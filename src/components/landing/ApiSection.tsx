@@ -4,12 +4,12 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 const endpoints = [
-  { method: "POST", path: "/v1/auth/signup", description: "Create a new account" },
-  { method: "POST", path: "/v1/auth/login", description: "Authenticate user" },
-  { method: "POST", path: "/v1/verify-email", description: "Validate single email" },
-  { method: "POST", path: "/v1/verify-list", description: "Upload CSV for bulk validation" },
-  { method: "GET", path: "/v1/jobs/{id}", description: "Check bulk job status" },
-  { method: "GET", path: "/v1/plans", description: "List available plans" },
+  { method: "POST", path: "/v1/auth/signup", description: "Create account" },
+  { method: "POST", path: "/v1/auth/login", description: "Authenticate" },
+  { method: "POST", path: "/v1/verify-email", description: "Validate email" },
+  { method: "POST", path: "/v1/verify-list", description: "Bulk validation" },
+  { method: "GET", path: "/v1/jobs/{id}", description: "Job status" },
+  { method: "GET", path: "/v1/plans", description: "List plans" },
 ];
 
 const codeExample = `const response = await fetch('https://api.mailvet.app/v1/verify-email', {
@@ -24,16 +24,7 @@ const codeExample = `const response = await fetch('https://api.mailvet.app/v1/ve
 });
 
 const result = await response.json();
-console.log(result);
-
-// Response:
-// {
-//   "valid": true,
-//   "code": 200,
-//   "message": "Email is valid and deliverable",
-//   "domain": "example.com",
-//   "catch_all": false
-// }`;
+// { "valid": true, "code": 200, "message": "Email is valid" }`;
 
 export const ApiSection = () => {
   const [copied, setCopied] = useState(false);
@@ -45,42 +36,47 @@ export const ApiSection = () => {
   };
 
   return (
-    <section id="api" className="py-24 bg-muted/30">
-      <div className="container mx-auto px-4">
+    <section id="api" className="relative py-28 overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-card/30" />
+      <div className="absolute inset-0 dot-pattern opacity-15" />
+      
+      <div className="container mx-auto px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <h2 className="font-display text-4xl md:text-5xl font-bold mb-4">
+          <p className="text-overline text-accent mb-4">API</p>
+          <h2 className="font-display font-bold mb-5">
             <span className="gradient-text">Developer-First</span> API
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Simple, powerful REST API. Integrate email validation in minutes with comprehensive documentation.
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-start">
+        <div className="grid lg:grid-cols-2 gap-10 items-start max-w-6xl mx-auto">
           {/* Endpoints list */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
           >
-            <h3 className="font-display text-2xl font-semibold mb-6">API Endpoints</h3>
+            <h3 className="font-display text-xl font-semibold mb-6 text-foreground">API Endpoints</h3>
             <div className="space-y-3">
-              {endpoints.map((endpoint, index) => (
+              {endpoints.map((endpoint) => (
                 <div
                   key={endpoint.path}
-                  className="flex items-center gap-4 p-4 bg-card rounded-lg border border-border hover:border-primary/30 transition-colors"
+                  className="flex items-center gap-4 p-4 rounded-xl border border-border/50 bg-card/50 hover:border-primary/30 transition-colors"
                 >
                   <span
-                    className={`px-2 py-1 rounded text-xs font-mono font-semibold ${
+                    className={`px-2.5 py-1 rounded-md text-xs font-mono font-semibold ${
                       endpoint.method === "POST"
-                        ? "bg-green-500/10 text-green-600"
+                        ? "bg-green-500/10 text-green-400"
                         : "bg-blue/10 text-blue"
                     }`}
                   >
@@ -98,20 +94,20 @@ export const ApiSection = () => {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
           >
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-display text-2xl font-semibold">Quick Start (Node.js)</h3>
+              <h3 className="font-display text-xl font-semibold text-foreground">Quick Start</h3>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleCopy}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-sm"
               >
                 {copied ? (
                   <>
-                    <Check className="w-4 h-4" />
-                    Copied!
+                    <Check className="w-4 h-4 text-green-400" />
+                    Copied
                   </>
                 ) : (
                   <>
@@ -121,16 +117,19 @@ export const ApiSection = () => {
                 )}
               </Button>
             </div>
-            <div className="gradient-border rounded-xl p-1">
-              <div className="bg-dark rounded-lg overflow-hidden">
-                <div className="px-4 py-3 border-b border-border/20 flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground font-mono">verify-email.js</span>
+            <div className="relative">
+              <div className="absolute inset-0 gradient-bg rounded-xl blur-xl opacity-10" />
+              <div className="relative gradient-border rounded-xl overflow-hidden">
+                <div className="bg-background rounded-xl overflow-hidden">
+                  <div className="px-4 py-3 border-b border-border/30 flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground font-mono">verify-email.js</span>
+                  </div>
+                  <pre className="p-5 overflow-x-auto">
+                    <code className="text-sm font-mono text-foreground/90 leading-relaxed">
+                      {codeExample}
+                    </code>
+                  </pre>
                 </div>
-                <pre className="p-6 overflow-x-auto">
-                  <code className="text-sm font-mono text-primary-foreground/90 leading-relaxed">
-                    {codeExample}
-                  </code>
-                </pre>
               </div>
             </div>
           </motion.div>

@@ -3,25 +3,27 @@ import { cn } from "@/lib/utils";
 interface LogoProps {
   className?: string;
   showText?: boolean;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
 }
 
 export const Logo = ({ className, showText = true, size = "md" }: LogoProps) => {
   const sizeClasses = {
-    sm: "h-8",
-    md: "h-10",
-    lg: "h-12",
+    sm: "h-7 w-7",
+    md: "h-9 w-9",
+    lg: "h-11 w-11",
+    xl: "h-14 w-14",
   };
 
   const textSizeClasses = {
     sm: "text-lg",
     md: "text-xl",
     lg: "text-2xl",
+    xl: "text-3xl",
   };
 
   return (
-    <div className={cn("flex items-center gap-2", className)}>
-      {/* Logo SVG - M and V interlocked with envelope hint */}
+    <div className={cn("flex items-center gap-2.5", className)}>
+      {/* Minimalist M+V Logo */}
       <svg
         viewBox="0 0 48 48"
         fill="none"
@@ -29,60 +31,77 @@ export const Logo = ({ className, showText = true, size = "md" }: LogoProps) => 
         className={cn(sizeClasses[size])}
       >
         <defs>
-          <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="hsl(272 70% 43%)" />
-            <stop offset="50%" stopColor="hsl(243 64% 54%)" />
-            <stop offset="100%" stopColor="hsl(204 100% 50%)" />
+          <linearGradient id="logoGradientMV" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="hsl(270, 100%, 65%)" />
+            <stop offset="50%" stopColor="hsl(280, 100%, 60%)" />
+            <stop offset="100%" stopColor="hsl(220, 100%, 60%)" />
+          </linearGradient>
+          <linearGradient id="logoGradientAccent" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="hsl(220, 100%, 60%)" />
+            <stop offset="100%" stopColor="hsl(180, 100%, 50%)" />
           </linearGradient>
         </defs>
-        {/* Envelope shape with M and V */}
-        <path
-          d="M4 14L24 26L44 14V38C44 40.2091 42.2091 42 40 42H8C5.79086 42 4 40.2091 4 38V14Z"
-          fill="url(#logoGradient)"
-          opacity="0.2"
+        
+        {/* Background glow circle */}
+        <circle 
+          cx="24" 
+          cy="24" 
+          r="22" 
+          fill="url(#logoGradientMV)" 
+          opacity="0.1"
         />
+        
+        {/* M letter - left side */}
         <path
-          d="M4 10C4 7.79086 5.79086 6 8 6H40C42.2091 6 44 7.79086 44 10V14L24 26L4 14V10Z"
-          fill="url(#logoGradient)"
-        />
-        {/* M letter */}
-        <path
-          d="M12 18L18 28L24 18L24 34"
-          stroke="white"
-          strokeWidth="2.5"
+          d="M8 36V12L18 28L24 18"
+          stroke="url(#logoGradientMV)"
+          strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
           fill="none"
         />
+        
+        {/* V letter - right side, interlocked with M */}
         <path
-          d="M12 18L12 34"
-          stroke="white"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-        {/* V letter */}
-        <path
-          d="M28 18L34 34L40 18"
-          stroke="white"
-          strokeWidth="2.5"
+          d="M24 18L30 36L40 12"
+          stroke="url(#logoGradientAccent)"
+          strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
           fill="none"
         />
-        {/* Checkmark accent */}
-        <circle cx="38" cy="38" r="8" fill="hsl(355 78% 56%)" />
-        <path
-          d="M34 38L37 41L42 35"
-          stroke="white"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+        
+        {/* Connection point glow */}
+        <circle 
+          cx="24" 
+          cy="18" 
+          r="3" 
+          fill="hsl(180, 100%, 50%)"
+          opacity="0.8"
         />
       </svg>
+
       {showText && (
-        <span className={cn("font-display font-bold gradient-text", textSizeClasses[size])}>
-          MailVet
-        </span>
+        <div className="flex items-baseline gap-0.5">
+          <span className={cn(
+            "font-display font-bold tracking-tight text-foreground",
+            textSizeClasses[size]
+          )}>
+            Mail
+          </span>
+          <span className={cn(
+            "font-display font-bold tracking-tight gradient-text",
+            textSizeClasses[size]
+          )}>
+            Vet
+          </span>
+          <span className={cn(
+            "text-muted-foreground font-medium",
+            size === "sm" ? "text-xs" : size === "md" ? "text-sm" : size === "lg" ? "text-base" : "text-lg"
+          )}>
+            .app
+          </span>
+        </div>
       )}
     </div>
   );
