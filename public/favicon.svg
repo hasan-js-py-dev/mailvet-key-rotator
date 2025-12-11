@@ -1,0 +1,39 @@
+<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoGradientMV" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="hsl(180, 100%, 50%)" />
+      <stop offset="50%" stop-color="hsl(200, 100%, 55%)" />
+      <stop offset="100%" stop-color="hsl(220, 100%, 60%)" />
+    </linearGradient>
+    <linearGradient id="logoGradientAccent" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="hsl(220, 100%, 60%)" />
+      <stop offset="100%" stop-color="hsl(180, 100%, 50%)" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="24" cy="24" r="22" fill="hsl(0, 0%, 5%)" />
+  
+  <!-- M letter - left side -->
+  <path
+    d="M8 36V12L18 28L24 18"
+    stroke="url(#logoGradientMV)"
+    stroke-width="3"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+  
+  <!-- V letter - right side, interlocked with M -->
+  <path
+    d="M24 18L30 36L40 12"
+    stroke="url(#logoGradientAccent)"
+    stroke-width="3"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+  
+  <!-- Connection point glow -->
+  <circle cx="24" cy="18" r="3" fill="hsl(180, 100%, 50%)" opacity="0.9" />
+</svg>
