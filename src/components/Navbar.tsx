@@ -8,8 +8,6 @@ import { Button } from "./ui/button";
 const navLinks = [
   { name: "Features", href: "#features" },
   { name: "Pricing", href: "#pricing" },
-  { name: "API", href: "#api" },
-  { name: "Docs", href: "#docs" },
 ];
 
 export const Navbar = () => {
