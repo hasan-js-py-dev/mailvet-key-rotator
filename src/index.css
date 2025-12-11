@@ -144,7 +144,7 @@
 }
 
 @layer components {
-  /* Animated dot pattern background */
+  /* Animated dot pattern background - vikileads style */
   .dot-pattern {
     background-image: radial-gradient(
       circle at center,
@@ -165,7 +165,43 @@
     animation: dot-pulse 4s ease-in-out infinite;
   }
 
+  /* Floating particles like vikileads */
+  .particles-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: hsl(var(--cyan));
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: float-particle 15s infinite ease-in-out;
+  }
+
+  .particle::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    border-radius: inherit;
+    filter: blur(4px);
+    transform: scale(3);
+    opacity: 0.4;
+  }
+
   .gradient-text {
+    background: linear-gradient(135deg, hsl(180, 100%, 50%) 0%, hsl(180, 100%, 60%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-primary {
     background: var(--gradient-text);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -217,6 +253,11 @@
     box-shadow: var(--shadow-glow-cyan);
   }
 
+  /* Logo animation */
+  .logo-animated {
+    animation: logo-glow 3s ease-in-out infinite;
+  }
+
   /* Text sizes for professional SaaS */
   .text-nav {
     @apply text-sm font-medium tracking-wide;
@@ -237,6 +278,23 @@
   .text-overline {
     @apply text-xs uppercase tracking-widest font-semibold;
   }
+
+  /* Deliverable badge */
+  .badge-deliverable {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold;
+    background: hsl(142, 76%, 36%);
+    color: white;
+  }
+
+  /* Score bar gradient */
+  .score-bar {
+    background: linear-gradient(90deg, 
+      hsl(0, 85%, 60%) 0%, 
+      hsl(0, 85%, 60%) 50%, 
+      hsl(45, 100%, 50%) 70%, 
+      hsl(142, 76%, 36%) 100%
+    );
+  }
 }
 
 @layer utilities {
@@ -245,7 +303,7 @@
       opacity: 0.3;
     }
     50% {
-      opacity: 0.6;
+      opacity: 0.5;
     }
   }
 
@@ -258,6 +316,23 @@
     }
   }
 
+  @keyframes float-particle {
+    0%, 100% {
+      transform: translateY(0) translateX(0);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.6;
+    }
+    50% {
+      transform: translateY(-100vh) translateX(50px);
+      opacity: 0.4;
+    }
+    90% {
+      opacity: 0.6;
+    }
+  }
+
   @keyframes glow-pulse {
     0%, 100% {
       opacity: 0.4;
@@ -266,6 +341,15 @@
     50% {
       opacity: 0.7;
       transform: scale(1.05);
+    }
+  }
+
+  @keyframes logo-glow {
+    0%, 100% {
+      filter: drop-shadow(0 0 8px hsl(180, 100%, 50%, 0.4));
+    }
+    50% {
+      filter: drop-shadow(0 0 20px hsl(180, 100%, 50%, 0.7));
     }
   }
 
@@ -289,6 +373,21 @@
     }
   }
 
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(0.95);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(0.95);
+      opacity: 1;
+    }
+  }
+
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
@@ -304,6 +403,10 @@
 
   .animate-fade-in-up {
     animation: fade-in-up 0.6s ease-out forwards;
+  }
+
+  .animate-pulse-ring {
+    animation: pulse-ring 2s ease-in-out infinite;
   }
 
   .animation-delay-100 {

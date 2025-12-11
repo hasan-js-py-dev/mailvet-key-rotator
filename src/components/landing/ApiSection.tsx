@@ -1,18 +1,34 @@
 import { motion } from "framer-motion";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Terminal, Book, Puzzle, Zap } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
-const endpoints = [
-  { method: "POST", path: "/v1/auth/signup", description: "Create account" },
-  { method: "POST", path: "/v1/auth/login", description: "Authenticate" },
-  { method: "POST", path: "/v1/verify-email", description: "Validate email" },
-  { method: "POST", path: "/v1/verify-list", description: "Bulk validation" },
-  { method: "GET", path: "/v1/jobs/{id}", description: "Job status" },
-  { method: "GET", path: "/v1/plans", description: "List plans" },
+const features = [
+  {
+    icon: Terminal,
+    title: "Simple REST API",
+    description: "Clean, intuitive endpoints that follow REST best practices. Get started in minutes.",
+  },
+  {
+    icon: Book,
+    title: "Comprehensive Docs",
+    description: "Detailed documentation with examples in multiple languages including Node.js, Python, PHP.",
+  },
+  {
+    icon: Puzzle,
+    title: "Easy Integration",
+    description: "SDKs for popular frameworks. Seamless integration with your existing workflow.",
+  },
+  {
+    icon: Zap,
+    title: "Webhooks Support",
+    description: "Real-time notifications for bulk validation jobs. Never miss a completion event.",
+  },
 ];
 
-const codeExample = `const response = await fetch('https://api.mailvet.app/v1/verify-email', {
+const codeExample = `// Validate a single email address
+const response = await fetch('https://api.mailvet.app/v1/verify-email', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer YOUR_API_TOKEN',
@@ -24,7 +40,17 @@ const codeExample = `const response = await fetch('https://api.mailvet.app/v1/ve
 });
 
 const result = await response.json();
-// { "valid": true, "code": 200, "message": "Email is valid" }`;
+
+// Response
+{
+  "email": "user@example.com",
+  "valid": true,
+  "result": {
+    "code": 200,
+    "message": "Email is valid and deliverable",
+    "risk_level": "low"
+  }
+}`;
 
 export const ApiSection = () => {
   const [copied, setCopied] = useState(false);
@@ -36,9 +62,9 @@ export const ApiSection = () => {
   };
 
   return (
-    <section id="api" className="relative py-28 overflow-hidden">
+    <section id="api" className="relative py-24 overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-card/30" />
+      <div className="absolute inset-0 bg-background" />
       <div className="absolute inset-0 dot-pattern opacity-15" />
       
       <div className="container mx-auto px-6 relative z-10">
@@ -49,43 +75,52 @@ export const ApiSection = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <p className="text-overline text-accent mb-4">API</p>
-          <h2 className="font-display font-bold mb-5">
-            <span className="gradient-text">Developer-First</span> API
+          <p className="text-overline text-cyan mb-4">For Developers</p>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-5">
+            Powerful Email Validation{" "}
+            <span className="gradient-text">API</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Simple, powerful REST API. Integrate email validation in minutes with comprehensive documentation.
+            Integrate email validation into your applications with our developer-friendly REST API. 
+            Built for reliability and speed at any scale.
           </p>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-10 items-start max-w-6xl mx-auto">
-          {/* Endpoints list */}
+          {/* Features grid */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
+            className="space-y-6"
           >
-            <h3 className="font-display text-xl font-semibold mb-6 text-foreground">API Endpoints</h3>
-            <div className="space-y-3">
-              {endpoints.map((endpoint) => (
+            <div className="grid sm:grid-cols-2 gap-4">
+              {features.map((feature) => (
                 <div
-                  key={endpoint.path}
-                  className="flex items-center gap-4 p-4 rounded-xl border border-border/50 bg-card/50 hover:border-primary/30 transition-colors"
+                  key={feature.title}
+                  className="p-5 rounded-xl border border-border/30 bg-card/30 hover:border-cyan/30 transition-colors"
                 >
-                  <span
-                    className={`px-2.5 py-1 rounded-md text-xs font-mono font-semibold ${
-                      endpoint.method === "POST"
-                        ? "bg-green-500/10 text-green-400"
-                        : "bg-blue/10 text-blue"
-                    }`}
-                  >
-                    {endpoint.method}
-                  </span>
-                  <code className="text-sm font-mono text-foreground flex-1">{endpoint.path}</code>
-                  <span className="text-sm text-muted-foreground hidden sm:block">{endpoint.description}</span>
+                  <div className="w-10 h-10 rounded-lg bg-cyan/10 border border-cyan/20 flex items-center justify-center mb-4">
+                    <feature.icon className="w-5 h-5 text-cyan" />
+                  </div>
+                  <h3 className="text-base font-semibold mb-2 text-foreground">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground">{feature.description}</p>
                 </div>
               ))}
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link to="/access?page=signup">
+                <Button size="lg" className="bg-cyan hover:bg-cyan/90 text-background font-semibold w-full sm:w-auto">
+                  Get API Key
+                </Button>
+              </Link>
+              <a href="#api">
+                <Button size="lg" variant="outline" className="border-border/50 hover:bg-card w-full sm:w-auto">
+                  View Documentation
+                </Button>
+              </a>
             </div>
           </motion.div>
 
@@ -96,40 +131,42 @@ export const ApiSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-display text-xl font-semibold text-foreground">Quick Start</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCopy}
-                className="flex items-center gap-2 text-sm"
-              >
-                {copied ? (
-                  <>
-                    <Check className="w-4 h-4 text-green-400" />
-                    Copied
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4" />
-                    Copy
-                  </>
-                )}
-              </Button>
-            </div>
             <div className="relative">
-              <div className="absolute inset-0 gradient-bg rounded-xl blur-xl opacity-10" />
-              <div className="relative gradient-border rounded-xl overflow-hidden">
-                <div className="bg-background rounded-xl overflow-hidden">
-                  <div className="px-4 py-3 border-b border-border/30 flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground font-mono">verify-email.js</span>
+              <div className="absolute inset-0 bg-cyan/10 rounded-xl blur-xl opacity-20" />
+              <div className="relative rounded-xl border border-border/30 overflow-hidden bg-background">
+                <div className="px-4 py-3 border-b border-border/30 flex items-center justify-between bg-card/50">
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                      <div className="w-3 h-3 rounded-full bg-green-500/80" />
+                    </div>
+                    <span className="text-xs text-muted-foreground font-mono ml-2">verify-email.js</span>
                   </div>
-                  <pre className="p-5 overflow-x-auto">
-                    <code className="text-sm font-mono text-foreground/90 leading-relaxed">
-                      {codeExample}
-                    </code>
-                  </pre>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCopy}
+                    className="h-7 px-2 text-xs"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-3 h-3 mr-1 text-green-400" />
+                        Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3 mr-1" />
+                        Copy
+                      </>
+                    )}
+                  </Button>
                 </div>
+                <pre className="p-5 overflow-x-auto text-sm">
+                  <code className="font-mono text-foreground/90 leading-relaxed whitespace-pre">
+                    {codeExample}
+                  </code>
+                </pre>
               </div>
             </div>
           </motion.div>
