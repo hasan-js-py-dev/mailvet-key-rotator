@@ -5,39 +5,51 @@ import {
   Zap, 
   Shield, 
   Code, 
-  Gift 
+  Gift,
+  Globe,
+  Lock
 } from "lucide-react";
 
 const features = [
   {
     icon: Mail,
-    title: "Real-Time Validation",
-    description: "Verify individual emails instantly with our lightning-fast API. Get detailed validity results in milliseconds.",
+    title: "Real-Time Email Validation",
+    description: "Verify individual email addresses instantly with our lightning-fast API. Get detailed validity results in milliseconds, not minutes.",
   },
   {
     icon: FileSpreadsheet,
     title: "Bulk List Validation",
-    description: "Upload CSV files with thousands of emails. Download clean, validated lists when processing completes.",
+    description: "Upload CSV files containing thousands of emails. Download clean, validated lists with detailed reports when processing completes.",
   },
   {
     icon: Zap,
     title: "High-Speed Processing",
-    description: "From 1 to 10 emails per second based on your plan. Scale your validation as your business grows.",
+    description: "Validate from 1 to 10 emails per second based on your plan. Enterprise-grade infrastructure that scales with your business needs.",
   },
   {
     icon: Shield,
-    title: "99.9% Accuracy",
-    description: "Multi-layer verification checks MX records, SMTP responses, and catch-all detection for precision.",
+    title: "99% Accuracy Guaranteed",
+    description: "Multi-layer verification including SMTP checks, MX record validation, catch-all detection, and disposable email identification.",
   },
   {
     icon: Code,
     title: "Developer-Friendly API",
-    description: "Simple REST API with comprehensive documentation. Integrate email validation in minutes.",
+    description: "RESTful API with comprehensive documentation. Integrate email validation into your applications in minutes with our SDKs.",
   },
   {
     icon: Gift,
-    title: "Free Trial Credits",
-    description: "Start with 50 free credits to test our service. No credit card required to begin.",
+    title: "50 Free Credits to Start",
+    description: "Test our service risk-free with 50 complimentary credits. No credit card required to get started immediately.",
+  },
+  {
+    icon: Globe,
+    title: "Global Coverage",
+    description: "Validate emails from any domain worldwide. Our distributed infrastructure ensures fast response times globally.",
+  },
+  {
+    icon: Lock,
+    title: "GDPR & Privacy Compliant",
+    description: "We never store validated email addresses. Your data is processed securely and deleted immediately after validation.",
   },
 ];
 
@@ -62,10 +74,13 @@ const itemVariants = {
 
 export const FeaturesSection = () => {
   return (
-    <section id="features" className="relative py-28 overflow-hidden">
+    <section id="features" className="relative py-24 overflow-hidden">
       {/* Background elements */}
-      <div className="absolute inset-0 bg-background" />
-      <div className="absolute inset-0 dot-pattern opacity-20" />
+      <div className="absolute inset-0 bg-card/20" />
+      <div className="absolute inset-0 dot-pattern opacity-15" />
+      
+      {/* Glow */}
+      <div className="absolute top-0 right-1/4 w-[400px] h-[400px] bg-cyan/10 rounded-full blur-[150px] opacity-20" />
       
       <div className="container mx-auto px-6 relative z-10">
         <motion.div
@@ -75,13 +90,14 @@ export const FeaturesSection = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <p className="text-overline text-accent mb-4">Features</p>
-          <h2 className="font-display font-bold mb-5">
+          <p className="text-overline text-cyan mb-4">Features</p>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-5">
             Everything You Need to{" "}
             <span className="gradient-text">Validate Emails</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Powerful features designed to maintain a clean email list and improve your deliverability rates.
+            Powerful email validation features designed to maintain clean email lists, 
+            improve deliverability rates, and protect your sender reputation.
           </p>
         </motion.div>
 
@@ -90,7 +106,7 @@ export const FeaturesSection = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto"
         >
           {features.map((feature) => (
             <motion.div
@@ -98,12 +114,12 @@ export const FeaturesSection = () => {
               variants={itemVariants}
               className="group"
             >
-              <div className="h-full p-8 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:bg-card transition-all duration-300">
-                <div className="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center mb-6 group-hover:scale-110 group-hover:shadow-glow transition-all duration-300">
-                  <feature.icon className="w-6 h-6 text-primary-foreground" />
+              <div className="h-full p-6 rounded-2xl border border-border/30 bg-background/50 hover:border-cyan/30 hover:bg-card/80 transition-all duration-300">
+                <div className="w-11 h-11 rounded-xl bg-cyan/10 border border-cyan/20 flex items-center justify-center mb-5 group-hover:bg-cyan/20 transition-colors">
+                  <feature.icon className="w-5 h-5 text-cyan" />
                 </div>
-                <h3 className="font-display text-xl font-semibold mb-3 text-foreground">{feature.title}</h3>
-                <p className="text-muted-foreground text-base leading-relaxed">{feature.description}</p>
+                <h3 className="text-base font-semibold mb-2 text-foreground">{feature.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
               </div>
             </motion.div>
           ))}
