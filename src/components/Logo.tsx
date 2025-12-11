@@ -81,28 +81,6 @@ export const Logo = ({ className, showText = true, size = "md" }: LogoProps) => 
         />
       </svg>
 
-      {showText && (
-        <div className="flex items-baseline gap-0.5">
-          <span className={cn(
-            "font-display font-bold tracking-tight text-foreground",
-            textSizeClasses[size]
-          )}>
-            Mail
-          </span>
-          <span className={cn(
-            "font-display font-bold tracking-tight gradient-text",
-            textSizeClasses[size]
-          )}>
-            Vet
-          </span>
-          <span className={cn(
-            "text-muted-foreground font-medium",
-            size === "sm" ? "text-xs" : size === "md" ? "text-sm" : size === "lg" ? "text-base" : "text-lg"
-          )}>
-            .app
-          </span>
-        </div>
-      )}
     </div>
   );
 };
