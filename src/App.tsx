@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Access from "./pages/Access";
+import UseCases from "./pages/UseCases";
+import UseCaseDetail from "./pages/UseCaseDetail";
 import DashboardOverview from "./pages/dashboard/Overview";
 import VerifyEmail from "./pages/dashboard/VerifyEmail";
 import VerifyList from "./pages/dashboard/VerifyList";
@@ -24,6 +26,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/access" element={<Access />} />
+          <Route path="/use-cases" element={<UseCases />} />
+          <Route path="/use-cases/:slug" element={<UseCaseDetail />} />
           <Route path="/dashboard" element={<DashboardOverview />} />
           <Route path="/dashboard/verify-email" element={<VerifyEmail />} />
           <Route path="/dashboard/verify-list" element={<VerifyList />} />
