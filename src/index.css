@@ -46,10 +46,10 @@
     --pure-black: 0 0% 0%;
     --soft-white: 0 0% 98%;
 
-    /* Dot pattern - highly visible */
+    /* Dot pattern - small dots */
     --dot-color: 180 100% 50%;
-    --dot-size: 2px;
-    --dot-gap: 24px;
+    --dot-size: 1px;
+    --dot-gap: 32px;
 
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--purple)) 0%, hsl(var(--violet)) 50%, hsl(var(--blue)) 100%);
@@ -165,11 +165,31 @@
   .dot-pattern-animated {
     background-image: radial-gradient(
       circle at center,
-      hsl(var(--dot-color) / 0.5) var(--dot-size),
+      hsl(var(--dot-color) / 0.4) var(--dot-size),
       transparent var(--dot-size)
     );
     background-size: var(--dot-gap) var(--dot-gap);
-    animation: dot-pulse 4s ease-in-out infinite;
+    animation: dots-rise 20s linear infinite;
+  }
+
+  /* Rising dots animation - moves from bottom to top */
+  .rising-dots {
+    background-image: radial-gradient(
+      circle at center,
+      hsl(var(--dot-color) / 0.35) 1px,
+      transparent 1px
+    );
+    background-size: 28px 28px;
+    animation: dots-rise 25s linear infinite;
+  }
+
+  @keyframes dots-rise {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 0 -500px;
+    }
   }
 
   .gradient-text {
