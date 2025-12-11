@@ -32,30 +32,42 @@ const ValidationDemo = () => {
   ];
 
   useEffect(() => {
+    let isMounted = true;
+    
     const runValidation = async () => {
+      if (!isMounted) return;
+      
       setIsValidating(true);
       setShowResult(false);
       setValidationStep(0);
 
       // Initial delay before starting
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Animate through validation steps - slower and smoother
-      for (let i = 0; i < validationSteps.length; i++) {
-        await new Promise(resolve => setTimeout(resolve, 1200));
-        setValidationStep(i + 1);
+      // Animate through validation steps one by one - slow and smooth
+      for (let i = 0; i < 4; i++) {
+        if (!isMounted) return;
+        setValidationStep(i); // Show current step as "Checking..."
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Wait while checking
+        setValidationStep(i + 1); // Mark as complete
       }
 
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise(resolve => setTimeout(resolve, 600));
+      if (!isMounted) return;
       setIsValidating(false);
       setShowResult(true);
 
-      // Wait longer before moving to next email
-      await new Promise(resolve => setTimeout(resolve, 4000));
+      // Wait before moving to next email
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      if (!isMounted) return;
       setCurrentIndex((prev) => (prev + 1) % businessEmails.length);
     };
 
     runValidation();
+    
+    return () => {
+      isMounted = false;
+    };
   }, [currentIndex]);
 
   return (
@@ -105,61 +117,90 @@ const ValidationDemo = () => {
         </div>
 
         {/* Validation steps */}
-        <div className="space-y-3 mb-6">
+        <div className="space-y-4 mb-6">
           {validationSteps.map((step, index) => {
             const StepIcon = step.icon;
             const isComplete = validationStep > index;
             const isCurrent = validationStep === index && isValidating;
+            const isPending = validationStep < index;
             
             return (
               <motion.div
                 key={step.label}
-                initial={{ opacity: 0.5 }}
+                initial={{ opacity: 0.3, x: -10 }}
                 animate={{ 
-                  opacity: isComplete || isCurrent ? 1 : 0.4,
+                  opacity: isComplete ? 1 : isCurrent ? 1 : 0.4,
+                  x: 0,
                 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
                 className="flex items-center gap-3"
               >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  isComplete 
-                    ? currentEmail.valid || index < 3 
-                      ? 'bg-green-500/20 border border-green-500/50' 
-                      : 'bg-red-500/20 border border-red-500/50'
-                    : isCurrent 
-                      ? 'bg-cyan/20 border border-cyan/50' 
-                      : 'bg-muted border border-border/50'
-                }`}>
+                <motion.div 
+                  className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-500 ${
+                    isComplete 
+                      ? currentEmail.valid || index < 3 
+                        ? 'bg-green-500/20 border-2 border-green-500' 
+                        : 'bg-red-500/20 border-2 border-red-500'
+                      : isCurrent 
+                        ? 'bg-cyan/20 border-2 border-cyan' 
+                        : 'bg-muted/50 border border-border/50'
+                  }`}
+                  animate={isCurrent ? { scale: [1, 1.1, 1] } : {}}
+                  transition={{ duration: 0.8, repeat: isCurrent ? Infinity : 0 }}
+                >
                   {isComplete ? (
-                    currentEmail.valid || index < 3 ? (
-                      <Check className="w-3 h-3 text-green-500" />
-                    ) : (
-                      <X className="w-3 h-3 text-red-500" />
-                    )
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", duration: 0.4 }}
+                    >
+                      {currentEmail.valid || index < 3 ? (
+                        <Check className="w-4 h-4 text-green-500" />
+                      ) : (
+                        <X className="w-4 h-4 text-red-500" />
+                      )}
+                    </motion.div>
                   ) : isCurrent ? (
                     <motion.div
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 0.5, repeat: Infinity }}
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                     >
-                      <StepIcon className="w-3 h-3 text-cyan" />
+                      <StepIcon className="w-4 h-4 text-cyan" />
                     </motion.div>
                   ) : (
-                    <StepIcon className="w-3 h-3 text-muted-foreground" />
+                    <StepIcon className="w-3.5 h-3.5 text-muted-foreground/50" />
                   )}
+                </motion.div>
+                <div className="flex-1 flex items-center justify-between">
+                  <span className={`text-sm font-medium transition-all duration-500 ${
+                    isComplete ? 'text-foreground' : isCurrent ? 'text-cyan' : 'text-muted-foreground/60'
+                  }`}>
+                    {step.label}
+                  </span>
+                  <AnimatePresence mode="wait">
+                    {isCurrent && (
+                      <motion.span
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        className="text-xs text-cyan font-medium"
+                      >
+                        Checking...
+                      </motion.span>
+                    )}
+                    {isComplete && (
+                      <motion.span
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className={`text-xs font-medium ${
+                          currentEmail.valid || index < 3 ? 'text-green-500' : 'text-red-500'
+                        }`}
+                      >
+                        {currentEmail.valid || index < 3 ? 'Passed' : 'Failed'}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
                 </div>
-                <span className={`text-sm transition-colors duration-300 ${
-                  isComplete || isCurrent ? 'text-foreground' : 'text-muted-foreground'
-                }`}>
-                  {step.label}
-                </span>
-                {isCurrent && (
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-xs text-cyan ml-auto"
-                  >
-                    Checking...
-                  </motion.span>
-                )}
               </motion.div>
             );
           })}
