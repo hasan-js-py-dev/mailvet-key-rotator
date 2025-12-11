@@ -37,18 +37,21 @@ const ValidationDemo = () => {
       setShowResult(false);
       setValidationStep(0);
 
-      // Animate through validation steps
+      // Initial delay before starting
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      // Animate through validation steps - slower and smoother
       for (let i = 0; i < validationSteps.length; i++) {
-        await new Promise(resolve => setTimeout(resolve, 600));
+        await new Promise(resolve => setTimeout(resolve, 1200));
         setValidationStep(i + 1);
       }
 
-      await new Promise(resolve => setTimeout(resolve, 400));
+      await new Promise(resolve => setTimeout(resolve, 800));
       setIsValidating(false);
       setShowResult(true);
 
-      // Wait and move to next email
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Wait longer before moving to next email
+      await new Promise(resolve => setTimeout(resolve, 4000));
       setCurrentIndex((prev) => (prev + 1) % businessEmails.length);
     };
 

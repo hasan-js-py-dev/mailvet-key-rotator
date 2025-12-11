@@ -46,10 +46,10 @@
     --pure-black: 0 0% 0%;
     --soft-white: 0 0% 98%;
 
-    /* Dot pattern */
-    --dot-color: 0 0% 20%;
-    --dot-size: 1px;
-    --dot-gap: 32px;
+    /* Dot pattern - more visible */
+    --dot-color: 0 0% 35%;
+    --dot-size: 1.5px;
+    --dot-gap: 28px;
 
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--purple)) 0%, hsl(var(--violet)) 50%, hsl(var(--blue)) 100%);
