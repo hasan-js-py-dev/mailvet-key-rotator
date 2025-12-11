@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
-import { cn } from "@/lib/utils";
 
 const navLinks = [
   { name: "Features", href: "#features" },
@@ -19,38 +18,42 @@ export const Navbar = () => {
   const isHome = location.pathname === "/";
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/50">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <Link to="/">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/30 bg-background/60 backdrop-blur-xl">
+      <div className="container mx-auto px-6">
+        <div className="flex items-center justify-between h-16 md:h-20">
+          <Link to="/" className="relative z-10">
             <Logo size="md" />
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-10">
             {isHome && navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
-                className="text-muted-foreground hover:text-foreground transition-colors duration-200 font-medium"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200"
               >
                 {link.name}
               </a>
             ))}
           </div>
 
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
             <Link to="/access?page=login">
-              <Button variant="ghost">Log in</Button>
+              <Button variant="ghost" size="sm" className="text-sm font-medium">
+                Log in
+              </Button>
             </Link>
             <Link to="/access?page=signup">
-              <Button variant="gradient">Start Free</Button>
+              <Button variant="gradient" size="sm" className="text-sm font-semibold">
+                Start Free
+              </Button>
             </Link>
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2"
+            className="md:hidden p-2 text-foreground"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
           >
@@ -66,20 +69,20 @@ export const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden glass border-b border-border/50"
+            className="md:hidden bg-background/95 backdrop-blur-xl border-b border-border"
           >
-            <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
+            <div className="container mx-auto px-6 py-6 flex flex-col gap-4">
               {isHome && navLinks.map((link) => (
                 <a
                   key={link.name}
                   href={link.href}
-                  className="text-muted-foreground hover:text-foreground transition-colors py-2"
+                  className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
                   onClick={() => setIsOpen(false)}
                 >
                   {link.name}
                 </a>
               ))}
-              <div className="flex flex-col gap-2 pt-4 border-t border-border">
+              <div className="flex flex-col gap-3 pt-4 border-t border-border">
                 <Link to="/access?page=login" onClick={() => setIsOpen(false)}>
                   <Button variant="ghost" className="w-full">Log in</Button>
                 </Link>
