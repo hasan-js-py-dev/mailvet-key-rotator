@@ -8,12 +8,13 @@ import { ApiSection } from "@/components/landing/ApiSection";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { Footer } from "@/components/landing/Footer";
+import { FallingDots } from "@/components/FallingDots";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background relative">
-      {/* Global animated dot pattern - cyan colored, visible */}
-      <div className="fixed inset-0 dot-pattern-animated opacity-60 pointer-events-none z-0" />
+      {/* Random falling dots background */}
+      <FallingDots />
       
       <Navbar />
       <main className="relative z-10">
