@@ -162,33 +162,29 @@
     background-position: center center;
   }
 
-  .dot-pattern-animated {
-    background-image: radial-gradient(
-      circle at center,
-      hsl(var(--dot-color) / 0.4) var(--dot-size),
-      transparent var(--dot-size)
-    );
-    background-size: var(--dot-gap) var(--dot-gap);
-    animation: dots-rise 20s linear infinite;
+  /* Falling dot styles */
+  .falling-dot {
+    background: hsl(195 100% 50%);
+    box-shadow: 
+      0 0 4px hsl(195 100% 50% / 0.8),
+      0 0 8px hsl(195 100% 50% / 0.4);
+    animation: fall-down linear infinite;
   }
 
-  /* Rising dots animation - moves from bottom to top */
-  .rising-dots {
-    background-image: radial-gradient(
-      circle at center,
-      hsl(var(--dot-color) / 0.35) 1px,
-      transparent 1px
-    );
-    background-size: 28px 28px;
-    animation: dots-rise 25s linear infinite;
-  }
-
-  @keyframes dots-rise {
+  @keyframes fall-down {
     0% {
-      background-position: 0 0;
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    10% {
+      opacity: var(--dot-opacity, 0.5);
+    }
+    90% {
+      opacity: var(--dot-opacity, 0.5);
     }
     100% {
-      background-position: 0 -500px;
+      transform: translateY(100vh);
+      opacity: 0;
     }
   }
 

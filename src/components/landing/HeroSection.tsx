@@ -267,12 +267,9 @@ const ValidationDemo = () => {
 export const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Rising dots animation */}
-      <div className="absolute inset-0 rising-dots opacity-50" />
-      
       {/* Subtle gradient orbs */}
-      <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-cyan/10 rounded-full blur-[180px] opacity-20" />
-      <div className="absolute bottom-1/4 right-1/3 w-[400px] h-[400px] bg-primary/10 rounded-full blur-[150px] opacity-15" />
+      <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-cyan/5 rounded-full blur-[180px] opacity-30" />
+      <div className="absolute bottom-1/4 right-1/3 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[150px] opacity-20" />
       
       <div className="container mx-auto px-6 relative z-10 py-24">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
