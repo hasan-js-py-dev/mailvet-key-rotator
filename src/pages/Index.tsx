@@ -11,9 +11,12 @@ import { Footer } from "@/components/landing/Footer";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Global animated dot pattern */}
+      <div className="fixed inset-0 dot-pattern-animated opacity-20 pointer-events-none z-0" />
+      
       <Navbar />
-      <main>
+      <main className="relative z-10">
         <HeroSection />
         <HowItWorksSection />
         <FeaturesSection />

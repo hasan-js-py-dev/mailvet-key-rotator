@@ -122,11 +122,18 @@
 
   /* Professional typography scale */
   h1 {
-    @apply text-5xl md:text-6xl lg:text-7xl;
+    font-size: 48px;
+    line-height: 1.1;
+  }
+
+  @media (min-width: 768px) {
+    h1 {
+      font-size: 48px;
+    }
   }
 
   h2 {
-    @apply text-3xl md:text-4xl lg:text-5xl;
+    @apply text-3xl md:text-4xl;
   }
 
   h3 {

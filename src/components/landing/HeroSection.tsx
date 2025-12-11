@@ -1,105 +1,219 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowRight, Shield, CheckCircle, Star, Upload, Copy } from "lucide-react";
+import { ArrowRight, Shield, CheckCircle, Star, Upload, Check, X, Globe, Server, Mail, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 
-// Floating particles component for vikileads-style background
-const FloatingParticles = () => {
-  const particles = Array.from({ length: 50 }, (_, i) => ({
-    id: i,
-    left: `${Math.random() * 100}%`,
-    delay: Math.random() * 15,
-    duration: 10 + Math.random() * 10,
-    size: 1 + Math.random() * 2,
-  }));
+// Business emails for animated demo
+const businessEmails = [
+  { email: "sarah.johnson@techcorp.io", valid: true },
+  { email: "mike.chen@startup.com", valid: true },
+  { email: "support@invalid-domain-xyz.fake", valid: false },
+  { email: "hello@enterprise.co", valid: true },
+  { email: "contact@growthmarketing.agency", valid: true },
+  { email: "john.doe@nonexistent.test", valid: false },
+  { email: "sales@cloudservices.net", valid: true },
+];
 
-  return (
-    <div className="particles-bg">
-      {particles.map((particle) => (
-        <div
-          key={particle.id}
-          className="particle"
-          style={{
-            left: particle.left,
-            bottom: `-${particle.size * 2}px`,
-            width: `${particle.size}px`,
-            height: `${particle.size}px`,
-            animationDelay: `${particle.delay}s`,
-            animationDuration: `${particle.duration}s`,
-          }}
-        />
-      ))}
-    </div>
-  );
-};
-
-// Email validation demo component
+// Animated email validation demo component
 const ValidationDemo = () => {
-  const [email] = useState("joe.schmoe@gmail.com");
-  const [score] = useState(87);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isValidating, setIsValidating] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+  const [validationStep, setValidationStep] = useState(0);
+
+  const currentEmail = businessEmails[currentIndex];
+  
+  const validationSteps = [
+    { label: "Syntax Check", icon: Check, status: "checking" },
+    { label: "Domain Verification", icon: Globe, status: "checking" },
+    { label: "MX Record Lookup", icon: Server, status: "checking" },
+    { label: "SMTP Validation", icon: Mail, status: "checking" },
+  ];
+
+  useEffect(() => {
+    const runValidation = async () => {
+      setIsValidating(true);
+      setShowResult(false);
+      setValidationStep(0);
+
+      // Animate through validation steps
+      for (let i = 0; i < validationSteps.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 600));
+        setValidationStep(i + 1);
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 400));
+      setIsValidating(false);
+      setShowResult(true);
+
+      // Wait and move to next email
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      setCurrentIndex((prev) => (prev + 1) % businessEmails.length);
+    };
+
+    runValidation();
+  }, [currentIndex]);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.6, delay: 0.4 }}
-      className="relative"
+      className="relative w-full max-w-md"
     >
       {/* Glow effect */}
-      <div className="absolute inset-0 bg-cyan/20 rounded-2xl blur-2xl opacity-30" />
+      <div className="absolute inset-0 bg-cyan/20 rounded-2xl blur-3xl opacity-40" />
       
-      <div className="relative bg-card border border-border/50 rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-        {/* Email input */}
-        <div className="flex items-center gap-3 mb-5 p-3 bg-background rounded-lg border border-border/30">
-          <Copy className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm text-foreground flex-1">{email}</span>
-          <Button size="sm" className="bg-foreground text-background hover:bg-foreground/90 text-xs px-3 py-1 h-7">
-            Validate <ArrowRight className="w-3 h-3 ml-1" />
-          </Button>
+      <div className="relative bg-card/90 backdrop-blur-xl border border-border/50 rounded-2xl p-6 shadow-2xl">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-xs text-muted-foreground font-medium">Live Validation</span>
+          </div>
+          <span className="text-xs text-cyan font-mono">v2.0</span>
         </div>
 
-        {/* Result - Deliverable */}
-        <div className="space-y-4">
-          <div className="flex items-start gap-3">
-            <span className="badge-deliverable">Deliverable</span>
+        {/* Email input display */}
+        <div className="flex items-center gap-3 mb-6 p-4 bg-background/80 rounded-xl border border-border/40">
+          <Mail className="w-4 h-4 text-cyan" />
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={currentEmail.email}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="text-sm text-foreground flex-1 font-mono"
+            >
+              {currentEmail.email}
+            </motion.span>
+          </AnimatePresence>
+          <div className="flex items-center gap-1">
+            {isValidating && (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              >
+                <Zap className="w-4 h-4 text-cyan" />
+              </motion.div>
+            )}
           </div>
-          
-          <div>
-            <p className="text-sm font-medium text-foreground mb-1">This address accepts email</p>
-            <p className="text-xs text-muted-foreground">The recipient's email server has confirmed its deliverability.</p>
-          </div>
+        </div>
 
-          <div className="border-t border-border/30 pt-4">
-            <span className="badge-deliverable mb-2">Deliverable</span>
-            <p className="text-sm font-medium text-foreground mt-2 mb-3">This email address is valid</p>
+        {/* Validation steps */}
+        <div className="space-y-3 mb-6">
+          {validationSteps.map((step, index) => {
+            const StepIcon = step.icon;
+            const isComplete = validationStep > index;
+            const isCurrent = validationStep === index && isValidating;
             
-            {/* Score bar */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>0</span>
-                <span>25</span>
-                <span>50</span>
-                <span>75</span>
-                <span>100</span>
-              </div>
-              <div className="relative h-2 bg-muted rounded-full overflow-hidden">
-                <div className="score-bar h-full rounded-full" style={{ width: '100%' }} />
-                <div 
-                  className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-foreground border-2 border-background rounded-full shadow-lg"
-                  style={{ left: `${score}%`, transform: 'translate(-50%, -50%)' }}
-                />
-              </div>
-            </div>
-          </div>
+            return (
+              <motion.div
+                key={step.label}
+                initial={{ opacity: 0.5 }}
+                animate={{ 
+                  opacity: isComplete || isCurrent ? 1 : 0.4,
+                }}
+                className="flex items-center gap-3"
+              >
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  isComplete 
+                    ? currentEmail.valid || index < 3 
+                      ? 'bg-green-500/20 border border-green-500/50' 
+                      : 'bg-red-500/20 border border-red-500/50'
+                    : isCurrent 
+                      ? 'bg-cyan/20 border border-cyan/50' 
+                      : 'bg-muted border border-border/50'
+                }`}>
+                  {isComplete ? (
+                    currentEmail.valid || index < 3 ? (
+                      <Check className="w-3 h-3 text-green-500" />
+                    ) : (
+                      <X className="w-3 h-3 text-red-500" />
+                    )
+                  ) : isCurrent ? (
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 0.5, repeat: Infinity }}
+                    >
+                      <StepIcon className="w-3 h-3 text-cyan" />
+                    </motion.div>
+                  ) : (
+                    <StepIcon className="w-3 h-3 text-muted-foreground" />
+                  )}
+                </div>
+                <span className={`text-sm transition-colors duration-300 ${
+                  isComplete || isCurrent ? 'text-foreground' : 'text-muted-foreground'
+                }`}>
+                  {step.label}
+                </span>
+                {isCurrent && (
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-xs text-cyan ml-auto"
+                  >
+                    Checking...
+                  </motion.span>
+                )}
+              </motion.div>
+            );
+          })}
+        </div>
 
-          <div className="border-t border-border/30 pt-4">
-            <p className="text-xs text-muted-foreground mb-3">Or instead</p>
-            <Button variant="outline" className="w-full justify-center gap-2 text-sm border-border/50 hover:bg-muted/50">
-              <Upload className="w-4 h-4" />
-              Upload a list
-            </Button>
-          </div>
+        {/* Result */}
+        <AnimatePresence mode="wait">
+          {showResult && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className={`p-4 rounded-xl border ${
+                currentEmail.valid 
+                  ? 'bg-green-500/10 border-green-500/30' 
+                  : 'bg-red-500/10 border-red-500/30'
+              }`}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+                  currentEmail.valid 
+                    ? 'bg-green-500 text-white' 
+                    : 'bg-red-500 text-white'
+                }`}>
+                  {currentEmail.valid ? 'Deliverable' : 'Invalid'}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Score: {currentEmail.valid ? '98' : '12'}/100
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="flex items-center gap-2">
+                  <Globe className="w-3 h-3 text-muted-foreground" />
+                  <span className="text-muted-foreground">Domain:</span>
+                  <span className={currentEmail.valid ? 'text-green-400' : 'text-red-400'}>
+                    {currentEmail.valid ? 'Valid' : 'Invalid'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Server className="w-3 h-3 text-muted-foreground" />
+                  <span className="text-muted-foreground">MX:</span>
+                  <span className={currentEmail.valid ? 'text-green-400' : 'text-red-400'}>
+                    {currentEmail.valid ? 'Found' : 'Missing'}
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* CTA */}
+        <div className="mt-5 pt-5 border-t border-border/30">
+          <Button variant="outline" className="w-full justify-center gap-2 text-sm border-border/50 hover:bg-muted/50 hover:border-cyan/50 transition-colors">
+            <Upload className="w-4 h-4" />
+            Bulk verify your list
+          </Button>
         </div>
       </div>
     </motion.div>
@@ -112,18 +226,12 @@ export const HeroSection = () => {
       {/* Pure black background */}
       <div className="absolute inset-0 bg-background" />
       
-      {/* Animated dot pattern */}
-      <div className="absolute inset-0 dot-pattern-animated opacity-30" />
-      
-      {/* Floating particles - vikileads style */}
-      <FloatingParticles />
-      
       {/* Subtle gradient orbs */}
-      <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-cyan/20 rounded-full blur-[150px] opacity-20" />
-      <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-blue/20 rounded-full blur-[120px] opacity-15" />
+      <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-cyan/10 rounded-full blur-[180px] opacity-30" />
+      <div className="absolute bottom-1/4 right-1/3 w-[400px] h-[400px] bg-primary/10 rounded-full blur-[150px] opacity-20" />
       
-      <div className="container mx-auto px-6 relative z-10 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className="container mx-auto px-6 relative z-10 py-24">
+        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
           {/* Left content */}
           <div className="text-left">
             {/* Social proof badge */}
@@ -133,44 +241,38 @@ export const HeroSection = () => {
               transition={{ duration: 0.5 }}
               className="mb-8"
             >
-              <div className="inline-flex items-center gap-3">
-                <div className="flex items-center gap-1">
+              <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-card/50 border border-border/30 backdrop-blur-sm">
+                <div className="flex items-center gap-0.5">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
                   ))}
                 </div>
-                <span className="text-sm text-muted-foreground">+10,572 users</span>
+                <span className="text-sm text-muted-foreground">Trusted by 10,000+ businesses</span>
               </div>
             </motion.div>
 
-            {/* Headline */}
+            {/* Headline - 48px as requested */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6"
+              className="font-bold tracking-tight mb-6"
+              style={{ fontSize: '48px', lineHeight: '1.1' }}
             >
-              Simple, fast{" "}
-              <span className="inline-flex items-center">
-                <span className="text-red-500 mx-1">⚡</span>
-              </span>
-              , and secure{" "}
-              <span className="inline-flex items-center">
-                <span className="text-green-500 mx-1">🔒</span>
-              </span>
-              <br />
-              <span className="gradient-text">email validation service</span>
+              Stop Bounced Emails.{" "}
+              <br className="hidden md:block" />
+              <span className="gradient-text">Protect Your Sender Reputation</span>
             </motion.h1>
 
-            {/* Subheadline */}
+            {/* Subheadline - SEO optimized, unique */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-lg text-muted-foreground mb-8 max-w-xl leading-relaxed"
+              className="text-lg text-muted-foreground mb-8 max-w-lg leading-relaxed"
             >
-              Email Validation API: Clean Lists, Boost Deliverability & Maximize ROI. 
-              Remove fake emails and spam users from your email lists.
+              Enterprise-grade email verification with 99% accuracy. Validate emails in real-time, 
+              reduce bounce rates by 98%, and ensure every message reaches real inboxes.
             </motion.p>
 
             {/* Trust badges */}
@@ -181,12 +283,16 @@ export const HeroSection = () => {
               className="flex flex-wrap items-center gap-6 mb-10"
             >
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-500" />
-                <span className="text-sm text-foreground">GDPR Compliant</span>
+                <Shield className="w-5 h-5 text-cyan" />
+                <span className="text-sm text-foreground font-medium">SOC 2 Compliant</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-green-500" />
-                <span className="text-sm text-foreground">99.99% availability</span>
+                <span className="text-sm text-foreground font-medium">99.9% Uptime SLA</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Zap className="w-5 h-5 text-yellow-500" />
+                <span className="text-sm text-foreground font-medium">50ms Response</span>
               </div>
             </motion.div>
 
@@ -195,29 +301,41 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="flex flex-col sm:flex-row items-start gap-6"
+              className="flex flex-col sm:flex-row items-start gap-4"
             >
-              <div className="flex flex-col items-start">
-                <Link to="/access?page=signup">
-                  <Button 
-                    size="lg" 
-                    className="bg-red-500 hover:bg-red-600 text-white font-semibold px-8 py-6 text-base rounded-full shadow-lg shadow-red-500/25"
-                  >
-                    Get started for free
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
-                </Link>
-                <span className="text-xs text-cyan mt-3 ml-2">Includes 50 free credits</span>
+              <Link to="/access?page=signup">
+                <Button 
+                  size="lg" 
+                  className="bg-cyan hover:bg-cyan/90 text-background font-semibold px-8 py-6 text-base rounded-xl shadow-lg shadow-cyan/25 transition-all hover:shadow-cyan/40"
+                >
+                  Start Free Trial
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+              <div className="flex flex-col gap-1">
+                <span className="text-sm text-muted-foreground">100 free verifications</span>
+                <span className="text-xs text-muted-foreground/70">No credit card required</span>
               </div>
-              
-              <div className="flex items-center gap-2 text-sm text-muted-foreground italic">
-                <span className="text-lg">↖</span>
-                <span>No credit<br />card required!</span>
+            </motion.div>
+
+            {/* Brands/integrations hint */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="mt-12 pt-8 border-t border-border/20"
+            >
+              <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wider">Integrates with your stack</p>
+              <div className="flex items-center gap-6 text-muted-foreground/50">
+                <span className="text-sm font-medium">Mailchimp</span>
+                <span className="text-sm font-medium">HubSpot</span>
+                <span className="text-sm font-medium">Salesforce</span>
+                <span className="text-sm font-medium">Zapier</span>
               </div>
             </motion.div>
           </div>
 
-          {/* Right content - Validation demo */}
+          {/* Right content - Animated Validation demo */}
           <div className="flex justify-center lg:justify-end">
             <ValidationDemo />
           </div>
