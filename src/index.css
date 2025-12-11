@@ -8,53 +8,54 @@
   :root {
     /* Pure black theme */
     --background: 0 0% 0%;
-    --foreground: 0 0% 98%;
+    --foreground: 140 50% 96%; /* Off-white #F1FAEE */
 
     --card: 0 0% 4%;
-    --card-foreground: 0 0% 98%;
+    --card-foreground: 140 50% 96%;
 
     --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 98%;
+    --popover-foreground: 140 50% 96%;
 
-    --primary: 270 100% 65%;
+    --primary: 270 100% 43%; /* Purple #6D23B6 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 100% 60%;
+    --secondary: 243 76% 55%; /* Indigo #4840D3 */
     --secondary-foreground: 0 0% 100%;
 
     --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 55%;
+    --muted-foreground: 187 36% 76%; /* Pale cyan #A8DADC */
 
-    --accent: 180 100% 50%;
+    --accent: 195 100% 50%; /* Blue #0099FF */
     --accent-foreground: 0 0% 0%;
 
-    --destructive: 0 85% 60%;
+    --destructive: 355 70% 56%; /* CTA Red #E63946 */
     --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 15%;
     --input: 0 0% 15%;
-    --ring: 270 100% 65%;
+    --ring: 270 100% 43%;
 
     --radius: 0.75rem;
 
-    /* Custom brand colors */
-    --purple: 270 100% 65%;
-    --violet: 280 100% 60%;
-    --blue: 220 100% 60%;
-    --cyan: 180 100% 50%;
-    --dark: 0 0% 0%;
+    /* Custom brand colors - Modern SaaS palette */
+    --purple: 270 100% 43%; /* #6D23B6 */
+    --indigo: 243 76% 55%; /* #4840D3 */
+    --blue: 200 100% 50%; /* #0099FF */
+    --cyan: 187 36% 76%; /* Pale cyan #A8DADC */
+    --off-white: 140 50% 96%; /* #F1FAEE */
+    --dark: 0 0% 13%; /* #212121 */
     --pure-black: 0 0% 0%;
-    --soft-white: 0 0% 98%;
+    --cta-red: 355 70% 56%; /* #E63946 */
 
     /* Dot pattern - small dots */
     --dot-color: 180 100% 50%;
     --dot-size: 1px;
     --dot-gap: 32px;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--purple)) 0%, hsl(var(--violet)) 50%, hsl(var(--blue)) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(var(--blue)) 0%, hsl(var(--cyan)) 100%);
-    --gradient-text: linear-gradient(135deg, hsl(var(--purple)) 0%, hsl(var(--cyan)) 100%);
+    /* Gradients - Purple → Indigo → Blue */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--purple)) 0%, hsl(var(--indigo)) 50%, hsl(var(--blue)) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(var(--indigo)) 0%, hsl(var(--blue)) 100%);
+    --gradient-text: linear-gradient(135deg, hsl(var(--purple)) 0%, hsl(var(--blue)) 100%);
 
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
@@ -76,24 +77,24 @@
 
   .dark {
     --background: 0 0% 0%;
-    --foreground: 0 0% 98%;
+    --foreground: 140 50% 96%;
     --card: 0 0% 4%;
-    --card-foreground: 0 0% 98%;
+    --card-foreground: 140 50% 96%;
     --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 270 100% 65%;
+    --popover-foreground: 140 50% 96%;
+    --primary: 270 100% 43%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 100% 60%;
+    --secondary: 243 76% 55%;
     --secondary-foreground: 0 0% 100%;
     --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 55%;
-    --accent: 180 100% 50%;
+    --muted-foreground: 187 36% 76%;
+    --accent: 195 100% 50%;
     --accent-foreground: 0 0% 0%;
-    --destructive: 0 85% 60%;
+    --destructive: 355 70% 56%;
     --destructive-foreground: 0 0% 100%;
     --border: 0 0% 15%;
     --input: 0 0% 15%;
-    --ring: 270 100% 65%;
+    --ring: 270 100% 43%;
   }
 }
 

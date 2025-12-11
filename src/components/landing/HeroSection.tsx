@@ -280,32 +280,32 @@ export const HeroSection = () => {
               transition={{ duration: 0.5 }}
               className="mb-8"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 via-secondary/10 to-cyan/10 border border-primary/20 backdrop-blur-sm">
-                <Zap className="w-4 h-4 text-cyan" />
-                <span className="text-sm text-foreground font-medium">99% Accuracy Rate</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple/10 via-indigo/10 to-blue/10 border border-purple/20 backdrop-blur-sm">
+                <Zap className="w-4 h-4 text-blue" />
+                <span className="text-sm text-off-white font-medium">99% Accuracy Rate</span>
               </div>
             </motion.div>
 
-            {/* Headline - Two lines */}
+            {/* Headline - Two lines: off-white first, gradient second */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
               className="font-bold tracking-tight mb-6 text-4xl md:text-5xl lg:text-[56px] xl:text-[64px] leading-[1.08]"
             >
-              Stop Bounced Emails.
+              <span className="text-off-white">Stop Bounced Emails.</span>
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-cyan">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple via-indigo to-blue">
                 Protect Your Sender Reputation.
               </span>
             </motion.h1>
 
-            {/* Sub-headline */}
+            {/* Sub-headline - pale cyan for secondary text */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl leading-relaxed"
+              className="text-lg md:text-xl text-cyan mb-8 max-w-xl leading-relaxed"
             >
               Enterprise-grade email verification with 99% accuracy. Validate emails in real-time, 
               reduce bounce rates by 98%, and ensure every message reaches real inboxes.
@@ -319,16 +319,16 @@ export const HeroSection = () => {
               className="flex flex-wrap items-center gap-4 mb-10"
             >
               <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/30 border border-border/30">
-                <Shield className="w-4 h-4 text-primary" />
-                <span className="text-sm text-muted-foreground">SOC 2 Compliant</span>
+                <Shield className="w-4 h-4 text-purple" />
+                <span className="text-sm text-off-white/80">SOC 2 Compliant</span>
               </div>
               <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/30 border border-border/30">
                 <CheckCircle className="w-4 h-4 text-green-500" />
-                <span className="text-sm text-muted-foreground">99.9% Uptime SLA</span>
+                <span className="text-sm text-off-white/80">99.9% Uptime SLA</span>
               </div>
               <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/30 border border-border/30">
-                <Clock className="w-4 h-4 text-cyan" />
-                <span className="text-sm text-muted-foreground">&lt;100ms Response</span>
+                <Clock className="w-4 h-4 text-blue" />
+                <span className="text-sm text-off-white/80">&lt;100ms Response</span>
               </div>
             </motion.div>
 
