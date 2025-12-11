@@ -12,8 +12,8 @@ import { Footer } from "@/components/landing/Footer";
 const Index = () => {
   return (
     <div className="min-h-screen bg-background relative">
-      {/* Global animated dot pattern */}
-      <div className="fixed inset-0 dot-pattern-animated opacity-20 pointer-events-none z-0" />
+      {/* Global animated dot pattern - more visible */}
+      <div className="fixed inset-0 dot-pattern-animated opacity-40 pointer-events-none z-0" />
       
       <Navbar />
       <main className="relative z-10">
