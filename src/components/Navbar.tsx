@@ -6,8 +6,9 @@ import { Logo } from "./Logo";
 import { Button } from "./ui/button";
 
 const navLinks = [
-  { name: "Features", href: "#features" },
   { name: "Pricing", href: "#pricing" },
+  { name: "Features", href: "#features" },
+  { name: "Use Cases", href: "/use-cases", isRoute: true },
 ];
 
 export const Navbar = () => {
