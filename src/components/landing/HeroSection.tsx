@@ -252,7 +252,7 @@ const ValidationDemo = () => {
         <div className="mt-5 pt-5 border-t border-border/30">
           <Button variant="outline" className="w-full justify-center gap-2 text-sm border-border/50 hover:bg-muted/50 hover:border-cyan/50 transition-colors">
             <Upload className="w-4 h-4" />
-            Bulk verify your list
+            Unlimited bulk verify
           </Button>
         </div>
       </div>
@@ -282,7 +282,7 @@ export const HeroSection = () => {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple/10 via-indigo/10 to-blue/10 border border-purple/20 backdrop-blur-sm">
                 <Zap className="w-4 h-4 text-blue" />
-                <span className="text-sm text-off-white font-medium">99% Accuracy Rate</span>
+                <span className="text-sm text-off-white font-medium">Unlimited Bulk Verification • 99% Accuracy</span>
               </div>
             </motion.div>
 
@@ -293,10 +293,10 @@ export const HeroSection = () => {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="font-bold tracking-tight mb-6 text-4xl md:text-5xl lg:text-[56px] xl:text-[64px] leading-[1.08]"
             >
-              <span className="text-off-white">Stop Bounced Emails.</span>
+              <span className="text-off-white">Unlimited Bulk Email Verification.</span>
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple via-indigo to-blue">
-                Protect Your Sender Reputation.
+                Validate Millions. Pay Less.
               </span>
             </motion.h1>
 
@@ -307,8 +307,8 @@ export const HeroSection = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-lg md:text-xl text-cyan mb-8 max-w-xl leading-relaxed"
             >
-              Enterprise-grade email verification with 99% accuracy. Validate emails in real-time, 
-              reduce bounce rates by 98%, and ensure every message reaches real inboxes.
+              Enterprise-grade unlimited email verification with 99% accuracy. Validate millions of emails instantly, 
+              reduce bounce rates by 98%, and protect your sender reputation with our unlimited bulk validation API.
             </motion.p>
 
             {/* Trust badges - horizontal */}
