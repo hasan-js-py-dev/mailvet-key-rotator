@@ -60,7 +60,7 @@ export default function AccessPage() {
             <p className="text-muted-foreground mb-8">
               {isLogin
                 ? "Enter your credentials to access your dashboard"
-                : "Start validating emails with 50 free credits"}
+                : "Start validating emails with 100 free credits"}
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-6">

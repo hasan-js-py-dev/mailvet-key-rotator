@@ -38,8 +38,8 @@ const features = [
   },
   {
     icon: Gift,
-    title: "50 Free Credits to Start",
-    description: "Test our service risk-free with 50 complimentary credits. No credit card required to get started immediately.",
+    title: "100 Free Credits to Start",
+    description: "Test our service risk-free with 100 complimentary credits. No credit card required to get started immediately.",
   },
   {
     icon: Globe,

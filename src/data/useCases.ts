@@ -76,14 +76,14 @@ export const useCases: UseCase[] = [
         { step: "Bulk List Cleaning", description: "Upload existing customer lists for comprehensive verification and segmentation" },
         { step: "Continuous Monitoring", description: "MailVet's automated re-verification keeps your lists clean as emails become invalid over time" }
       ],
-      cta: "Start recovering lost sales today with MailVet. Get 50 free email verifications and see the difference clean data makes to your e-commerce revenue."
+      cta: "Start recovering lost sales today with MailVet. Get 100 free credits and see the difference clean data makes to your e-commerce revenue."
     }
   },
   {
     slug: "saas-tech",
     title: "SaaS & Tech Platforms",
     metaTitle: "SaaS Email Verification API for Trial Signups | MailVet",
-    metaDescription: "MailVet blocks fake SaaS signups with 99% accurate email verification. Improve trial conversions & onboarding. Free 50 credits.",
+    metaDescription: "MailVet blocks fake SaaS signups with 99% accurate email verification. Improve trial conversions & onboarding. Free 100 credits.",
     icon: "Code2",
     heroTitle: "SaaS Email Verification That Converts More Trials",
     heroSubtitle: "MailVet converts more trials to paid users. Ensure every onboarding email, product update, and feature announcement reaches engaged users with real-time verification.",
@@ -123,14 +123,14 @@ export const useCases: UseCase[] = [
         { step: "User Database Cleaning", description: "Verify existing users to identify and segment inactive accounts" },
         { step: "Webhook Automation", description: "Trigger actions based on MailVet verification results for seamless workflows" }
       ],
-      cta: "Stop wasting resources on fake signups with MailVet. Start your free trial with 50 verifications and improve your SaaS conversion metrics today."
+      cta: "Stop wasting resources on fake signups with MailVet. Start your free trial with 100 credits and improve your SaaS conversion metrics today."
     }
   },
   {
     slug: "recruitment-hr",
     title: "Recruitment & HR",
     metaTitle: "HR Email Verification for Recruitment Teams | MailVet",
-    metaDescription: "MailVet screens applicants & prevents fake resumes with 99% accurate email verification. Hire faster. Free 50 credits.",
+    metaDescription: "MailVet screens applicants & prevents fake resumes with 99% accurate email verification. Hire faster. Free 100 credits.",
     icon: "Users",
     heroTitle: "Recruitment Email Verification That Hires Faster",
     heroSubtitle: "MailVet helps you hire faster with verified candidate data. Ensure interview invitations, job offers, and onboarding documents reach real applicants with 99% accuracy.",
@@ -313,7 +313,7 @@ export const useCases: UseCase[] = [
         { step: "Database Maintenance", description: "Bulk verify existing contact databases annually" },
         { step: "Ongoing Monitoring", description: "Automatically flag invalid emails for update" }
       ],
-      cta: "Never miss a critical student communication. Start verifying educational emails with MailVet—get 50 free credits today."
+      cta: "Never miss a critical student communication. Start verifying educational emails with MailVet—get 100 free credits today."
     }
   },
   {
@@ -549,7 +549,7 @@ export const useCases: UseCase[] = [
         { step: "Loyalty Database Cleaning", description: "Bulk verify member databases for engagement" },
         { step: "Real-time Typo Correction", description: "MailVet suggests corrections for common email typos" }
       ],
-      cta: "Deliver exceptional guest experiences with MailVet. Try free with 50 verifications."
+      cta: "Deliver exceptional guest experiences with MailVet. Try free with 100 credits."
     }
   },
   {

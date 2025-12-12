@@ -49,7 +49,7 @@ export const Footer = () => {
               Ready to clean your email lists?
             </h3>
             <p className="text-muted-foreground mb-8">
-              Start validating emails today with 50 free credits. No credit card required.
+              Start validating emails today with 100 free credits. No credit card required.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/access?page=signup">

@@ -287,7 +287,7 @@ const UseCaseDetail = () => {
                 </p>
                 <Link to="/access?page=signup">
                   <Button size="lg" className="text-lg px-8">
-                    Get 50 Free Verifications
+                    Get 100 Free Credits
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
