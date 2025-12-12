@@ -6,52 +6,56 @@ import { cn } from "@/lib/utils";
 
 const plans = [
   {
-    name: "Starter",
-    price: "$9.99",
-    period: "/mo",
-    description: "Perfect for small projects",
+    name: "Free",
+    price: "$0",
+    period: "",
+    description: "Try MailVet risk-free",
     features: [
-      { text: "50 free credits included", included: true },
-      { text: "1 email/second rate limit", included: true },
-      { text: "Single email validation", included: true },
-      { text: "API access", included: true },
-      { text: "CSV bulk upload", included: false },
-      { text: "Priority support", included: false },
+      { text: "50 email validations", included: true },
+      { text: "Single email validation only", included: true },
+      { text: "No CSV bulk upload", included: false },
+      { text: "No API access", included: false },
+      { text: "No priority support", included: false },
     ],
-    cta: "Get Started",
+    cta: "Get Started Free",
     popular: false,
-  },
-  {
-    name: "Pro",
-    price: "$19.99",
-    period: "/mo",
-    description: "For growing businesses",
-    features: [
-      { text: "Everything in Starter", included: true },
-      { text: "3 emails/second rate limit", included: true },
-      { text: "CSV bulk upload", included: true },
-      { text: "Priority support", included: true },
-      { text: "Detailed analytics", included: true },
-      { text: "Webhook notifications", included: true },
-    ],
-    cta: "Start Pro Trial",
-    popular: true,
+    contactSales: false,
   },
   {
     name: "Ultimate",
     price: "$29.99",
     period: "/mo",
-    description: "Maximum power for enterprise",
+    description: "Unlimited power for growing teams",
     features: [
-      { text: "Everything in Pro", included: true },
-      { text: "10 emails/second rate limit", included: true },
-      { text: "Dedicated support", included: true },
-      { text: "Custom integrations", included: true },
-      { text: "SLA guarantee", included: true },
-      { text: "White-label options", included: true },
+      { text: "Unlimited email validations/month", included: true },
+      { text: "Max 10,000 rows per file", included: true },
+      { text: "Bulk CSV upload", included: true },
+      { text: "3 emails/second rate limit", included: true },
+      { text: "Max 2 concurrent files", included: true },
+      { text: "Detailed analytics", included: true },
+      { text: "Priority support", included: true },
+      { text: "No API access", included: false },
     ],
-    cta: "Go Ultimate",
+    cta: "Start Ultimate",
+    popular: true,
+    contactSales: false,
+  },
+  {
+    name: "Enterprise",
+    price: "Custom",
+    period: "",
+    description: "For large-scale operations",
+    features: [
+      { text: "Everything in Ultimate", included: true },
+      { text: "Full API access", included: true },
+      { text: "Super fast processing", included: true },
+      { text: "Unlimited concurrent files", included: true },
+      { text: "Dedicated account manager", included: true },
+      { text: "Custom integrations & SLA", included: true },
+    ],
+    cta: "Contact Sales",
     popular: false,
+    contactSales: true,
   },
 ];
 
@@ -136,7 +140,7 @@ export const PricingSection = () => {
                   ))}
                 </ul>
 
-                <Link to="/access?page=signup" className="block">
+                <Link to={plan.contactSales ? "mailto:sales@mailvet.io" : "/access?page=signup"} className="block">
                   <Button
                     variant={plan.popular ? "hero" : "gradient-outline"}
                     className="w-full"
