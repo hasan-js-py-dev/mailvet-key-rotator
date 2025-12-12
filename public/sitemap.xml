@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Homepage -->
+  <url>
+    <loc>https://mailvet.app/</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- Use Cases Hub -->
+  <url>
+    <loc>https://mailvet.app/use-cases</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- E-commerce & Retail -->
+  <url>
+    <loc>https://mailvet.app/use-cases/ecommerce-retail</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- SaaS & Tech -->
+  <url>
+    <loc>https://mailvet.app/use-cases/saas-tech</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Recruitment & HR -->
+  <url>
+    <loc>https://mailvet.app/use-cases/recruitment-hr</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Finance & Banking -->
+  <url>
+    <loc>https://mailvet.app/use-cases/finance-banking</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Healthcare & Telemedicine -->
+  <url>
+    <loc>https://mailvet.app/use-cases/healthcare-telemedicine</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Education & e-Learning -->
+  <url>
+    <loc>https://mailvet.app/use-cases/education-elearning</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Non-profits & Fundraising -->
+  <url>
+    <loc>https://mailvet.app/use-cases/nonprofits-fundraising</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Government & Public Sector -->
+  <url>
+    <loc>https://mailvet.app/use-cases/government-public-sector</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Insurance & Risk Management -->
+  <url>
+    <loc>https://mailvet.app/use-cases/insurance-risk</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Real Estate & Property -->
+  <url>
+    <loc>https://mailvet.app/use-cases/real-estate</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Travel & Hospitality -->
+  <url>
+    <loc>https://mailvet.app/use-cases/travel-hospitality</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Events & Webinars -->
+  <url>
+    <loc>https://mailvet.app/use-cases/events-webinars</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Marketing & Advertising Agencies -->
+  <url>
+    <loc>https://mailvet.app/use-cases/marketing-agencies</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- CRM & Data Hygiene -->
+  <url>
+    <loc>https://mailvet.app/use-cases/crm-data-hygiene</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- B2B Sales & Lead Generation -->
+  <url>
+    <loc>https://mailvet.app/use-cases/b2b-sales-lead-gen</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- App & Product Onboarding -->
+  <url>
+    <loc>https://mailvet.app/use-cases/app-onboarding</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Subscription & Membership -->
+  <url>
+    <loc>https://mailvet.app/use-cases/subscription-membership</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Customer Support & Service -->
+  <url>
+    <loc>https://mailvet.app/use-cases/customer-support</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Media & Publishing -->
+  <url>
+    <loc>https://mailvet.app/use-cases/media-publishing</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Social Networks & Communities -->
+  <url>
+    <loc>https://mailvet.app/use-cases/social-networks</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Gaming & Entertainment -->
+  <url>
+    <loc>https://mailvet.app/use-cases/gaming-entertainment</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Logistics & Shipping -->
+  <url>
+    <loc>https://mailvet.app/use-cases/logistics-shipping</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Manufacturing & Industrial -->
+  <url>
+    <loc>https://mailvet.app/use-cases/manufacturing-industrial</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Professional Services -->
+  <url>
+    <loc>https://mailvet.app/use-cases/professional-services</loc>
+    <lastmod>2024-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+</urlset>

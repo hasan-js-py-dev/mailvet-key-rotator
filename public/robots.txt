@@ -1,7 +1,32 @@
+# MailVet Robots.txt
+# Unlimited Bulk Email Verification Service
+
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /access
+Disallow: /api/
+
+# Allow all major search engines
 User-agent: Googlebot
 Allow: /
 
+User-agent: Googlebot-Image
+Allow: /
+
 User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
 Allow: /
 
 User-agent: Twitterbot
@@ -10,5 +35,11 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
+User-agent: LinkedInBot
 Allow: /
+
+# Sitemap location
+Sitemap: https://mailvet.app/sitemap.xml
+
+# Host
+Host: https://mailvet.app
