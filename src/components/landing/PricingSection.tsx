@@ -21,7 +21,7 @@ const plans = [
       { text: "No API access", included: false, icon: Code },
       { text: "No priority support", included: false, icon: Headphones },
     ],
-    cta: "Start Free",
+    cta: "100 Free Credits",
     popular: false,
     contactSales: false,
     gradient: "from-[hsl(220_15%_18%)] via-[hsl(220_15%_14%)] to-[hsl(220_15%_10%)]",

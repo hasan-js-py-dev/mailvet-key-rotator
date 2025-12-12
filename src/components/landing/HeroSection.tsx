@@ -344,7 +344,7 @@ export const HeroSection = () => {
                   size="lg" 
                   className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-semibold px-8 py-6 text-base rounded-xl shadow-lg shadow-destructive/25 transition-all hover:shadow-destructive/40 group"
                 >
-                  Start Free Trial
+                  100 Free Credits
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>

@@ -85,7 +85,7 @@ export const Navbar = () => {
             </Link>
             <Link to="/access?page=signup">
               <Button size="default" className="text-[16px] font-semibold bg-primary hover:bg-primary/90 text-white px-6">
-                Start Free
+                100 Free Credits
               </Button>
             </Link>
           </div>
@@ -133,7 +133,7 @@ export const Navbar = () => {
                   <Button variant="ghost" className="w-full text-[16px] font-semibold text-[hsl(140,50%,96%)] hover:text-primary">Log in</Button>
                 </Link>
                 <Link to="/access?page=signup" onClick={() => setIsOpen(false)}>
-                  <Button className="w-full text-[16px] font-semibold bg-primary hover:bg-primary/90 text-white">Start Free</Button>
+                  <Button className="w-full text-[16px] font-semibold bg-primary hover:bg-primary/90 text-white">100 Free Credits</Button>
                 </Link>
               </div>
             </div>
