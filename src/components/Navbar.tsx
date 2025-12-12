@@ -28,15 +28,22 @@ export const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            {isHome && navLinks.map((link) => (
+            {/* Pricing - anchor on home, link on other pages */}
+            {isHome ? (
               <a
-                key={link.name}
-                href={link.href}
+                href="#pricing"
                 className="text-[16px] font-semibold text-[hsl(140,50%,96%)] hover:text-primary px-4 py-2 transition-colors duration-200"
               >
-                {link.name}
+                Pricing
               </a>
-            ))}
+            ) : (
+              <Link
+                to="/#pricing"
+                className="text-[16px] font-semibold text-[hsl(140,50%,96%)] hover:text-primary px-4 py-2 transition-colors duration-200"
+              >
+                Pricing
+              </Link>
+            )}
             
             {/* Features Dropdown */}
             <div 
@@ -151,16 +158,24 @@ export const Navbar = () => {
             className="md:hidden bg-[hsl(220,20%,8%)]/98 backdrop-blur-xl border-b border-border/20"
           >
             <div className="container mx-auto px-6 py-6 flex flex-col gap-4">
-              {isHome && navLinks.map((link) => (
+              {/* Pricing - anchor on home, link on other pages */}
+              {isHome ? (
                 <a
-                  key={link.name}
-                  href={link.href}
+                  href="#pricing"
                   className="text-[16px] font-semibold text-[hsl(140,50%,96%)] hover:text-primary transition-colors py-3 px-4"
                   onClick={() => setIsOpen(false)}
                 >
-                  {link.name}
+                  Pricing
                 </a>
-              ))}
+              ) : (
+                <Link
+                  to="/#pricing"
+                  className="text-[16px] font-semibold text-[hsl(140,50%,96%)] hover:text-primary transition-colors py-3 px-4"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Pricing
+                </Link>
+              )}
               <Link
                 to="/features"
                 className="text-[16px] font-semibold text-[hsl(140,50%,96%)] hover:text-primary transition-colors py-3 px-4"
