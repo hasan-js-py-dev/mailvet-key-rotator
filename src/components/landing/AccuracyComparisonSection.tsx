@@ -1,17 +1,17 @@
 import { motion } from "framer-motion";
-import { Trophy, TrendingUp, Shield } from "lucide-react";
+import { Trophy, TrendingUp, Shield, ExternalLink } from "lucide-react";
 
 const accuracyData = [
-  { rank: 1, name: "MailVet", accuracy: 99.2, speed: "200ms", highlight: true },
-  { rank: 2, name: "ZeroBounce", accuracy: 98.8, speed: "350ms", highlight: false },
-  { rank: 3, name: "NeverBounce", accuracy: 98.5, speed: "400ms", highlight: false },
-  { rank: 4, name: "Clearout", accuracy: 98.2, speed: "380ms", highlight: false },
-  { rank: 5, name: "EmailListVerify", accuracy: 97.8, speed: "450ms", highlight: false },
-  { rank: 6, name: "Bouncer", accuracy: 97.5, speed: "420ms", highlight: false },
-  { rank: 7, name: "Hunter.io", accuracy: 97.2, speed: "500ms", highlight: false },
-  { rank: 8, name: "Kickbox", accuracy: 96.8, speed: "480ms", highlight: false },
-  { rank: 9, name: "BriteVerify", accuracy: 96.5, speed: "550ms", highlight: false },
-  { rank: 10, name: "Verifalia", accuracy: 96.2, speed: "600ms", highlight: false },
+  { rank: 1, name: "MailVet", accuracy: 99.2, speed: "200ms", highlight: true, website: null },
+  { rank: 2, name: "ZeroBounce", accuracy: 99.0, speed: "350ms", highlight: false, website: "https://www.zerobounce.net" },
+  { rank: 3, name: "NeverBounce", accuracy: 98.5, speed: "400ms", highlight: false, website: "https://www.neverbounce.com" },
+  { rank: 4, name: "Clearout", accuracy: 98.2, speed: "380ms", highlight: false, website: "https://clearout.io" },
+  { rank: 5, name: "EmailListVerify", accuracy: 97.8, speed: "450ms", highlight: false, website: "https://www.emaillistverify.com" },
+  { rank: 6, name: "Bouncer", accuracy: 97.5, speed: "420ms", highlight: false, website: "https://www.usebouncer.com" },
+  { rank: 7, name: "Hunter.io", accuracy: 97.2, speed: "500ms", highlight: false, website: "https://hunter.io" },
+  { rank: 8, name: "Kickbox", accuracy: 96.8, speed: "480ms", highlight: false, website: "https://kickbox.com" },
+  { rank: 9, name: "BriteVerify", accuracy: 96.5, speed: "550ms", highlight: false, website: "https://www.validity.com/everest/email-verification/" },
+  { rank: 10, name: "Verifalia", accuracy: 96.2, speed: "600ms", highlight: false, website: "https://verifalia.com" },
 ];
 
 export const AccuracyComparisonSection = () => {
@@ -33,8 +33,8 @@ export const AccuracyComparisonSection = () => {
             Industry-Leading <span className="gradient-text">99% Accuracy</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Based on independent testing of 100,000+ email addresses across major providers. 
-            MailVet consistently outperforms competitors in accuracy and speed.
+            Based on comprehensive testing across major email providers. 
+            MailVet consistently delivers the most accurate verification results in the market.
           </p>
         </motion.div>
 
@@ -53,13 +53,13 @@ export const AccuracyComparisonSection = () => {
                   <Trophy className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground">#1 Ranked</h3>
-                  <p className="text-muted-foreground">In accuracy benchmarks</p>
+                  <h3 className="text-2xl font-bold text-foreground">#1 in Accuracy</h3>
+                  <p className="text-muted-foreground">Verified by independent testing</p>
                 </div>
               </div>
               <p className="text-muted-foreground">
-                MailVet achieves 99.2% accuracy rate, surpassing all major competitors 
-                in independent verification tests.
+                MailVet achieves 99.2% accuracy using multi-layer verification including 
+                SMTP validation, MX checks, and proprietary algorithms.
               </p>
             </div>
 
@@ -70,7 +70,7 @@ export const AccuracyComparisonSection = () => {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-foreground">200ms Average</h3>
-                  <p className="text-muted-foreground">Response time</p>
+                  <p className="text-muted-foreground">Fastest response time</p>
                 </div>
               </div>
               <p className="text-muted-foreground">
@@ -86,12 +86,12 @@ export const AccuracyComparisonSection = () => {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-foreground">Zero False Positives</h3>
-                  <p className="text-muted-foreground">On major providers</p>
+                  <p className="text-muted-foreground">On Gmail, Outlook, Yahoo</p>
                 </div>
               </div>
               <p className="text-muted-foreground">
-                Never block a valid customer. Our multi-layer verification ensures 
-                real emails always pass.
+                Never block a valid customer. Our advanced verification ensures 
+                real emails from major providers always pass.
               </p>
             </div>
           </motion.div>
@@ -131,9 +131,22 @@ export const AccuracyComparisonSection = () => {
                     }`}>
                       {item.rank}
                     </span>
-                    <span className={`font-semibold ${item.highlight ? 'text-primary' : 'text-foreground'}`}>
-                      {item.name}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className={`font-semibold ${item.highlight ? 'text-primary' : 'text-foreground'}`}>
+                        {item.name}
+                      </span>
+                      {item.website && (
+                        <a 
+                          href={item.website} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-muted-foreground hover:text-primary transition-colors"
+                          title={`Visit ${item.name}`}
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-6">
                     <div className="text-right">
@@ -150,7 +163,7 @@ export const AccuracyComparisonSection = () => {
               ))}
             </div>
             <p className="text-xs text-muted-foreground mt-4 text-center">
-              *Based on independent testing across 100K+ emails. Results may vary.
+              *Rankings based on comprehensive testing. Click names to visit provider websites.
             </p>
           </motion.div>
         </div>
