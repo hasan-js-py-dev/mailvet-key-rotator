@@ -6,75 +6,69 @@ import { Button } from "@/components/ui/button";
 const pricingData = [
   { 
     name: "MailVet", 
-    price10k: "$15",
-    price50k: "$49",
-    price100k: "$89", 
-    priceType: "Unlimited",
+    starter: "$15/mo",
+    pro: "$49/mo",
+    business: "$89/mo", 
+    model: "Unlimited",
     freeCredits: "100",
-    creditExpiry: "Never",
     highlight: true,
     website: null,
-    note: "Unlimited verifications"
+    note: "Unlimited verifications included"
   },
   { 
     name: "ZeroBounce", 
-    price10k: "~$99*",
-    price50k: "~$99*",
-    price100k: "~$99*", 
-    priceType: "Subscription",
+    starter: "$99/mo*",
+    pro: "$199/mo*",
+    business: "$499/mo*", 
+    model: "Credit-based",
     freeCredits: "100",
-    creditExpiry: "Never",
     highlight: false,
     website: "https://www.zerobounce.net/email-validation-pricing",
-    note: "*Min 25K credits subscription"
+    note: "*Subscription with credit limits"
   },
   { 
     name: "NeverBounce", 
-    price10k: "$50",
-    price50k: "$250",
-    price100k: "$400", 
-    priceType: "Pay-as-you-go",
+    starter: "$8/1K",
+    pro: "$50/10K",
+    business: "$400/100K", 
+    model: "Pay-per-email",
     freeCredits: "1,000",
-    creditExpiry: "12 months",
     highlight: false,
     website: "https://www.neverbounce.com/pricing",
-    note: "$0.004-$0.008/credit"
+    note: "Credits expire in 12 months"
   },
   { 
     name: "Hunter.io", 
-    price10k: "$149/mo",
-    price50k: "$299/mo",
-    price100k: "$299/mo", 
-    priceType: "Subscription",
+    starter: "$49/mo",
+    pro: "$149/mo",
+    business: "$299/mo", 
+    model: "Credit-based",
     freeCredits: "50",
-    creditExpiry: "Monthly",
     highlight: false,
     website: "https://hunter.io/pricing",
-    note: "Includes email finder"
+    note: "Limited monthly credits"
   },
   { 
     name: "Clearout", 
-    price10k: "$48/mo",
-    price50k: "$144/mo",
-    price100k: "$264/mo", 
-    priceType: "Subscription",
+    starter: "$21/mo",
+    pro: "$58/mo",
+    business: "$174/mo", 
+    model: "Credit-based",
     freeCredits: "100",
-    creditExpiry: "Rollover",
     highlight: false,
     website: "https://clearout.io/pricing/",
-    note: "Monthly subscription"
+    note: "Monthly credit limits"
   },
   { 
     name: "EmailListVerify", 
-    price10k: "$27",
-    price50k: "$98",
-    price100k: "$186", 
-    priceType: "Pay-as-you-go",
+    starter: "$5/1K",
+    pro: "$27/10K",
+    business: "$186/100K", 
+    model: "Pay-per-email",
     freeCredits: "100",
-    creditExpiry: "Never",
     highlight: false,
     website: "https://www.emaillistverify.com/pricing/",
-    note: "$0.00186-$0.005/credit"
+    note: "One-time credit purchase"
   },
 ];
 
@@ -95,11 +89,12 @@ export const PricingComparisonSection = () => {
         >
           <p className="text-overline text-cyan mb-4">Pricing Comparison</p>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-5">
-            Best Value: <span className="gradient-text">Unlimited Email Verification</span>
+            Only MailVet Offers <span className="gradient-text">Unlimited Verifications</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            While competitors charge per-email, MailVet offers <strong className="text-foreground">unlimited verifications</strong> at 
-            fixed monthly prices. Verify as many emails as you need without worrying about costs.
+            While competitors charge per email or limit your monthly verifications, 
+            MailVet gives you <strong className="text-primary">truly unlimited</strong> email verifications 
+            at simple flat monthly rates.
           </p>
         </motion.div>
 
@@ -110,26 +105,23 @@ export const PricingComparisonSection = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="overflow-x-auto"
         >
-          <div className="min-w-[900px] max-w-6xl mx-auto">
+          <div className="min-w-[800px] max-w-5xl mx-auto">
             {/* Header */}
-            <div className="grid grid-cols-7 gap-3 mb-4">
+            <div className="grid grid-cols-6 gap-3 mb-4">
               <div className="p-4 text-left">
                 <span className="text-sm text-muted-foreground">Provider</span>
               </div>
               <div className="p-4 text-center">
-                <span className="text-sm text-muted-foreground">10K emails</span>
+                <span className="text-sm text-muted-foreground">Starter</span>
               </div>
               <div className="p-4 text-center">
-                <span className="text-sm text-muted-foreground">50K emails</span>
+                <span className="text-sm text-muted-foreground">Professional</span>
               </div>
               <div className="p-4 text-center">
-                <span className="text-sm text-muted-foreground">100K emails</span>
+                <span className="text-sm text-muted-foreground">Business</span>
               </div>
               <div className="p-4 text-center">
-                <span className="text-sm text-muted-foreground">Free Credits</span>
-              </div>
-              <div className="p-4 text-center">
-                <span className="text-sm text-muted-foreground">Credit Expiry</span>
+                <span className="text-sm text-muted-foreground">Pricing Model</span>
               </div>
               <div className="p-4"></div>
             </div>
@@ -142,7 +134,7 @@ export const PricingComparisonSection = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                className={`grid grid-cols-7 gap-3 mb-3 p-4 rounded-xl ${
+                className={`grid grid-cols-6 gap-3 mb-3 p-4 rounded-xl ${
                   item.highlight 
                     ? 'bg-primary/15 border-2 border-primary' 
                     : 'bg-card/50 border border-border/30'
@@ -170,27 +162,22 @@ export const PricingComparisonSection = () => {
                 </div>
                 <div className="flex items-center justify-center">
                   <span className={`font-semibold ${item.highlight ? 'text-emerald-400' : 'text-muted-foreground'}`}>
-                    {item.price10k}
+                    {item.starter}
                   </span>
                 </div>
                 <div className="flex items-center justify-center">
                   <span className={`font-semibold ${item.highlight ? 'text-emerald-400' : 'text-muted-foreground'}`}>
-                    {item.price50k}
+                    {item.pro}
                   </span>
                 </div>
                 <div className="flex items-center justify-center">
                   <span className={`font-semibold ${item.highlight ? 'text-emerald-400' : 'text-muted-foreground'}`}>
-                    {item.price100k}
+                    {item.business}
                   </span>
                 </div>
                 <div className="flex items-center justify-center">
-                  <span className={`text-sm ${item.highlight ? 'text-foreground font-semibold' : 'text-muted-foreground'}`}>
-                    {item.freeCredits}
-                  </span>
-                </div>
-                <div className="flex items-center justify-center">
-                  <span className={`text-sm ${item.creditExpiry === 'Never' ? 'text-emerald-400' : 'text-muted-foreground'}`}>
-                    {item.creditExpiry}
+                  <span className={`text-sm font-medium ${item.model === 'Unlimited' ? 'text-primary' : 'text-muted-foreground'}`}>
+                    {item.model}
                   </span>
                 </div>
                 <div className="flex items-center justify-center">
@@ -214,7 +201,7 @@ export const PricingComparisonSection = () => {
           transition={{ duration: 0.5, delay: 0.5 }}
           className="text-xs text-muted-foreground text-center mt-6"
         >
-          Prices sourced from official websites as of December 2024. Actual prices may vary. 
+          Prices sourced from official websites as of December 2024. Competitor prices vary based on usage. 
           Links open competitor pricing pages for verification.
         </motion.p>
 
@@ -227,19 +214,21 @@ export const PricingComparisonSection = () => {
           className="mt-16 grid md:grid-cols-3 gap-6 max-w-4xl mx-auto"
         >
           <div className="text-center p-6 rounded-2xl bg-primary/10 border border-primary/30">
-            <div className="text-4xl font-bold text-primary mb-2">Unlimited</div>
-            <p className="text-muted-foreground">Verifications per plan</p>
+            <div className="text-4xl font-bold text-primary mb-2">∞</div>
+            <p className="text-foreground font-semibold">Unlimited Verifications</p>
+            <p className="text-sm text-muted-foreground mt-1">No per-email charges ever</p>
           </div>
           <div className="text-center p-6 rounded-2xl bg-card/50 border border-border/30">
-            <div className="text-4xl font-bold gradient-text mb-2">No</div>
-            <p className="text-muted-foreground">Per-email charges</p>
+            <div className="text-4xl font-bold gradient-text mb-2">$15</div>
+            <p className="text-foreground font-semibold">Starting Price</p>
+            <p className="text-sm text-muted-foreground mt-1">Flat monthly rate</p>
           </div>
           <div className="text-center p-6 rounded-2xl bg-card/50 border border-border/30">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Check className="w-8 h-8 text-emerald-400" />
-              <span className="text-4xl font-bold gradient-text">Never</span>
             </div>
-            <p className="text-muted-foreground">Credits expire</p>
+            <p className="text-foreground font-semibold">No Hidden Fees</p>
+            <p className="text-sm text-muted-foreground mt-1">Cancel anytime</p>
           </div>
         </motion.div>
       </div>

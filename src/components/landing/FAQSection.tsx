@@ -12,48 +12,48 @@ const faqs = [
     answer: "MailVet uses a multi-layer verification process that includes syntax validation, DNS/MX record checks, SMTP handshake verification, disposable email detection, and spam trap identification. This comprehensive approach achieves 99% accuracy in determining if an email address is valid and deliverable."
   },
   {
-    question: "What's included in the 100 free credits?",
-    answer: "When you sign up, you get 100 free email verifications with full access to all features including real-time API verification, bulk list upload, disposable email detection, and detailed verification reports. No credit card required to start."
+    question: "What's included in the 100 free trial verifications?",
+    answer: "When you sign up, you get 100 free email verifications to test our service. This includes full access to real-time API verification, bulk list upload, disposable email detection, and detailed verification reports. No credit card required to start."
   },
   {
-    question: "How is pricing calculated?",
-    answer: "You only pay for what you use. Credits are purchased in packages—the more you buy, the lower the cost per verification. Our Starter plan offers 1,000 credits for $4, Professional offers 10,000 for $15, and Business offers 100,000 for $89. Credits never expire."
+    question: "How is MailVet's pricing different from competitors?",
+    answer: "Unlike competitors who charge per email or limit your monthly verifications, MailVet offers truly unlimited email verifications at flat monthly rates. Our Starter plan is $15/month, Professional is $49/month, and Business is $89/month—all with unlimited verifications. No surprises, no overage charges."
   },
   {
-    question: "Do credits expire?",
-    answer: "No, your credits never expire. Once purchased, they remain in your account until used. This is different from many competitors who expire credits after 12 months."
+    question: "What does 'unlimited verifications' mean?",
+    answer: "Unlimited means exactly that—you can verify as many emails as you need without any per-email charges or monthly caps. Whether you verify 1,000 or 1,000,000 emails per month, your price stays the same. This is unique to MailVet; competitors typically charge $0.001-$0.01 per email."
   },
   {
     question: "Can I cancel my subscription anytime?",
-    answer: "MailVet uses a pay-as-you-go model, not subscriptions. You purchase credits when needed and use them at your own pace. There's nothing to cancel—no recurring charges unless you set up auto-refill."
+    answer: "Yes, you can cancel your MailVet subscription at any time with no cancellation fees. Your access continues until the end of your current billing period. We believe in earning your business every month, not locking you in."
   },
   {
     question: "What payment methods do you accept?",
-    answer: "We accept all major credit cards (Visa, Mastercard, American Express), PayPal, and bank transfers for enterprise customers. All payments are securely processed through Stripe."
+    answer: "We accept all major credit cards (Visa, Mastercard, American Express), PayPal, and bank transfers for enterprise customers. All payments are securely processed through Stripe with bank-level encryption."
   },
   {
     question: "Is there a refund policy?",
-    answer: "Yes, we offer a 30-day money-back guarantee. If you're not satisfied with our service for any reason, contact support within 30 days of purchase for a full refund on unused credits."
+    answer: "Yes, we offer a 30-day money-back guarantee. If you're not satisfied with MailVet for any reason, contact support within 30 days of your first payment for a full refund. No questions asked."
   },
   {
     question: "What's the difference between real-time and bulk verification?",
-    answer: "Real-time verification checks emails instantly as users enter them (great for signup forms). Bulk verification lets you upload a list of emails (CSV/Excel) and verify them all at once—ideal for cleaning existing databases or marketing lists."
+    answer: "Real-time verification checks emails instantly as users enter them (great for signup forms, checkout pages). Bulk verification lets you upload a list of emails (CSV/Excel) and verify them all at once—ideal for cleaning existing databases or marketing lists. Both are included in all plans with unlimited usage."
   },
   {
     question: "Is MailVet GDPR compliant?",
     answer: "Yes, MailVet is fully GDPR compliant. We never store the email addresses you verify—data is processed in real-time and immediately discarded. Our infrastructure is SOC 2 Type II certified and follows strict data protection protocols."
   },
   {
-    question: "Do you offer enterprise plans?",
-    answer: "Yes, we offer custom enterprise plans for businesses verifying 1M+ emails per month. Enterprise plans include dedicated support, custom SLAs, volume discounts, and optional on-premise deployment. Contact our sales team for details."
+    question: "Do you offer enterprise or custom plans?",
+    answer: "Yes, we offer custom enterprise plans for large organizations with specific requirements. Enterprise plans include dedicated support, custom SLAs, priority API access, and optional on-premise deployment. Contact our sales team for a custom quote."
   },
   {
     question: "How accurate is MailVet compared to competitors?",
-    answer: "MailVet achieves 99.2% accuracy, ranking #1 in independent benchmarks against major competitors including ZeroBounce (98.8%), NeverBounce (98.5%), and Hunter.io (97.2%). Our multi-layer verification process catches issues others miss."
+    answer: "MailVet achieves 99.2% accuracy, ranking #1 in independent benchmarks against major competitors including ZeroBounce (99.0%), NeverBounce (98.5%), and Hunter.io (97.2%). Our multi-layer verification process catches issues that single-check verifiers miss."
   },
   {
-    question: "What happens if I run out of credits?",
-    answer: "API calls will return an 'insufficient credits' error. You can purchase more credits anytime, or enable auto-refill to automatically add credits when your balance drops below a threshold you set."
+    question: "What happens if I need to upgrade or downgrade my plan?",
+    answer: "You can upgrade or downgrade your plan at any time from your dashboard. Upgrades take effect immediately with prorated billing. Downgrades take effect at the start of your next billing cycle. All plans include unlimited verifications, so you're choosing based on features and support level."
   },
 ];
 
@@ -77,8 +77,7 @@ export const FAQSection = () => {
             Frequently Asked <span className="gradient-text">Questions</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to know about MailVet's email verification service, 
-            pricing, and features.
+            Everything you need to know about MailVet's unlimited email verification service.
           </p>
         </motion.div>
 
