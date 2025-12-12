@@ -143,7 +143,7 @@ const UseCases = () => {
                 Ready to Improve Your Email Deliverability?
               </h2>
               <p className="text-lg text-muted-foreground mb-8">
-                Start with 50 free email verifications and see the difference clean data makes.
+                Start with 100 free credits and see the difference clean data makes.
               </p>
               <Link
                 to="/access?page=signup"

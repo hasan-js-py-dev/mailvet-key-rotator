@@ -15,7 +15,7 @@ const testimonials = [
     company: "StartupHub",
   },
   {
-    quote: "Finally, an email validation service that's both accurate and affordable. The 50 free credits let us test thoroughly.",
+    quote: "Finally, an email validation service that's both accurate and affordable. The 100 free credits let us test thoroughly.",
     author: "Maria Garcia",
     role: "Email Operations",
     company: "GrowthMail",

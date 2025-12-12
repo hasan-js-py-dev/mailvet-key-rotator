@@ -10,7 +10,7 @@ const plans = [
     price: "$9.99",
     current: true,
     features: [
-      "50 free credits included",
+      "100 free credits included",
       "1 email/second rate limit",
       "Single email validation",
       "API access",
