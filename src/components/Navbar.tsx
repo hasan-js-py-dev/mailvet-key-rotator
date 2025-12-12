@@ -1,18 +1,19 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
+import { UseCasesMenu } from "./UseCasesMenu";
 
 const navLinks = [
   { name: "Pricing", href: "#pricing" },
   { name: "Features", href: "#features" },
-  { name: "Use Cases", href: "/use-cases", isRoute: true },
 ];
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [useCasesOpen, setUseCasesOpen] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
 
@@ -35,6 +36,45 @@ export const Navbar = () => {
                 {link.name}
               </a>
             ))}
+            
+            {/* Use Cases Dropdown */}
+            <div 
+              className="relative"
+              onMouseEnter={() => setUseCasesOpen(true)}
+              onMouseLeave={() => setUseCasesOpen(false)}
+            >
+              <Link
+                to="/use-cases"
+                className="flex items-center gap-1 text-[16px] font-semibold text-[hsl(140,50%,96%)] hover:text-primary px-4 py-2 transition-colors duration-200"
+              >
+                Use Cases
+                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${useCasesOpen ? 'rotate-180' : ''}`} />
+              </Link>
+              
+              <AnimatePresence>
+                {useCasesOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-card border border-border/30 rounded-xl shadow-xl z-50"
+                  >
+                    <div className="absolute -top-2 left-0 right-0 h-2" />
+                    <UseCasesMenu onItemClick={() => setUseCasesOpen(false)} />
+                    <div className="px-4 py-3 border-t border-border/20">
+                      <Link 
+                        to="/use-cases" 
+                        onClick={() => setUseCasesOpen(false)}
+                        className="text-sm text-primary hover:underline font-medium"
+                      >
+                        View all use cases →
+                      </Link>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
 
           <div className="hidden md:flex items-center gap-4 ml-10">
@@ -81,6 +121,13 @@ export const Navbar = () => {
                   {link.name}
                 </a>
               ))}
+              <Link
+                to="/use-cases"
+                className="text-[16px] font-semibold text-[hsl(140,50%,96%)] hover:text-primary transition-colors py-3 px-4"
+                onClick={() => setIsOpen(false)}
+              >
+                Use Cases
+              </Link>
               <div className="flex flex-col gap-3 pt-4 border-t border-border/20">
                 <Link to="/access?page=login" onClick={() => setIsOpen(false)}>
                   <Button variant="ghost" className="w-full text-[16px] font-semibold text-[hsl(140,50%,96%)] hover:text-primary">Log in</Button>
