@@ -5,15 +5,16 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
 import { UseCasesMenu } from "./UseCasesMenu";
+import { FeaturesMenu } from "./FeaturesMenu";
 
 const navLinks = [
   { name: "Pricing", href: "#pricing" },
-  { name: "Features", href: "#features" },
 ];
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [useCasesOpen, setUseCasesOpen] = useState(false);
+  const [featuresOpen, setFeaturesOpen] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
 
@@ -36,6 +37,45 @@ export const Navbar = () => {
                 {link.name}
               </a>
             ))}
+            
+            {/* Features Dropdown */}
+            <div 
+              className="relative"
+              onMouseEnter={() => setFeaturesOpen(true)}
+              onMouseLeave={() => setFeaturesOpen(false)}
+            >
+              <Link
+                to="/features"
+                className="flex items-center gap-1 text-[16px] font-semibold text-[hsl(140,50%,96%)] hover:text-primary px-4 py-2 transition-colors duration-200"
+              >
+                Features
+                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${featuresOpen ? 'rotate-180' : ''}`} />
+              </Link>
+              
+              <AnimatePresence>
+                {featuresOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-card border border-border/30 rounded-xl shadow-xl z-50"
+                  >
+                    <div className="absolute -top-2 left-0 right-0 h-2" />
+                    <FeaturesMenu onItemClick={() => setFeaturesOpen(false)} />
+                    <div className="px-4 py-3 border-t border-border/20">
+                      <Link 
+                        to="/features" 
+                        onClick={() => setFeaturesOpen(false)}
+                        className="text-sm text-primary hover:underline font-medium"
+                      >
+                        View all features →
+                      </Link>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             
             {/* Use Cases Dropdown */}
             <div 
@@ -121,6 +161,13 @@ export const Navbar = () => {
                   {link.name}
                 </a>
               ))}
+              <Link
+                to="/features"
+                className="text-[16px] font-semibold text-[hsl(140,50%,96%)] hover:text-primary transition-colors py-3 px-4"
+                onClick={() => setIsOpen(false)}
+              >
+                Features
+              </Link>
               <Link
                 to="/use-cases"
                 className="text-[16px] font-semibold text-[hsl(140,50%,96%)] hover:text-primary transition-colors py-3 px-4"
