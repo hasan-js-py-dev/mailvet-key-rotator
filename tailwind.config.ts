@@ -73,6 +73,12 @@ export default {
         "off-white": "hsl(var(--off-white))",
         dark: "hsl(var(--dark))",
         "cta-red": "hsl(var(--cta-red))",
+        text: {
+          primary: "hsl(var(--text-primary))",
+          secondary: "hsl(var(--text-secondary))",
+          muted: "hsl(var(--text-muted))",
+          disabled: "hsl(var(--text-disabled))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

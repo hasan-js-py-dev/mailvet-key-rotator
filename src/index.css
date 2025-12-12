@@ -8,44 +8,50 @@
   :root {
     /* Pure black theme */
     --background: 0 0% 0%;
-    --foreground: 140 50% 96%; /* Off-white #F1FAEE */
+    --foreground: 0 0% 95%;
 
     --card: 0 0% 4%;
-    --card-foreground: 140 50% 96%;
+    --card-foreground: 0 0% 95%;
 
     --popover: 0 0% 4%;
-    --popover-foreground: 140 50% 96%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 270 100% 43%; /* Purple #6D23B6 */
+    --primary: 270 100% 55%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 243 76% 55%; /* Indigo #4840D3 */
+    --secondary: 243 76% 55%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 10%;
-    --muted-foreground: 187 36% 76%; /* Pale cyan #A8DADC */
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 195 100% 50%; /* Blue #0099FF */
+    --accent: 195 100% 50%;
     --accent-foreground: 0 0% 0%;
 
-    --destructive: 355 70% 56%; /* CTA Red #E63946 */
+    --destructive: 355 70% 56%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 270 100% 43%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 270 100% 55%;
 
     --radius: 0.75rem;
 
+    /* Text color tokens for visibility */
+    --text-primary: 0 0% 95%;
+    --text-secondary: 0 0% 75%;
+    --text-muted: 0 0% 55%;
+    --text-disabled: 0 0% 40%;
+
     /* Custom brand colors - Modern SaaS palette */
-    --purple: 270 100% 43%; /* #6D23B6 */
-    --indigo: 243 76% 55%; /* #4840D3 */
-    --blue: 200 100% 50%; /* #0099FF */
-    --cyan: 187 36% 76%; /* Pale cyan #A8DADC */
-    --off-white: 140 50% 96%; /* #F1FAEE */
-    --dark: 0 0% 13%; /* #212121 */
+    --purple: 270 100% 55%;
+    --indigo: 243 76% 55%;
+    --blue: 200 100% 50%;
+    --cyan: 180 70% 50%;
+    --off-white: 0 0% 95%;
+    --dark: 0 0% 8%;
     --pure-black: 0 0% 0%;
-    --cta-red: 355 70% 56%; /* #E63946 */
+    --cta-red: 355 70% 56%;
 
     /* Dot pattern - small dots */
     --dot-color: 180 100% 50%;
@@ -66,35 +72,41 @@
     --shadow-glow-cyan: 0 0 40px hsl(var(--cyan) / 0.3);
 
     --sidebar-background: 0 0% 3%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 0 0% 98%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 0 0% 95%;
     --sidebar-primary-foreground: 0 0% 0%;
     --sidebar-accent: 0 0% 10%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 0 0% 18%;
     --sidebar-ring: 270 100% 65%;
   }
 
   .dark {
     --background: 0 0% 0%;
-    --foreground: 140 50% 96%;
+    --foreground: 0 0% 95%;
     --card: 0 0% 4%;
-    --card-foreground: 140 50% 96%;
+    --card-foreground: 0 0% 95%;
     --popover: 0 0% 4%;
-    --popover-foreground: 140 50% 96%;
-    --primary: 270 100% 43%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 270 100% 55%;
     --primary-foreground: 0 0% 100%;
     --secondary: 243 76% 55%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 10%;
-    --muted-foreground: 187 36% 76%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 65%;
     --accent: 195 100% 50%;
     --accent-foreground: 0 0% 0%;
     --destructive: 355 70% 56%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 270 100% 43%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 270 100% 55%;
+    
+    /* Text color tokens for visibility */
+    --text-primary: 0 0% 95%;
+    --text-secondary: 0 0% 75%;
+    --text-muted: 0 0% 55%;
+    --text-disabled: 0 0% 40%;
   }
 }
 
