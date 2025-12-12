@@ -1,71 +1,71 @@
 import { motion } from "framer-motion";
-import { Check, Star, ExternalLink } from "lucide-react";
+import { Check, Star, ExternalLink, Flame, Infinity } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const pricingData = [
   { 
     name: "MailVet", 
-    starter: "$15/mo",
-    pro: "$49/mo",
-    business: "$89/mo", 
+    free: "$0",
+    popular: "$29.99/mo",
+    enterprise: "Custom", 
     model: "Unlimited",
-    freeCredits: "100",
+    limitedOffer: "90% OFF",
     highlight: true,
     website: null,
-    note: "Unlimited verifications included"
+    note: "Unlimited verifications on all paid plans"
   },
   { 
     name: "ZeroBounce", 
-    starter: "$99/mo*",
-    pro: "$199/mo*",
-    business: "$499/mo*", 
+    free: "$0 (100)",
+    popular: "$99/mo",
+    enterprise: "$499/mo+", 
     model: "Credit-based",
-    freeCredits: "100",
+    limitedOffer: null,
     highlight: false,
     website: "https://www.zerobounce.net/email-validation-pricing",
-    note: "*Subscription with credit limits"
+    note: "Monthly credit limits apply"
   },
   { 
     name: "NeverBounce", 
-    starter: "$8/1K",
-    pro: "$50/10K",
-    business: "$400/100K", 
+    free: "$0 (1K)",
+    popular: "$50/10K",
+    enterprise: "$400/100K", 
     model: "Pay-per-email",
-    freeCredits: "1,000",
+    limitedOffer: null,
     highlight: false,
     website: "https://www.neverbounce.com/pricing",
     note: "Credits expire in 12 months"
   },
   { 
     name: "Hunter.io", 
-    starter: "$49/mo",
-    pro: "$149/mo",
-    business: "$299/mo", 
+    free: "$0 (50)",
+    popular: "$149/mo",
+    enterprise: "$299/mo", 
     model: "Credit-based",
-    freeCredits: "50",
+    limitedOffer: null,
     highlight: false,
     website: "https://hunter.io/pricing",
-    note: "Limited monthly credits"
+    note: "10K credits/mo limit"
   },
   { 
     name: "Clearout", 
-    starter: "$21/mo",
-    pro: "$58/mo",
-    business: "$174/mo", 
+    free: "$0 (100)",
+    popular: "$58/mo",
+    enterprise: "$174/mo", 
     model: "Credit-based",
-    freeCredits: "100",
+    limitedOffer: null,
     highlight: false,
     website: "https://clearout.io/pricing/",
     note: "Monthly credit limits"
   },
   { 
     name: "EmailListVerify", 
-    starter: "$5/1K",
-    pro: "$27/10K",
-    business: "$186/100K", 
+    free: "$0 (100)",
+    popular: "$27/10K",
+    enterprise: "$186/100K", 
     model: "Pay-per-email",
-    freeCredits: "100",
+    limitedOffer: null,
     highlight: false,
     website: "https://www.emaillistverify.com/pricing/",
     note: "One-time credit purchase"
@@ -92,9 +92,9 @@ export const PricingComparisonSection = () => {
             Only MailVet Offers <span className="gradient-text">Unlimited Verifications</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            While competitors charge per email or limit your monthly verifications, 
+            While competitors charge per email or cap your monthly verifications, 
             MailVet gives you <strong className="text-primary">truly unlimited</strong> email verifications 
-            at simple flat monthly rates.
+            at one low monthly price.
           </p>
         </motion.div>
 
@@ -112,13 +112,13 @@ export const PricingComparisonSection = () => {
                 <span className="text-sm text-muted-foreground">Provider</span>
               </div>
               <div className="p-4 text-center">
-                <span className="text-sm text-muted-foreground">Starter</span>
+                <span className="text-sm text-muted-foreground">Free Tier</span>
               </div>
               <div className="p-4 text-center">
-                <span className="text-sm text-muted-foreground">Professional</span>
+                <span className="text-sm text-muted-foreground">Popular Plan</span>
               </div>
               <div className="p-4 text-center">
-                <span className="text-sm text-muted-foreground">Business</span>
+                <span className="text-sm text-muted-foreground">Enterprise</span>
               </div>
               <div className="p-4 text-center">
                 <span className="text-sm text-muted-foreground">Pricing Model</span>
@@ -136,7 +136,7 @@ export const PricingComparisonSection = () => {
                 transition={{ duration: 0.3, delay: index * 0.05 }}
                 className={`grid grid-cols-6 gap-3 mb-3 p-4 rounded-xl ${
                   item.highlight 
-                    ? 'bg-primary/15 border-2 border-primary' 
+                    ? 'bg-gradient-to-r from-primary/15 via-purple-500/10 to-pink-500/10 border-2 border-primary' 
                     : 'bg-card/50 border border-border/30'
                 }`}
               >
@@ -161,29 +161,38 @@ export const PricingComparisonSection = () => {
                   <span className="text-xs text-muted-foreground mt-1">{item.note}</span>
                 </div>
                 <div className="flex items-center justify-center">
-                  <span className={`font-semibold ${item.highlight ? 'text-emerald-400' : 'text-muted-foreground'}`}>
-                    {item.starter}
+                  <span className={`font-semibold ${item.highlight ? 'text-foreground' : 'text-muted-foreground'}`}>
+                    {item.free}
+                  </span>
+                </div>
+                <div className="flex flex-col items-center justify-center">
+                  <div className="flex items-center gap-2">
+                    <span className={`font-semibold ${item.highlight ? 'text-emerald-400' : 'text-muted-foreground'}`}>
+                      {item.popular}
+                    </span>
+                  </div>
+                  {item.limitedOffer && (
+                    <span className="text-xs text-amber-400 font-bold flex items-center gap-1 mt-1">
+                      <Flame className="w-3 h-3" />
+                      {item.limitedOffer}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center justify-center">
+                  <span className={`font-semibold ${item.highlight ? 'text-foreground' : 'text-muted-foreground'}`}>
+                    {item.enterprise}
                   </span>
                 </div>
                 <div className="flex items-center justify-center">
-                  <span className={`font-semibold ${item.highlight ? 'text-emerald-400' : 'text-muted-foreground'}`}>
-                    {item.pro}
-                  </span>
-                </div>
-                <div className="flex items-center justify-center">
-                  <span className={`font-semibold ${item.highlight ? 'text-emerald-400' : 'text-muted-foreground'}`}>
-                    {item.business}
-                  </span>
-                </div>
-                <div className="flex items-center justify-center">
-                  <span className={`text-sm font-medium ${item.model === 'Unlimited' ? 'text-primary' : 'text-muted-foreground'}`}>
+                  <span className={`text-sm font-medium flex items-center gap-1 ${item.model === 'Unlimited' ? 'text-primary' : 'text-muted-foreground'}`}>
+                    {item.model === 'Unlimited' && <Infinity className="w-4 h-4" />}
                     {item.model}
                   </span>
                 </div>
                 <div className="flex items-center justify-center">
                   {item.highlight && (
                     <Link to="/access?page=signup">
-                      <Button size="sm" className="text-xs">
+                      <Button size="sm" className="text-xs bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
                         Get Started
                       </Button>
                     </Link>
@@ -213,22 +222,27 @@ export const PricingComparisonSection = () => {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="mt-16 grid md:grid-cols-3 gap-6 max-w-4xl mx-auto"
         >
-          <div className="text-center p-6 rounded-2xl bg-primary/10 border border-primary/30">
-            <div className="text-4xl font-bold text-primary mb-2">∞</div>
+          <div className="text-center p-6 rounded-2xl bg-gradient-to-br from-primary/10 to-purple-500/10 border border-primary/30">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Infinity className="w-10 h-10 text-primary" />
+            </div>
             <p className="text-foreground font-semibold">Unlimited Verifications</p>
-            <p className="text-sm text-muted-foreground mt-1">No per-email charges ever</p>
+            <p className="text-sm text-muted-foreground mt-1">No caps, no limits, ever</p>
           </div>
-          <div className="text-center p-6 rounded-2xl bg-card/50 border border-border/30">
-            <div className="text-4xl font-bold gradient-text mb-2">$15</div>
-            <p className="text-foreground font-semibold">Starting Price</p>
-            <p className="text-sm text-muted-foreground mt-1">Flat monthly rate</p>
+          <div className="text-center p-6 rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/30">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Flame className="w-8 h-8 text-amber-400" />
+              <span className="text-3xl font-bold text-amber-400">90%</span>
+            </div>
+            <p className="text-foreground font-semibold">Limited Time Discount</p>
+            <p className="text-sm text-muted-foreground mt-1">$29.99/mo instead of $299</p>
           </div>
           <div className="text-center p-6 rounded-2xl bg-card/50 border border-border/30">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Check className="w-8 h-8 text-emerald-400" />
             </div>
-            <p className="text-foreground font-semibold">No Hidden Fees</p>
-            <p className="text-sm text-muted-foreground mt-1">Cancel anytime</p>
+            <p className="text-foreground font-semibold">No Per-Email Charges</p>
+            <p className="text-sm text-muted-foreground mt-1">Flat rate, simple pricing</p>
           </div>
         </motion.div>
       </div>
