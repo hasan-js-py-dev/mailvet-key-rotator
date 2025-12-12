@@ -12,20 +12,20 @@ const faqs = [
     answer: "MailVet uses a multi-layer verification process that includes syntax validation, DNS/MX record checks, SMTP handshake verification, disposable email detection, and spam trap identification. This comprehensive approach achieves 99% accuracy in determining if an email address is valid and deliverable."
   },
   {
-    question: "What's included in the 100 free trial verifications?",
-    answer: "When you sign up, you get 100 free email verifications to test our service. This includes full access to real-time API verification, bulk list upload, disposable email detection, and detailed verification reports. No credit card required to start."
-  },
-  {
-    question: "How is MailVet's pricing different from competitors?",
-    answer: "Unlike competitors who charge per email or limit your monthly verifications, MailVet offers truly unlimited email verifications at flat monthly rates. Our Starter plan is $15/month, Professional is $49/month, and Business is $89/month—all with unlimited verifications. No surprises, no overage charges."
+    question: "What's included in the free plan?",
+    answer: "The free plan includes 100 email verifications to test our service. You can validate single emails and see how MailVet works. No credit card required. When you're ready for unlimited verifications, upgrade to our Ultimate plan."
   },
   {
     question: "What does 'unlimited verifications' mean?",
-    answer: "Unlimited means exactly that—you can verify as many emails as you need without any per-email charges or monthly caps. Whether you verify 1,000 or 1,000,000 emails per month, your price stays the same. This is unique to MailVet; competitors typically charge $0.001-$0.01 per email."
+    answer: "With our Ultimate plan at $29.99/month (90% off from $299), you get truly unlimited email verifications. There are no per-email charges, no monthly caps, and no hidden fees. Verify 1,000 or 1,000,000 emails—your price stays the same. This is unique to MailVet; competitors typically charge $0.001-$0.01 per email."
+  },
+  {
+    question: "Why is there a 90% discount right now?",
+    answer: "We're offering a limited-time launch discount to help businesses discover the power of unlimited email verification. Lock in $29.99/month now before prices return to $299/month. This offer won't last forever!"
   },
   {
     question: "Can I cancel my subscription anytime?",
-    answer: "Yes, you can cancel your MailVet subscription at any time with no cancellation fees. Your access continues until the end of your current billing period. We believe in earning your business every month, not locking you in."
+    answer: "Yes, you can cancel your MailVet subscription at any time with no cancellation fees. Your access continues until the end of your current billing period. We believe in earning your business every month, not locking you in with contracts."
   },
   {
     question: "What payment methods do you accept?",
@@ -37,23 +37,23 @@ const faqs = [
   },
   {
     question: "What's the difference between real-time and bulk verification?",
-    answer: "Real-time verification checks emails instantly as users enter them (great for signup forms, checkout pages). Bulk verification lets you upload a list of emails (CSV/Excel) and verify them all at once—ideal for cleaning existing databases or marketing lists. Both are included in all plans with unlimited usage."
+    answer: "Real-time verification checks emails instantly as users enter them (great for signup forms, checkout pages). Bulk verification lets you upload CSV files with up to 10,000 rows and verify them all at once—ideal for cleaning existing databases or marketing lists. Both are included with unlimited usage in the Ultimate plan."
   },
   {
     question: "Is MailVet GDPR compliant?",
     answer: "Yes, MailVet is fully GDPR compliant. We never store the email addresses you verify—data is processed in real-time and immediately discarded. Our infrastructure is SOC 2 Type II certified and follows strict data protection protocols."
   },
   {
-    question: "Do you offer enterprise or custom plans?",
-    answer: "Yes, we offer custom enterprise plans for large organizations with specific requirements. Enterprise plans include dedicated support, custom SLAs, priority API access, and optional on-premise deployment. Contact our sales team for a custom quote."
+    question: "What's included in the Enterprise plan?",
+    answer: "Enterprise includes everything in Ultimate plus: full API access, super-fast processing, unlimited concurrent file uploads, a dedicated account manager, custom integrations, and SLA guarantees. Contact our sales team for custom pricing based on your needs."
   },
   {
     question: "How accurate is MailVet compared to competitors?",
     answer: "MailVet achieves 99.2% accuracy, ranking #1 in independent benchmarks against major competitors including ZeroBounce (99.0%), NeverBounce (98.5%), and Hunter.io (97.2%). Our multi-layer verification process catches issues that single-check verifiers miss."
   },
   {
-    question: "What happens if I need to upgrade or downgrade my plan?",
-    answer: "You can upgrade or downgrade your plan at any time from your dashboard. Upgrades take effect immediately with prorated billing. Downgrades take effect at the start of your next billing cycle. All plans include unlimited verifications, so you're choosing based on features and support level."
+    question: "Are there any rate limits?",
+    answer: "The Ultimate plan includes 3 emails/second verification rate and up to 2 concurrent file uploads with max 10,000 rows per file. For higher throughput and unlimited concurrent files, our Enterprise plan offers super-fast processing tailored to your needs."
   },
 ];
 
