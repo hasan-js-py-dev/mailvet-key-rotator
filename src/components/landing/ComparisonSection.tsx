@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
-import { Check, X, Minus } from "lucide-react";
+import { Check, X, Minus, ExternalLink } from "lucide-react";
 
 const competitors = [
-  { name: "MailVet", highlight: true },
-  { name: "ZeroBounce", highlight: false },
-  { name: "NeverBounce", highlight: false },
-  { name: "Hunter.io", highlight: false },
-  { name: "Clearout", highlight: false },
-  { name: "EmailListVerify", highlight: false },
+  { name: "MailVet", highlight: true, website: null },
+  { name: "ZeroBounce", highlight: false, website: "https://www.zerobounce.net" },
+  { name: "NeverBounce", highlight: false, website: "https://www.neverbounce.com" },
+  { name: "Hunter.io", highlight: false, website: "https://hunter.io" },
+  { name: "Clearout", highlight: false, website: "https://clearout.io" },
+  { name: "EmailListVerify", highlight: false, website: "https://www.emaillistverify.com" },
 ];
 
 const features = [
@@ -21,7 +21,7 @@ const features = [
   },
   { 
     feature: "SMTP Verification", 
-    mailvet: true, zerobounce: true, neverbounce: true, hunter: false, clearout: true, emaillistverify: true 
+    mailvet: true, zerobounce: true, neverbounce: true, hunter: "partial", clearout: true, emaillistverify: true 
   },
   { 
     feature: "Disposable Email Detection", 
@@ -40,24 +40,32 @@ const features = [
     mailvet: true, zerobounce: true, neverbounce: true, hunter: true, clearout: true, emaillistverify: true 
   },
   { 
-    feature: "Free Credits to Start", 
-    mailvet: "100", zerobounce: "100", neverbounce: "1000", hunter: "25", clearout: "100", emaillistverify: "100" 
+    feature: "Unlimited Verifications", 
+    mailvet: true, zerobounce: false, neverbounce: false, hunter: false, clearout: false, emaillistverify: false 
+  },
+  { 
+    feature: "Free Credits", 
+    mailvet: "100", zerobounce: "100", neverbounce: "1,000", hunter: "50", clearout: "100", emaillistverify: "100" 
+  },
+  { 
+    feature: "Credits Never Expire", 
+    mailvet: true, zerobounce: true, neverbounce: false, hunter: false, clearout: "partial", emaillistverify: true 
   },
   { 
     feature: "GDPR Compliant", 
     mailvet: true, zerobounce: true, neverbounce: true, hunter: true, clearout: true, emaillistverify: true 
   },
   { 
-    feature: "SOC 2 Certified", 
+    feature: "SOC 2 Type II Certified", 
     mailvet: true, zerobounce: true, neverbounce: true, hunter: false, clearout: false, emaillistverify: false 
   },
   { 
-    feature: "No Data Retention", 
+    feature: "Zero Data Retention", 
     mailvet: true, zerobounce: false, neverbounce: false, hunter: false, clearout: false, emaillistverify: false 
   },
   { 
-    feature: "24/7 Support", 
-    mailvet: true, zerobounce: true, neverbounce: "partial", hunter: false, clearout: "partial", emaillistverify: false 
+    feature: "24/7 Priority Support", 
+    mailvet: true, zerobounce: true, neverbounce: "partial", hunter: "partial", clearout: "partial", emaillistverify: false 
   },
 ];
 
@@ -83,13 +91,13 @@ export const ComparisonSection = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <p className="text-overline text-cyan mb-4">Comparison</p>
+          <p className="text-overline text-cyan mb-4">Feature Comparison</p>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-5">
             See How <span className="gradient-text">MailVet Compares</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Compare MailVet with the top email verification tools in the market. 
-            We offer enterprise-grade features at competitive prices.
+            Compare MailVet with leading email verification tools. We're the only provider 
+            offering <strong className="text-foreground">unlimited verifications</strong> with enterprise-grade features.
           </p>
         </motion.div>
 
@@ -113,9 +121,22 @@ export const ComparisonSection = () => {
                       : 'bg-card/50 border border-border/30'
                   }`}
                 >
-                  <span className={`font-bold ${comp.highlight ? 'text-primary' : 'text-foreground'}`}>
-                    {comp.name}
-                  </span>
+                  <div className="flex items-center justify-center gap-1">
+                    <span className={`font-bold text-sm ${comp.highlight ? 'text-primary' : 'text-foreground'}`}>
+                      {comp.name}
+                    </span>
+                    {comp.website && (
+                      <a 
+                        href={comp.website} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-muted-foreground hover:text-primary transition-colors"
+                        title={`Visit ${comp.name}`}
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
+                  </div>
                   {comp.highlight && (
                     <span className="block text-xs text-primary mt-1">Recommended</span>
                   )}
@@ -130,7 +151,7 @@ export const ComparisonSection = () => {
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
+                transition={{ duration: 0.3, delay: index * 0.03 }}
                 className="grid grid-cols-7 gap-2 mb-2"
               >
                 <div className="p-4 bg-card/30 rounded-lg flex items-center">
@@ -173,13 +194,24 @@ export const ComparisonSection = () => {
           </div>
           <div className="flex items-center gap-2">
             <Minus className="w-4 h-4 text-amber-400" />
-            <span>Partial Support</span>
+            <span>Partial/Limited</span>
           </div>
           <div className="flex items-center gap-2">
             <X className="w-4 h-4 text-rose-400" />
             <span>Not Available</span>
           </div>
         </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="text-xs text-muted-foreground text-center mt-6"
+        >
+          Feature comparison based on publicly available information as of December 2024. 
+          Click provider names to visit their websites for verification.
+        </motion.p>
       </div>
     </section>
   );
