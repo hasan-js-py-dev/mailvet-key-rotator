@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 const pricingData = [
   { 
     name: "MailVet", 
-    free: "$0",
+    free: "$0 (100)",
     popular: "$29.99/mo",
     enterprise: "Custom", 
     model: "Unlimited",
