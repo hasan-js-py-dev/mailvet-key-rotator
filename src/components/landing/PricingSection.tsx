@@ -22,10 +22,6 @@ const plans = [
     cta: "Start Free",
     popular: false,
     contactSales: false,
-    gradient: "from-slate-500/20 via-slate-600/10 to-slate-700/20",
-    glowColor: "group-hover:shadow-[0_0_60px_rgba(100,116,139,0.3)]",
-    borderGradient: "from-slate-400 via-slate-500 to-slate-600",
-    buttonVariant: "outline" as const,
   },
   {
     name: "Ultimate",
@@ -33,7 +29,7 @@ const plans = [
     price: "$29.99",
     period: "/mo",
     description: "Unlimited power for growing teams",
-    highlight: "👑 Most Popular",
+    highlight: "Most Popular Choice",
     features: [
       { text: "Unlimited validations/month", included: true, icon: Zap },
       { text: "Max 10,000 rows per file", included: true, icon: FileSpreadsheet },
@@ -44,13 +40,9 @@ const plans = [
       { text: "Priority support", included: true, icon: Headphones },
       { text: "No API access", included: false, icon: Code },
     ],
-    cta: "🚀 Get Ultimate",
+    cta: "Get Ultimate",
     popular: true,
     contactSales: false,
-    gradient: "from-purple-600/30 via-indigo-600/20 to-blue-600/30",
-    glowColor: "group-hover:shadow-[0_0_80px_rgba(139,92,246,0.5)]",
-    borderGradient: "from-purple-500 via-indigo-500 to-blue-500",
-    buttonVariant: "hero" as const,
   },
   {
     name: "Enterprise",
@@ -58,7 +50,7 @@ const plans = [
     price: "Custom",
     period: "",
     description: "For large-scale operations",
-    highlight: "⚡ Maximum Power",
+    highlight: "Maximum Power",
     features: [
       { text: "Everything in Ultimate", included: true, icon: Crown },
       { text: "Full API access", included: true, icon: Code },
@@ -70,23 +62,19 @@ const plans = [
     cta: "Contact Sales",
     popular: false,
     contactSales: true,
-    gradient: "from-cyan-500/20 via-blue-600/15 to-indigo-600/20",
-    glowColor: "group-hover:shadow-[0_0_60px_rgba(6,182,212,0.4)]",
-    borderGradient: "from-cyan-400 via-blue-500 to-indigo-500",
-    buttonVariant: "gradient-outline" as const,
   },
 ];
 
 export const PricingSection = () => {
   return (
     <section id="pricing" className="relative py-28 overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-background" />
-      <div className="absolute inset-0 dot-pattern opacity-20" />
+      {/* Background - dark grey #121212 equivalent */}
+      <div className="absolute inset-0 bg-[hsl(0_0%_7%)]" />
+      <div className="absolute inset-0 dot-pattern opacity-10" />
       
-      {/* Floating gradient orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl animate-pulse animation-delay-200" />
+      {/* Subtle gradient orbs */}
+      <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]" />
+      <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px]" />
       
       <div className="container mx-auto px-6 relative z-10">
         <motion.div
@@ -96,110 +84,119 @@ export const PricingSection = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <p className="text-overline text-accent mb-4">💎 Pricing</p>
-          <h2 className="font-display font-bold mb-5">
+          <p className="text-overline text-primary/80 mb-4 tracking-[0.2em]">PRICING</p>
+          <h2 className="font-display text-4xl md:text-5xl font-bold mb-5 text-[hsl(0_0%_88%)]">
             Simple, <span className="gradient-text">Transparent</span> Pricing
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-[hsl(0_0%_60%)] max-w-2xl mx-auto">
             Choose the plan that fits your needs. Start free, upgrade anytime.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto items-stretch">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.15 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
               className={cn(
                 "relative group",
-                plan.popular && "md:-mt-6 md:mb-6 z-10"
+                plan.popular && "md:-mt-4 md:mb-4 z-10"
               )}
             >
-              {/* Animated border gradient */}
-              <div className={cn(
-                "absolute -inset-[1px] rounded-3xl bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm",
-                plan.borderGradient
-              )} />
-              <div className={cn(
-                "absolute -inset-[1px] rounded-3xl bg-gradient-to-br opacity-30 group-hover:opacity-100 transition-opacity duration-500",
-                plan.borderGradient,
-                plan.popular && "opacity-60"
-              )} />
-              
-              {/* Card content */}
+              {/* Card with proper dark surface colors */}
               <div
                 className={cn(
-                  "relative h-full rounded-3xl border border-border/30 transition-all duration-500 overflow-hidden",
-                  "bg-gradient-to-br",
-                  plan.gradient,
-                  plan.glowColor,
-                  plan.popular && "border-purple-500/50"
+                  "relative h-full rounded-2xl transition-all duration-300 overflow-hidden",
+                  // Base card surface - #1F1F1F equivalent
+                  "bg-[hsl(0_0%_12%)]",
+                  // Border styling
+                  plan.popular 
+                    ? "border-2 border-primary/60" 
+                    : "border border-[hsl(0_0%_18%)]",
+                  // Hover states - lighten to #252525
+                  "hover:bg-[hsl(0_0%_15%)]",
+                  "hover:border-[hsl(0_0%_25%)]",
+                  plan.popular && "hover:border-primary/80",
+                  // Shadow for depth
+                  "shadow-[0_4px_24px_rgba(0,0,0,0.4)]",
+                  "hover:shadow-[0_8px_40px_rgba(0,0,0,0.5)]",
+                  plan.popular && "shadow-[0_8px_40px_rgba(109,35,182,0.15)]",
+                  plan.popular && "hover:shadow-[0_12px_50px_rgba(109,35,182,0.25)]",
+                  // Subtle scale on hover
+                  "hover:scale-[1.02]"
                 )}
               >
-                {/* Shimmer effect on hover */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                </div>
-                
                 {/* Popular badge */}
                 {plan.popular && (
-                  <div className="absolute -top-px left-1/2 -translate-x-1/2">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 blur-lg opacity-60" />
-                      <span className="relative block bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 text-primary-foreground text-sm font-bold px-6 py-2 rounded-b-xl shadow-lg">
-                        👑 MOST POPULAR
-                      </span>
-                    </div>
+                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-primary via-secondary to-accent py-2 px-4 text-center">
+                    <span className="text-xs font-bold tracking-wider text-white uppercase flex items-center justify-center gap-2">
+                      <Crown className="w-3.5 h-3.5" />
+                      Most Popular
+                      <Crown className="w-3.5 h-3.5" />
+                    </span>
                   </div>
                 )}
 
-                <div className="relative p-8 pt-10">
+                <div className={cn("p-8", plan.popular && "pt-14")}>
                   {/* Plan header */}
-                  <div className="flex items-center gap-3 mb-3">
+                  <div className="flex items-center gap-3 mb-2">
                     <div className={cn(
-                      "p-2.5 rounded-xl bg-gradient-to-br transition-transform duration-300 group-hover:scale-110",
+                      "p-2 rounded-lg transition-all duration-300",
                       plan.popular 
-                        ? "from-purple-500/30 to-indigo-500/30" 
-                        : plan.name === "Enterprise" 
-                          ? "from-cyan-500/30 to-blue-500/30"
-                          : "from-slate-500/30 to-slate-600/30"
+                        ? "bg-primary/20 group-hover:bg-primary/30" 
+                        : plan.name === "Enterprise"
+                          ? "bg-accent/15 group-hover:bg-accent/25"
+                          : "bg-[hsl(0_0%_20%)] group-hover:bg-[hsl(0_0%_25%)]"
                     )}>
                       <plan.icon className={cn(
-                        "w-6 h-6",
-                        plan.popular ? "text-purple-400" : plan.name === "Enterprise" ? "text-cyan-400" : "text-slate-400"
+                        "w-5 h-5 transition-colors duration-300",
+                        plan.popular 
+                          ? "text-primary group-hover:text-primary" 
+                          : plan.name === "Enterprise"
+                            ? "text-accent/80 group-hover:text-accent"
+                            : "text-[hsl(0_0%_50%)] group-hover:text-[hsl(0_0%_70%)]"
                       )} />
                     </div>
-                    <div>
-                      <h3 className="font-display text-2xl font-bold text-foreground flex items-center gap-2">
-                        {plan.name}
-                        {plan.popular && <span className="text-2xl">👑</span>}
-                      </h3>
-                    </div>
+                    <h3 className={cn(
+                      "font-display text-xl font-bold transition-colors duration-300",
+                      "text-[hsl(0_0%_88%)] group-hover:text-[hsl(0_0%_95%)]"
+                    )}>
+                      {plan.name}
+                    </h3>
                   </div>
                   
-                  <p className="text-muted-foreground text-sm mb-6">{plan.description}</p>
+                  <p className="text-[hsl(0_0%_50%)] text-sm mb-6 group-hover:text-[hsl(0_0%_60%)] transition-colors">
+                    {plan.description}
+                  </p>
                   
-                  {/* Price */}
-                  <div className="mb-8">
+                  {/* Price - 32-36px as recommended */}
+                  <div className="mb-6">
                     <div className="flex items-baseline gap-1">
                       <span className={cn(
-                        "font-display text-5xl font-bold",
-                        plan.popular ? "bg-gradient-to-r from-purple-400 via-indigo-400 to-blue-400 bg-clip-text text-transparent" : "text-foreground"
+                        "font-display text-4xl font-bold transition-all duration-300",
+                        plan.popular 
+                          ? "bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent" 
+                          : "text-[hsl(0_0%_88%)] group-hover:text-[hsl(0_0%_95%)]"
                       )}>
                         {plan.price}
                       </span>
                       {plan.period && (
-                        <span className="text-muted-foreground text-lg">{plan.period}</span>
+                        <span className="text-[hsl(0_0%_45%)] text-base">{plan.period}</span>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground mt-2">{plan.highlight}</p>
+                    <p className="text-xs text-[hsl(0_0%_45%)] mt-1.5 font-medium">
+                      {plan.highlight}
+                    </p>
                   </div>
 
-                  {/* Features */}
-                  <ul className="space-y-4 mb-8">
+                  {/* Divider */}
+                  <div className="h-px bg-[hsl(0_0%_18%)] mb-6 group-hover:bg-[hsl(0_0%_22%)] transition-colors" />
+
+                  {/* Features - 16px text */}
+                  <ul className="space-y-3.5 mb-8">
                     {plan.features.map((feature, i) => (
                       <motion.li 
                         key={i} 
@@ -207,24 +204,27 @@ export const PricingSection = () => {
                         initial={{ opacity: 0, x: -10 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        transition={{ delay: 0.3 + i * 0.05 }}
+                        transition={{ delay: 0.2 + i * 0.04 }}
                       >
+                        {/* Icon in circle - green for included, grey for excluded */}
                         <div className={cn(
-                          "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300",
+                          "flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300",
                           feature.included 
-                            ? "bg-gradient-to-br from-emerald-500/20 to-green-500/20 group-hover:from-emerald-500/30 group-hover:to-green-500/30" 
-                            : "bg-muted/30"
+                            ? "bg-[hsl(142_76%_36%_/_0.15)] group-hover:bg-[hsl(142_76%_36%_/_0.25)]" 
+                            : "bg-[hsl(0_0%_18%)]"
                         )}>
                           {feature.included ? (
-                            <Check className="w-4 h-4 text-emerald-400" />
+                            <Check className="w-3.5 h-3.5 text-[hsl(142_76%_42%)] group-hover:text-[hsl(142_76%_50%)] transition-colors" />
                           ) : (
-                            <X className="w-4 h-4 text-muted-foreground/50" />
+                            <X className="w-3 h-3 text-[hsl(0_0%_35%)]" />
                           )}
                         </div>
                         <span
                           className={cn(
-                            "text-sm",
-                            feature.included ? "text-foreground" : "text-muted-foreground/60"
+                            "text-sm transition-colors duration-300",
+                            feature.included 
+                              ? "text-[hsl(0_0%_75%)] group-hover:text-[hsl(0_0%_85%)]" 
+                              : "text-[hsl(0_0%_38%)] line-through"
                           )}
                         >
                           {feature.text}
@@ -239,14 +239,14 @@ export const PricingSection = () => {
                     className="block"
                   >
                     <Button
-                      variant={plan.buttonVariant}
                       className={cn(
-                        "w-full text-base font-semibold transition-all duration-300",
-                        plan.popular && "bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-500 hover:via-indigo-500 hover:to-blue-500 border-0 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-[1.02]",
-                        plan.name === "Enterprise" && "border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-400",
-                        plan.name === "Free" && "border-slate-500/50 text-slate-300 hover:bg-slate-500/10 hover:border-slate-400"
+                        "w-full font-semibold transition-all duration-300 h-11",
+                        plan.popular 
+                          ? "bg-gradient-to-r from-primary via-secondary to-accent text-white border-0 hover:opacity-90 hover:shadow-[0_0_30px_rgba(109,35,182,0.4)] hover:scale-[1.02]"
+                          : plan.name === "Enterprise"
+                            ? "bg-transparent border border-accent/50 text-accent hover:bg-accent/10 hover:border-accent"
+                            : "bg-[hsl(0_0%_18%)] border border-[hsl(0_0%_25%)] text-[hsl(0_0%_75%)] hover:bg-[hsl(0_0%_22%)] hover:text-[hsl(0_0%_90%)] hover:border-[hsl(0_0%_30%)]"
                       )}
-                      size="lg"
                     >
                       {plan.cta}
                     </Button>
@@ -262,22 +262,22 @@ export const PricingSection = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="mt-16 text-center"
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-14 text-center"
         >
-          <div className="inline-flex flex-wrap justify-center items-center gap-6 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-emerald-400" />
+          <div className="inline-flex flex-wrap justify-center items-center gap-8 text-sm text-[hsl(0_0%_45%)]">
+            <div className="flex items-center gap-2 hover:text-[hsl(0_0%_60%)] transition-colors">
+              <Shield className="w-4 h-4 text-[hsl(142_76%_42%)]" />
               <span>30-day money back</span>
             </div>
-            <div className="w-px h-4 bg-border hidden sm:block" />
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-yellow-400" />
+            <div className="w-px h-4 bg-[hsl(0_0%_20%)] hidden sm:block" />
+            <div className="flex items-center gap-2 hover:text-[hsl(0_0%_60%)] transition-colors">
+              <Zap className="w-4 h-4 text-[hsl(45_100%_50%)]" />
               <span>Instant activation</span>
             </div>
-            <div className="w-px h-4 bg-border hidden sm:block" />
-            <div className="flex items-center gap-2">
-              <Headphones className="w-4 h-4 text-blue-400" />
+            <div className="w-px h-4 bg-[hsl(0_0%_20%)] hidden sm:block" />
+            <div className="flex items-center gap-2 hover:text-[hsl(0_0%_60%)] transition-colors">
+              <Headphones className="w-4 h-4 text-accent" />
               <span>24/7 support</span>
             </div>
           </div>
