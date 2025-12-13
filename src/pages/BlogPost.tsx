@@ -3,114 +3,14 @@ import { Footer } from "@/components/landing/Footer";
 import { motion } from "framer-motion";
 import { Helmet } from "react-helmet";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Calendar, Clock } from "lucide-react";
-import { blogPosts } from "./Blog";
-
-const blogContent: Record<string, { content: string }> = {
-  "what-is-email-validation": {
-    content: `
-Email validation is the process of verifying whether an email address is valid, deliverable, and belongs to a real person. It's a critical step in email marketing that helps businesses maintain clean email lists, improve deliverability rates, and protect their sender reputation.
-
-## Why Email Validation Matters
-
-Email validation is essential for several reasons:
-
-1. **Improved Deliverability**: Invalid emails cause bounces, which hurt your sender reputation and can lead to your emails being marked as spam.
-
-2. **Cost Savings**: Most email service providers charge based on list size. Removing invalid emails reduces costs.
-
-3. **Better Analytics**: Clean lists provide accurate open and click rates, helping you make better marketing decisions.
-
-4. **Fraud Prevention**: Email validation helps detect fake sign-ups and potential fraud attempts.
-
-## How Email Validation Works
-
-The email validation process typically includes multiple checks:
-
-### Syntax Validation
-Checks if the email follows the correct format (user@domain.com).
-
-### Domain Validation
-Verifies that the domain exists and has valid MX records.
-
-### Mailbox Verification
-Confirms that the specific mailbox exists on the mail server.
-
-### Additional Checks
-- Disposable email detection
-- Role-based email detection
-- Spam trap identification
-- Catch-all server detection
-
-## Best Practices for Email Validation
-
-1. **Validate at the point of capture**: Implement real-time validation on signup forms.
-
-2. **Regularly clean your lists**: Validate your entire list at least quarterly.
-
-3. **Use double opt-in**: Require email confirmation for new subscribers.
-
-4. **Monitor bounce rates**: Track and act on bounce data.
-
-5. **Choose a reliable validation service**: Use a service with high accuracy rates like MailVet.
-
-## Conclusion
-
-Email validation is not optional for serious email marketers. It's an investment that pays for itself through improved deliverability, lower costs, and better campaign performance.
-    `
-  }
-};
-
-// Generate placeholder content for other posts
-blogPosts.forEach(post => {
-  if (!blogContent[post.slug]) {
-    blogContent[post.slug] = {
-      content: `
-This is a comprehensive guide about ${post.title.toLowerCase()}.
-
-## Introduction
-
-${post.excerpt}
-
-## Key Points
-
-Email validation is crucial for maintaining a healthy email list and ensuring high deliverability rates. Here's what you need to know:
-
-### Understanding the Basics
-
-Email validation involves multiple verification steps to ensure each email address on your list is valid and deliverable. This process helps protect your sender reputation and improve campaign performance.
-
-### Best Practices
-
-1. **Validate regularly**: Don't let your list become stale. Regular validation catches addresses that have become invalid.
-
-2. **Implement real-time validation**: Stop invalid emails at the source by validating during signup.
-
-3. **Monitor your metrics**: Keep an eye on bounce rates and engagement metrics.
-
-4. **Use a reliable service**: Choose an email validation provider with proven accuracy.
-
-### Benefits
-
-- Improved email deliverability
-- Better sender reputation
-- Reduced marketing costs
-- More accurate campaign analytics
-- Protection against spam traps
-
-## Conclusion
-
-Implementing proper email validation practices is essential for any business that relies on email marketing. With tools like MailVet, you can easily maintain a clean, high-quality email list that delivers results.
-
-Start validating your email list today with MailVet's unlimited verification plans.
-      `
-    };
-  }
-});
+import { ArrowLeft, Calendar, Clock, Share2, Linkedin, Twitter } from "lucide-react";
+import { blogPosts, getBlogPostBySlug, getRelatedPosts } from "@/data/blogPosts";
+import { Button } from "@/components/ui/button";
 
 export default function BlogPost() {
   const { slug } = useParams();
-  const post = blogPosts.find(p => p.slug === slug);
+  const post = getBlogPostBySlug(slug || "");
+  const relatedPosts = getRelatedPosts(slug || "", 3);
   
   if (!post) {
     return (
@@ -129,13 +29,64 @@ export default function BlogPost() {
     );
   }
 
-  const content = blogContent[slug || ""]?.content || "";
+  const shareUrl = `https://mailvet.app/blog/${post.slug}`;
+  const shareText = post.title;
+
+  const handleShare = (platform: string) => {
+    const urls: Record<string, string> = {
+      twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+    };
+    window.open(urls[platform], "_blank", "width=600,height=400");
+  };
 
   return (
     <>
       <Helmet>
         <title>{post.title} | MailVet Blog</title>
-        <meta name="description" content={post.excerpt} />
+        <meta name="description" content={post.metaDescription} />
+        <meta name="keywords" content={post.keywords.join(", ")} />
+        <link rel="canonical" href={`https://mailvet.app/blog/${post.slug}`} />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content={post.title} />
+        <meta property="og:description" content={post.metaDescription} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={`https://mailvet.app/blog/${post.slug}`} />
+        <meta property="og:image" content={post.thumbnail} />
+        <meta property="article:published_time" content={post.date} />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.metaDescription} />
+        <meta name="twitter:image" content={post.thumbnail} />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": post.title,
+            "description": post.metaDescription,
+            "image": post.thumbnail,
+            "datePublished": post.date,
+            "author": {
+              "@type": "Organization",
+              "name": "MailVet"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "MailVet",
+              "url": "https://mailvet.app"
+            },
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": `https://mailvet.app/blog/${post.slug}`
+            },
+            "keywords": post.keywords.join(", ")
+          })}
+        </script>
       </Helmet>
       
       <div className="min-h-screen bg-background">
@@ -149,6 +100,7 @@ export default function BlogPost() {
                 animate={{ opacity: 1, y: 0 }}
                 className="max-w-3xl mx-auto"
               >
+                {/* Breadcrumb */}
                 <Link 
                   to="/blog" 
                   className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors"
@@ -157,7 +109,18 @@ export default function BlogPost() {
                   Back to Blog
                 </Link>
 
-                <div className="flex items-center gap-3 mb-4">
+                {/* Hero Image */}
+                <div className="relative aspect-video rounded-xl overflow-hidden mb-8">
+                  <img 
+                    src={post.thumbnail} 
+                    alt={post.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
+                </div>
+
+                {/* Meta */}
+                <div className="flex flex-wrap items-center gap-3 mb-6">
                   <span className="text-sm font-medium text-cyan bg-cyan/10 px-3 py-1 rounded">
                     {post.category}
                   </span>
@@ -171,43 +134,182 @@ export default function BlogPost() {
                   </span>
                 </div>
 
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-8">
+                {/* Title */}
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
                   {post.title}
                 </h1>
 
+                {/* Excerpt */}
+                <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+                  {post.excerpt}
+                </p>
+
+                {/* Share Buttons */}
+                <div className="flex items-center gap-3 mb-10 pb-10 border-b border-border/30">
+                  <span className="text-sm text-muted-foreground flex items-center gap-2">
+                    <Share2 className="w-4 h-4" />
+                    Share:
+                  </span>
+                  <button
+                    onClick={() => handleShare("twitter")}
+                    className="w-8 h-8 rounded-full bg-card/50 border border-border/30 flex items-center justify-center hover:border-cyan/50 hover:text-cyan transition-all"
+                    aria-label="Share on Twitter"
+                  >
+                    <Twitter className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleShare("linkedin")}
+                    className="w-8 h-8 rounded-full bg-card/50 border border-border/30 flex items-center justify-center hover:border-cyan/50 hover:text-cyan transition-all"
+                    aria-label="Share on LinkedIn"
+                  >
+                    <Linkedin className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Content */}
                 <div className="prose prose-invert prose-lg max-w-none">
-                  {content.split('\n').map((paragraph, index) => {
-                    if (paragraph.startsWith('## ')) {
-                      return <h2 key={index} className="text-2xl font-bold mt-8 mb-4">{paragraph.replace('## ', '')}</h2>;
+                  {post.content.split('\n').map((paragraph, index) => {
+                    const trimmed = paragraph.trim();
+                    if (!trimmed) return null;
+                    
+                    if (trimmed.startsWith('## ')) {
+                      return (
+                        <h2 key={index} className="text-2xl font-bold mt-10 mb-4 text-foreground">
+                          {trimmed.replace('## ', '')}
+                        </h2>
+                      );
                     }
-                    if (paragraph.startsWith('### ')) {
-                      return <h3 key={index} className="text-xl font-semibold mt-6 mb-3">{paragraph.replace('### ', '')}</h3>;
+                    if (trimmed.startsWith('### ')) {
+                      return (
+                        <h3 key={index} className="text-xl font-semibold mt-8 mb-3 text-foreground">
+                          {trimmed.replace('### ', '')}
+                        </h3>
+                      );
                     }
-                    if (paragraph.startsWith('1. ') || paragraph.startsWith('2. ') || paragraph.startsWith('3. ') || paragraph.startsWith('4. ') || paragraph.startsWith('5. ')) {
-                      return <p key={index} className="text-muted-foreground mb-2 pl-4">{paragraph}</p>;
+                    if (trimmed.startsWith('| ')) {
+                      // Simple table rendering
+                      return (
+                        <div key={index} className="overflow-x-auto my-4">
+                          <pre className="text-sm text-muted-foreground bg-card/30 p-4 rounded-lg">
+                            {trimmed}
+                          </pre>
+                        </div>
+                      );
                     }
-                    if (paragraph.startsWith('- ')) {
-                      return <p key={index} className="text-muted-foreground mb-2 pl-4">{paragraph}</p>;
+                    if (trimmed.startsWith('```')) {
+                      return null; // Skip code block markers
                     }
-                    if (paragraph.trim()) {
-                      return <p key={index} className="text-muted-foreground mb-4">{paragraph}</p>;
+                    if (trimmed.startsWith('- [ ]') || trimmed.startsWith('- [x]')) {
+                      const isChecked = trimmed.startsWith('- [x]');
+                      const text = trimmed.replace(/- \[.\] /, '');
+                      return (
+                        <div key={index} className="flex items-center gap-2 my-2">
+                          <input type="checkbox" checked={isChecked} readOnly className="accent-cyan" />
+                          <span className="text-muted-foreground">{text}</span>
+                        </div>
+                      );
                     }
-                    return null;
+                    if (/^\d+\. \*\*/.test(trimmed)) {
+                      const match = trimmed.match(/^(\d+)\. \*\*(.+?)\*\*:?\s*(.*)$/);
+                      if (match) {
+                        return (
+                          <div key={index} className="my-3">
+                            <p className="text-muted-foreground">
+                              <span className="text-foreground font-semibold">{match[1]}. {match[2]}</span>
+                              {match[3] && `: ${match[3]}`}
+                            </p>
+                          </div>
+                        );
+                      }
+                    }
+                    if (/^\d+\. /.test(trimmed)) {
+                      return (
+                        <p key={index} className="text-muted-foreground my-2 pl-4">
+                          {trimmed}
+                        </p>
+                      );
+                    }
+                    if (trimmed.startsWith('- **')) {
+                      const match = trimmed.match(/^- \*\*(.+?)\*\*:?\s*(.*)$/);
+                      if (match) {
+                        return (
+                          <div key={index} className="my-2 pl-4">
+                            <p className="text-muted-foreground">
+                              <span className="text-foreground font-semibold">• {match[1]}</span>
+                              {match[2] && `: ${match[2]}`}
+                            </p>
+                          </div>
+                        );
+                      }
+                    }
+                    if (trimmed.startsWith('- ')) {
+                      return (
+                        <p key={index} className="text-muted-foreground my-2 pl-4">
+                          • {trimmed.replace('- ', '')}
+                        </p>
+                      );
+                    }
+                    if (trimmed.startsWith('**') && trimmed.endsWith('**')) {
+                      return (
+                        <p key={index} className="text-foreground font-semibold my-4">
+                          {trimmed.replace(/\*\*/g, '')}
+                        </p>
+                      );
+                    }
+                    
+                    return (
+                      <p key={index} className="text-muted-foreground my-4 leading-relaxed">
+                        {trimmed}
+                      </p>
+                    );
                   })}
                 </div>
 
-                <div className="mt-12 pt-8 border-t border-border/30">
-                  <h3 className="text-xl font-semibold mb-4">Ready to validate your email list?</h3>
+                {/* CTA */}
+                <div className="mt-12 pt-10 border-t border-border/30 bg-gradient-to-r from-cyan/5 to-transparent rounded-xl p-8">
+                  <h3 className="text-2xl font-semibold mb-4">Ready to validate your email list?</h3>
                   <p className="text-muted-foreground mb-6">
                     Start with 100 free credits and experience unlimited email validation with MailVet.
                   </p>
-                  <Link 
-                    to="/access?page=signup"
-                    className="inline-flex items-center gap-2 bg-cyan text-background px-6 py-3 rounded-lg font-semibold hover:bg-cyan/90 transition-colors"
-                  >
-                    Get Started Free
+                  <Link to="/access?page=signup">
+                    <Button className="bg-cyan hover:bg-cyan/90 text-background font-semibold px-8">
+                      Get Started Free
+                    </Button>
                   </Link>
                 </div>
+
+                {/* Related Posts */}
+                {relatedPosts.length > 0 && (
+                  <div className="mt-16">
+                    <h3 className="text-2xl font-semibold mb-8">Related Articles</h3>
+                    <div className="grid md:grid-cols-3 gap-6">
+                      {relatedPosts.map((relatedPost) => (
+                        <Link
+                          key={relatedPost.slug}
+                          to={`/blog/${relatedPost.slug}`}
+                          className="block bg-card/50 border border-border/30 rounded-xl overflow-hidden hover:border-cyan/30 transition-all group"
+                        >
+                          <div className="relative aspect-video overflow-hidden">
+                            <img
+                              src={relatedPost.thumbnail}
+                              alt={relatedPost.title}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              loading="lazy"
+                            />
+                          </div>
+                          <div className="p-4">
+                            <h4 className="font-semibold text-sm group-hover:text-cyan transition-colors line-clamp-2">
+                              {relatedPost.title}
+                            </h4>
+                            <span className="text-xs text-muted-foreground mt-2 block">
+                              {relatedPost.readTime}
+                            </span>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </motion.div>
             </div>
           </article>
