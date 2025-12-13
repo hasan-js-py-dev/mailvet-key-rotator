@@ -412,7 +412,17 @@ export default function AccessPage() {
   };
 
   const handleResendVerification = async () => {
-    if (resendCooldown > 0) return;
+    if (resendCooldown > 0 || isLoading) return;
+
+    const email = emailSentTo || formData.email;
+    if (!email) {
+      toast({
+        title: "Email required",
+        description: "Please provide your email address.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -421,7 +431,7 @@ export default function AccessPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: emailSentTo || formData.email }),
+        body: JSON.stringify({ email }),
       });
 
       const data = await response.json();
@@ -430,10 +440,16 @@ export default function AccessPage() {
         setResendCooldown(60); // 60 second cooldown
         toast({
           title: "Email sent!",
-          description: "A new verification email has been sent to your inbox.",
+          description: data.message || "A new verification email has been sent to your inbox.",
+        });
+      } else if (response.status === 429) {
+        toast({
+          title: "Please wait",
+          description: "You can request another verification email in a moment.",
+          variant: "destructive",
         });
       } else {
-        throw new Error(data.error);
+        throw new Error(data.error || "Failed to resend");
       }
     } catch (error: any) {
       toast({

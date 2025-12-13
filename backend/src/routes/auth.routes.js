@@ -248,21 +248,35 @@ router.get('/verify-email',
 
 /**
  * POST /auth/resend-verification
- * Resend verification email
+ * Resend verification email (by email address, no auth required)
  */
 router.post('/resend-verification',
-  verifyToken,
+  [body('email').isEmail().normalizeEmail()],
+  validate,
   async (req, res, next) => {
     try {
-      const user = await User.findById(req.userId)
+      const { email } = req.body;
+      
+      const user = await User.findOne({ email })
         .select('+emailVerificationToken +emailVerificationExpires');
 
+      // Always return success to prevent email enumeration
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.json({ message: 'If an account exists, a verification email has been sent' });
       }
 
       if (user.emailVerified) {
-        return res.status(400).json({ error: 'Email already verified' });
+        return res.json({ message: 'Email already verified. You can login now.' });
+      }
+
+      // Rate limit: don't send if last token was generated less than 60 seconds ago
+      if (user.emailVerificationExpires) {
+        const tokenAge = (24 * 60 * 60 * 1000) - (user.emailVerificationExpires - Date.now());
+        if (tokenAge < 60 * 1000) { // Less than 60 seconds since last send
+          return res.status(429).json({ 
+            error: 'Please wait before requesting another verification email' 
+          });
+        }
       }
 
       // Generate new token
