@@ -1,4 +1,4 @@
-import React, { useState, forwardRef } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronDown } from "lucide-react";
@@ -11,7 +11,7 @@ const navLinks = [
   { name: "Pricing", href: "#pricing" },
 ];
 
-export const Navbar = forwardRef<HTMLElement>((_, ref) => {
+export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [useCasesOpen, setUseCasesOpen] = useState(false);
   const [featuresOpen, setFeaturesOpen] = useState(false);
@@ -204,6 +204,4 @@ export const Navbar = forwardRef<HTMLElement>((_, ref) => {
       </AnimatePresence>
     </nav>
   );
-});
-
-Navbar.displayName = "Navbar";
+};
