@@ -1,3 +1,4 @@
+import React, { forwardRef } from "react";
 import { Logo } from "@/components/Logo";
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Twitter, Linkedin, Mail } from "lucide-react";
@@ -28,9 +29,9 @@ const socialLinks = [
   { icon: Linkedin, href: "https://linkedin.com/company/mailvet", label: "LinkedIn" },
 ];
 
-export const Footer = () => {
+export const Footer = forwardRef<HTMLElement>((_, ref) => {
   return (
-    <footer className="relative border-t border-border/20 bg-background">
+    <footer ref={ref} className="relative border-t border-border/20 bg-background">
       <div className="absolute inset-0 dot-pattern opacity-5" />
       
       <div className="container mx-auto px-6 relative z-10">
@@ -134,4 +135,6 @@ export const Footer = () => {
       </div>
     </footer>
   );
-};
+});
+
+Footer.displayName = "Footer";
