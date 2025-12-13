@@ -9,6 +9,12 @@ import UseCases from "./pages/UseCases";
 import UseCaseDetail from "./pages/UseCaseDetail";
 import Features from "./pages/Features";
 import FeatureDetail from "./pages/FeatureDetail";
+import About from "./pages/About";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
+import Contact from "./pages/Contact";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import DashboardOverview from "./pages/dashboard/Overview";
 import VerifyEmail from "./pages/dashboard/VerifyEmail";
 import VerifyList from "./pages/dashboard/VerifyList";
@@ -32,6 +38,12 @@ const App = () => (
           <Route path="/use-cases/:slug" element={<UseCaseDetail />} />
           <Route path="/features" element={<Features />} />
           <Route path="/features/:slug" element={<FeatureDetail />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
           <Route path="/dashboard" element={<DashboardOverview />} />
           <Route path="/dashboard/verify-email" element={<VerifyEmail />} />
           <Route path="/dashboard/verify-list" element={<VerifyList />} />
