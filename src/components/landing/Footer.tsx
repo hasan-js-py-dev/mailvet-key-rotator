@@ -1,39 +1,52 @@
 import { Logo } from "@/components/Logo";
 import { Link } from "react-router-dom";
-import { ArrowUpRight, Github, Twitter, Linkedin, Mail } from "lucide-react";
+import { ArrowUpRight, Twitter, Linkedin, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const footerLinks = {
   Product: [
-    { name: "Features", href: "#features" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "API Documentation", href: "#api" },
-    { name: "Use Cases", href: "#use-cases" },
+    { name: "Features", href: "/features", isRoute: true },
+    { name: "Use Cases", href: "/use-cases", isRoute: true },
+    { name: "Pricing", href: "/#pricing" },
   ],
   Resources: [
-    { name: "Blog", href: "#" },
-    { name: "Help Center", href: "#" },
-    { name: "API Status", href: "#" },
-    { name: "Changelog", href: "#" },
+    { name: "Email Validation Guide", href: "/blog/what-is-email-validation", isRoute: true },
+    { name: "Reduce Bounce Rate", href: "/blog/reduce-email-bounce-rate", isRoute: true },
+    { name: "Email List Hygiene", href: "/blog/email-list-hygiene-best-practices", isRoute: true },
+    { name: "Catch-All Emails", href: "/blog/catch-all-emails-explained", isRoute: true },
+    { name: "Disposable Email Detection", href: "/blog/disposable-email-detection", isRoute: true },
+    { name: "Email Deliverability", href: "/blog/email-deliverability-guide", isRoute: true },
+    { name: "Spam Trap Prevention", href: "/blog/spam-trap-prevention", isRoute: true },
+    { name: "Bulk Email Validation", href: "/blog/bulk-email-validation-guide", isRoute: true },
+    { name: "E-commerce Validation", href: "/blog/email-validation-for-ecommerce", isRoute: true },
+    { name: "Real-Time Verification", href: "/blog/real-time-email-verification", isRoute: true },
+    { name: "SaaS Email Validation", href: "/blog/email-validation-for-saas", isRoute: true },
+    { name: "MX Record Validation", href: "/blog/mx-record-validation", isRoute: true },
+    { name: "Email Validation ROI", href: "/blog/email-validation-roi", isRoute: true },
+    { name: "Role-Based Emails", href: "/blog/role-based-email-detection", isRoute: true },
+    { name: "Agency Guide", href: "/blog/email-validation-for-agencies", isRoute: true },
+    { name: "SMTP Verification", href: "/blog/smtp-verification-explained", isRoute: true },
+    { name: "Common Mistakes", href: "/blog/email-validation-mistakes", isRoute: true },
+    { name: "GDPR Compliance", href: "/blog/gdpr-email-validation", isRoute: true },
+    { name: "Email Warm-Up", href: "/blog/email-warm-up-validation", isRoute: true },
+    { name: "Integration Guide", href: "/blog/email-validation-integration-guide", isRoute: true },
+    { name: "Sender Reputation", href: "/blog/sender-reputation-management", isRoute: true },
+    { name: "View All Articles", href: "/blog", isRoute: true },
+    { name: "Help Center", href: "mailto:contact@mailvet.app" },
   ],
   Company: [
-    { name: "About Us", href: "#" },
-    { name: "Contact", href: "#" },
-    { name: "Careers", href: "#" },
-    { name: "Partners", href: "#" },
+    { name: "About Us", href: "/about", isRoute: true },
+    { name: "Contact", href: "/contact", isRoute: true },
   ],
   Legal: [
-    { name: "Privacy Policy", href: "#" },
-    { name: "Terms of Service", href: "#" },
-    { name: "Cookie Policy", href: "#" },
-    { name: "GDPR", href: "#" },
+    { name: "Privacy Policy", href: "/privacy", isRoute: true },
+    { name: "Terms of Service", href: "/terms", isRoute: true },
   ],
 };
 
 const socialLinks = [
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Github, href: "#", label: "GitHub" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
+  { icon: Twitter, href: "https://twitter.com/mailvetapp", label: "Twitter" },
+  { icon: Linkedin, href: "https://linkedin.com/company/mailvet", label: "LinkedIn" },
 ];
 
 export const Footer = () => {
@@ -68,7 +81,7 @@ export const Footer = () => {
 
         {/* Main footer */}
         <div className="py-12">
-          <div className="grid md:grid-cols-2 lg:grid-cols-6 gap-10">
+          <div className="grid md:grid-cols-2 lg:grid-cols-7 gap-10">
             {/* Brand column */}
             <div className="lg:col-span-2">
               <Logo size="md" animated className="mb-5" />
@@ -94,18 +107,28 @@ export const Footer = () => {
 
             {/* Link columns */}
             {Object.entries(footerLinks).map(([category, links]) => (
-              <div key={category}>
+              <div key={category} className={category === "Resources" ? "lg:col-span-2" : ""}>
                 <h4 className="font-semibold text-sm text-foreground mb-4">{category}</h4>
-                <ul className="space-y-3">
+                <ul className={`space-y-3 ${category === "Resources" ? "grid grid-cols-2 gap-x-6 gap-y-3 space-y-0" : ""}`}>
                   {links.map((link) => (
                     <li key={link.name}>
-                      <a
-                        href={link.href}
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 flex items-center gap-1 group"
-                      >
-                        {link.name}
-                        <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                      </a>
+                      {link.isRoute ? (
+                        <Link
+                          to={link.href}
+                          className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 flex items-center gap-1 group"
+                        >
+                          {link.name}
+                          <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                        </Link>
+                      ) : (
+                        <a
+                          href={link.href}
+                          className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 flex items-center gap-1 group"
+                        >
+                          {link.name}
+                          <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                        </a>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -121,11 +144,11 @@ export const Footer = () => {
           </p>
           <div className="flex items-center gap-4">
             <a 
-              href="mailto:support@mailvet.app"
+              href="mailto:contact@mailvet.app"
               className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
             >
               <Mail className="w-3 h-3" />
-              support@mailvet.app
+              contact@mailvet.app
             </a>
           </div>
         </div>
