@@ -1,50 +1,454 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, ArrowRight, User } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, User, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { signInWithPopup } from "firebase/auth";
+import { signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth, googleProvider, isFirebaseConfigured } from "@/lib/firebase";
+import { z } from "zod";
+
+// Validation schemas
+const signupSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name is too long"),
+  email: z.string().email("Please enter a valid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number"),
+});
+
+const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+const forgotPasswordSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+});
+
+const resetPasswordSchema = z.object({
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number"),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+type PageType = "login" | "signup" | "forgot" | "reset" | "verify-email" | "email-sent";
+
+interface FormErrors {
+  name?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+}
 
 export default function AccessPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const pageType = searchParams.get("page") || "login";
-  const isLogin = pageType === "login";
+  const pageType = (searchParams.get("page") || "login") as PageType;
+  const resetToken = searchParams.get("token");
+  const verifyToken = searchParams.get("token");
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState<"pending" | "success" | "error">("pending");
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [emailSentTo, setEmailSentTo] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(0);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
+
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
+
+  // Resend cooldown timer
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCooldown]);
+
+  // Handle email verification when landing on verify-email page
+  useEffect(() => {
+    if (pageType === "verify-email" && verifyToken) {
+      verifyEmail(verifyToken);
+    }
+  }, [pageType, verifyToken]);
+
+  const verifyEmail = async (token: string) => {
+    setIsVerifying(true);
+    try {
+      const response = await fetch(`${apiBaseUrl}/v1/auth/verify-email?token=${token}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        setVerificationStatus("success");
+        toast({
+          title: "Email verified!",
+          description: "Your account is now active. Redirecting to login...",
+        });
+        setTimeout(() => navigate("/access?page=login"), 3000);
+      } else {
+        setVerificationStatus("error");
+        toast({
+          title: "Verification failed",
+          description: data.error || "Invalid or expired verification link",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      setVerificationStatus("error");
+      toast({
+        title: "Verification failed",
+        description: "Unable to verify email. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const validateForm = useCallback(() => {
+    setFormErrors({});
+    
+    try {
+      if (pageType === "signup") {
+        signupSchema.parse(formData);
+      } else if (pageType === "login") {
+        loginSchema.parse(formData);
+      } else if (pageType === "forgot") {
+        forgotPasswordSchema.parse(formData);
+      } else if (pageType === "reset") {
+        resetPasswordSchema.parse(formData);
+      }
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errors: FormErrors = {};
+        error.errors.forEach((err) => {
+          const field = err.path[0] as keyof FormErrors;
+          errors[field] = err.message;
+        });
+        setFormErrors(errors);
+      }
+      return false;
+    }
+  }, [formData, pageType]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent duplicate submissions
+    if (isSubmitting || isLoading) return;
+    
+    if (!validateForm()) return;
+
     setIsLoading(true);
+    setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      if (pageType === "signup") {
+        await handleSignup();
+      } else if (pageType === "login") {
+        await handleLogin();
+      } else if (pageType === "forgot") {
+        await handleForgotPassword();
+      } else if (pageType === "reset") {
+        await handleResetPassword();
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+    } finally {
+      setIsLoading(false);
+      setIsSubmitting(false);
+    }
+  };
 
-    toast({
-      title: isLogin ? "Welcome back!" : "Account created!",
-      description: isLogin
-        ? "You've successfully logged in."
-        : "Check your email to verify your account.",
-    });
+  const handleSignup = async () => {
+    if (!auth) {
+      toast({
+        title: "Configuration error",
+        description: "Firebase is not configured. Please contact support.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    setIsLoading(false);
-    navigate("/dashboard");
+    try {
+      // Create Firebase user
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      
+      const idToken = await userCredential.user.getIdToken();
+
+      // Register with backend
+      const response = await fetch(`${apiBaseUrl}/v1/auth/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle specific error cases
+        if (response.status === 409 || data.error?.includes("already exists")) {
+          toast({
+            title: "Account already exists",
+            description: "An account with this email already exists. Please login instead.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw new Error(data.error || "Signup failed");
+      }
+
+      setEmailSentTo(formData.email);
+      navigate("/access?page=email-sent");
+      
+      toast({
+        title: "Check your inbox!",
+        description: "We've sent you a verification email. Click the link to activate your account.",
+      });
+    } catch (error: any) {
+      // Handle Firebase specific errors
+      if (error.code === "auth/email-already-in-use") {
+        toast({
+          title: "Email already registered",
+          description: "An account with this email already exists. Please login or use a different email.",
+          variant: "destructive",
+        });
+      } else if (error.code === "auth/weak-password") {
+        toast({
+          title: "Weak password",
+          description: "Please choose a stronger password.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Signup failed",
+          description: error.message || "Unable to create account. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const handleLogin = async () => {
+    if (!auth) {
+      toast({
+        title: "Configuration error",
+        description: "Firebase is not configured. Please contact support.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      
+      const idToken = await userCredential.user.getIdToken();
+
+      const response = await fetch(`${apiBaseUrl}/v1/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 403 && data.error?.includes("verify")) {
+          toast({
+            title: "Email not verified",
+            description: "Please check your inbox and verify your email before logging in.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw new Error(data.error || "Login failed");
+      }
+
+      if (data.token) {
+        localStorage.setItem("mailvet_session", data.token);
+      }
+
+      toast({
+        title: "Welcome back!",
+        description: "Redirecting to your dashboard...",
+      });
+
+      navigate("/dashboard");
+    } catch (error: any) {
+      if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
+        toast({
+          title: "Invalid credentials",
+          description: "The email or password you entered is incorrect.",
+          variant: "destructive",
+        });
+      } else if (error.code === "auth/too-many-requests") {
+        toast({
+          title: "Too many attempts",
+          description: "Account temporarily locked. Please try again later or reset your password.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Login failed",
+          description: error.message || "Unable to login. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    try {
+      const response = await fetch(`${apiBaseUrl}/v1/auth/password-reset`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: formData.email }),
+      });
+
+      const data = await response.json();
+
+      // Always show success message to prevent email enumeration
+      setEmailSentTo(formData.email);
+      navigate("/access?page=email-sent");
+      
+      toast({
+        title: "Reset email sent",
+        description: "If an account exists with this email, you'll receive a password reset link.",
+      });
+    } catch (error) {
+      toast({
+        title: "Request failed",
+        description: "Unable to send reset email. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!resetToken) {
+      toast({
+        title: "Invalid link",
+        description: "This password reset link is invalid or has expired.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/v1/auth/reset-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: resetToken,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Password reset failed");
+      }
+
+      toast({
+        title: "Password updated!",
+        description: "Your password has been reset. Please login with your new password.",
+      });
+
+      navigate("/access?page=login");
+    } catch (error: any) {
+      toast({
+        title: "Reset failed",
+        description: error.message || "Unable to reset password. The link may have expired.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (resendCooldown > 0) return;
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${apiBaseUrl}/v1/auth/resend-verification`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: emailSentTo || formData.email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setResendCooldown(60); // 60 second cooldown
+        toast({
+          title: "Email sent!",
+          description: "A new verification email has been sent to your inbox.",
+        });
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (error: any) {
+      toast({
+        title: "Failed to resend",
+        description: error.message || "Unable to resend verification email.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogle = async () => {
+    if (isGoogleLoading) return;
+    
     try {
       if (!auth || !googleProvider) {
         toast({
@@ -54,6 +458,7 @@ export default function AccessPage() {
         });
         return;
       }
+      
       setIsGoogleLoading(true);
       const result = await signInWithPopup(auth, googleProvider);
       const idToken = await result.user.getIdToken();
@@ -67,6 +472,7 @@ export default function AccessPage() {
       });
 
       const payload = await response.json().catch(() => ({}));
+      
       if (!response.ok) {
         throw new Error(payload?.error || "Google sign-in failed");
       }
@@ -79,11 +485,17 @@ export default function AccessPage() {
         title: "Signed in with Google",
         description: "Redirecting to dashboard...",
       });
+      
       navigate("/dashboard");
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Unable to use Google sign-in";
+    } catch (error: any) {
+      if (error.code === "auth/popup-closed-by-user") {
+        // User closed the popup, no need to show error
+        return;
+      }
+      
+      const message = error instanceof Error ? error.message : "Unable to use Google sign-in";
       console.error("Google sign-in error", error);
+      
       toast({
         title: "Google sign-in failed",
         description: message,
@@ -94,15 +506,257 @@ export default function AccessPage() {
     }
   };
 
-  return (
-    <div className="min-h-screen flex">
-      {/* Left side - Form */}
-      <div className="flex-1 flex flex-col justify-center px-8 lg:px-16 xl:px-24">
-        <div className="max-w-md w-full mx-auto">
-          <Link to="/" className="inline-block mb-8">
-            <Logo size="lg" />
-          </Link>
+  const renderForm = () => {
+    switch (pageType) {
+      case "email-sent":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
+          >
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
+              <Mail className="w-10 h-10 text-primary" />
+            </div>
+            <h1 className="font-display text-3xl font-bold mb-2">Check your email</h1>
+            <p className="text-muted-foreground mb-6">
+              We've sent a verification link to<br />
+              <span className="font-medium text-foreground">{emailSentTo}</span>
+            </p>
+            <p className="text-sm text-muted-foreground mb-6">
+              Click the link in the email to verify your account. If you don't see it, check your spam folder.
+            </p>
+            
+            <Button
+              variant="outline"
+              onClick={handleResendVerification}
+              disabled={isLoading || resendCooldown > 0}
+              className="w-full"
+            >
+              {isLoading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Sending...
+                </span>
+              ) : resendCooldown > 0 ? (
+                `Resend in ${resendCooldown}s`
+              ) : (
+                "Resend verification email"
+              )}
+            </Button>
+            
+            <p className="mt-6 text-sm text-muted-foreground">
+              Wrong email?{" "}
+              <Link to="/access?page=signup" className="text-primary hover:underline">
+                Sign up again
+              </Link>
+            </p>
+          </motion.div>
+        );
 
+      case "verify-email":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
+          >
+            {isVerifying ? (
+              <>
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Loader2 className="w-10 h-10 text-primary animate-spin" />
+                </div>
+                <h1 className="font-display text-3xl font-bold mb-2">Verifying your email</h1>
+                <p className="text-muted-foreground">Please wait while we confirm your email address...</p>
+              </>
+            ) : verificationStatus === "success" ? (
+              <>
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/10 flex items-center justify-center">
+                  <CheckCircle className="w-10 h-10 text-green-500" />
+                </div>
+                <h1 className="font-display text-3xl font-bold mb-2">Email verified!</h1>
+                <p className="text-muted-foreground mb-6">
+                  Your account is now active. Redirecting to login...
+                </p>
+                <Button variant="gradient" onClick={() => navigate("/access?page=login")} className="w-full">
+                  Go to Login
+                </Button>
+              </>
+            ) : (
+              <>
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-destructive/10 flex items-center justify-center">
+                  <AlertCircle className="w-10 h-10 text-destructive" />
+                </div>
+                <h1 className="font-display text-3xl font-bold mb-2">Verification failed</h1>
+                <p className="text-muted-foreground mb-6">
+                  This verification link is invalid or has expired.
+                </p>
+                <Button variant="gradient" onClick={() => navigate("/access?page=signup")} className="w-full">
+                  Sign up again
+                </Button>
+              </>
+            )}
+          </motion.div>
+        );
+
+      case "forgot":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h1 className="font-display text-3xl font-bold mb-2">Forgot password?</h1>
+            <p className="text-muted-foreground mb-8">
+              No worries! Enter your email and we'll send you a reset link.
+            </p>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className={`pl-10 h-12 ${formErrors.email ? "border-destructive" : ""}`}
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+                {formErrors.email && (
+                  <p className="text-sm text-destructive">{formErrors.email}</p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                variant="gradient"
+                size="lg"
+                className="w-full"
+                disabled={isLoading || isSubmitting}
+              >
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Sending reset link...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    Send reset link
+                    <ArrowRight className="w-5 h-5" />
+                  </span>
+                )}
+              </Button>
+            </form>
+
+            <p className="mt-8 text-center text-muted-foreground">
+              Remember your password?{" "}
+              <Link to="/access?page=login" className="text-primary hover:underline font-medium">
+                Back to login
+              </Link>
+            </p>
+          </motion.div>
+        );
+
+      case "reset":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h1 className="font-display text-3xl font-bold mb-2">Set new password</h1>
+            <p className="text-muted-foreground mb-8">
+              Choose a strong password for your account.
+            </p>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="password">New Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className={`pl-10 pr-10 h-12 ${formErrors.password ? "border-destructive" : ""}`}
+                    required
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+                {formErrors.password && (
+                  <p className="text-sm text-destructive">{formErrors.password}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                    className={`pl-10 pr-10 h-12 ${formErrors.confirmPassword ? "border-destructive" : ""}`}
+                    required
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+                {formErrors.confirmPassword && (
+                  <p className="text-sm text-destructive">{formErrors.confirmPassword}</p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                variant="gradient"
+                size="lg"
+                className="w-full"
+                disabled={isLoading || isSubmitting}
+              >
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Updating password...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    Update password
+                    <ArrowRight className="w-5 h-5" />
+                  </span>
+                )}
+              </Button>
+            </form>
+          </motion.div>
+        );
+
+      default:
+        // Login & Signup forms
+        const isLogin = pageType === "login";
+        
+        return (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -114,29 +768,38 @@ export default function AccessPage() {
             <p className="text-muted-foreground mb-8">
               {isLogin
                 ? "Enter your credentials to access your dashboard"
-                : "Start validating emails with 100 free credits"}
+                : "Start validating emails with 50 free credits"}
             </p>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {!isLogin && (
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="John Doe"
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      className="pl-10 h-12"
-                      required
-                    />
-                  </div>
-                </div>
-              )}
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <AnimatePresence mode="wait">
+                {!isLogin && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-2"
+                  >
+                    <Label htmlFor="name">Full Name</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        id="name"
+                        type="text"
+                        placeholder="John Doe"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className={`pl-10 h-12 ${formErrors.name ? "border-destructive" : ""}`}
+                        required={!isLogin}
+                        disabled={isLoading}
+                      />
+                    </div>
+                    {formErrors.name && (
+                      <p className="text-sm text-destructive">{formErrors.name}</p>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -147,13 +810,15 @@ export default function AccessPage() {
                     type="email"
                     placeholder="you@example.com"
                     value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    className="pl-10 h-12"
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className={`pl-10 h-12 ${formErrors.email ? "border-destructive" : ""}`}
                     required
+                    disabled={isLoading}
                   />
                 </div>
+                {formErrors.email && (
+                  <p className="text-sm text-destructive">{formErrors.email}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -175,24 +840,27 @@ export default function AccessPage() {
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={formData.password}
-                    onChange={(e) =>
-                      setFormData({ ...formData, password: e.target.value })
-                    }
-                    className="pl-10 pr-10 h-12"
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className={`pl-10 pr-10 h-12 ${formErrors.password ? "border-destructive" : ""}`}
                     required
+                    disabled={isLoading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {showPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
+                {formErrors.password && (
+                  <p className="text-sm text-destructive">{formErrors.password}</p>
+                )}
+                {!isLogin && !formErrors.password && (
+                  <p className="text-xs text-muted-foreground">
+                    Min. 8 characters with uppercase, lowercase, and number
+                  </p>
+                )}
               </div>
 
               <Button
@@ -200,11 +868,11 @@ export default function AccessPage() {
                 variant="gradient"
                 size="lg"
                 className="w-full"
-                disabled={isLoading}
+                disabled={isLoading || isSubmitting}
               >
                 {isLoading ? (
                   <span className="flex items-center gap-2">
-                    <span className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin" />
                     {isLogin ? "Signing in..." : "Creating account..."}
                   </span>
                 ) : (
@@ -250,7 +918,7 @@ export default function AccessPage() {
               >
                 {isGoogleLoading ? (
                   <span className="flex items-center gap-2">
-                    <span className="w-5 h-5 border-2 border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin" />
                     Connecting...
                   </span>
                 ) : (
@@ -278,12 +946,26 @@ export default function AccessPage() {
                 )}
               </Button>
               {!isFirebaseConfigured && (
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="mt-2 text-sm text-muted-foreground text-center">
                   Google sign-in is disabled until VITE_FIREBASE_* env vars are configured.
                 </p>
               )}
             </div>
           </motion.div>
+        );
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex">
+      {/* Left side - Form */}
+      <div className="flex-1 flex flex-col justify-center px-8 lg:px-16 xl:px-24">
+        <div className="max-w-md w-full mx-auto">
+          <Link to="/" className="inline-block mb-8">
+            <Logo size="lg" />
+          </Link>
+
+          {renderForm()}
         </div>
       </div>
 
