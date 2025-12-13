@@ -60,10 +60,13 @@ type EmailSentContext = "verification" | "reset";
 export default function AccessPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const pageType = (searchParams.get("page") || "login") as PageType;
+  const pageParam = searchParams.get("page") || "login";
   const resetToken = searchParams.get("token");
   const verifyToken = searchParams.get("token");
   const sessionTokenKey = "mailvet_session";
+
+  // Determine actual page type - if we have a token on reset page, show reset form
+  const pageType: PageType = pageParam === "reset" && resetToken ? "reset" : pageParam as PageType;
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
