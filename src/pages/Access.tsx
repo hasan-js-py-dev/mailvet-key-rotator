@@ -54,23 +54,32 @@ interface FormErrors {
   confirmPassword?: string;
 }
 
+type VerificationState = "idle" | "pending" | "success" | "error";
+type EmailSentContext = "verification" | "reset";
+
 export default function AccessPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const pageType = (searchParams.get("page") || "login") as PageType;
   const resetToken = searchParams.get("token");
   const verifyToken = searchParams.get("token");
+  const sessionTokenKey = "mailvet_session";
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [verificationStatus, setVerificationStatus] = useState<"pending" | "success" | "error">("pending");
+  const [verificationStatus, setVerificationStatus] = useState<VerificationState>("idle");
+  const [verificationMessage, setVerificationMessage] = useState("");
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [emailSentTo, setEmailSentTo] = useState("");
+  const [emailSentContext, setEmailSentContext] = useState<EmailSentContext>("verification");
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [isResending, setIsResending] = useState(false);
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -91,43 +100,81 @@ export default function AccessPage() {
 
   // Handle email verification when landing on verify-email page
   useEffect(() => {
-    if (pageType === "verify-email" && verifyToken) {
-      verifyEmail(verifyToken);
+    if (pageType !== "verify-email") {
+      setVerificationStatus("idle");
+      setVerificationMessage("");
+      return;
     }
-  }, [pageType, verifyToken]);
 
-  const verifyEmail = async (token: string) => {
-    setIsVerifying(true);
-    try {
-      const response = await fetch(`${apiBaseUrl}/v1/auth/verify-email?token=${token}`);
-      const data = await response.json();
+    if (!verifyToken) {
+      setVerificationStatus("error");
+      setVerificationMessage("Verification token is missing.");
+      return;
+    }
 
-      if (response.ok) {
-        setVerificationStatus("success");
+    let isMounted = true;
+
+    const verifyEmail = async () => {
+      setIsVerifying(true);
+      setVerificationStatus("pending");
+      setVerificationMessage("Verifying your email...");
+
+      try {
+        const response = await fetch(
+          `${apiBaseUrl}/v1/auth/verify-email?token=${verifyToken}`
+        );
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Invalid or expired verification link");
+        }
+
+        if (data.token) {
+          localStorage.setItem(sessionTokenKey, data.token);
+        }
+
+        if (isMounted) {
+          setVerificationStatus("success");
+          setVerificationMessage(
+            data.message || "Email verified successfully. Redirecting you to the dashboard."
+          );
+        }
+
         toast({
-          title: "Email verified!",
-          description: "Your account is now active. Redirecting to login...",
+          title: "Email verified",
+          description: "Redirecting you to the dashboard.",
         });
-        setTimeout(() => navigate("/access?page=login"), 3000);
-      } else {
+
+        setTimeout(() => navigate("/dashboard"), 1500);
+      } catch (error) {
+        if (!isMounted) return;
+
+        const description =
+          error instanceof Error
+            ? error.message
+            : "Unable to verify email. Please try again.";
+
         setVerificationStatus("error");
+        setVerificationMessage(description);
+
         toast({
           title: "Verification failed",
-          description: data.error || "Invalid or expired verification link",
+          description,
           variant: "destructive",
         });
+      } finally {
+        if (isMounted) {
+          setIsVerifying(false);
+        }
       }
-    } catch (error) {
-      setVerificationStatus("error");
-      toast({
-        title: "Verification failed",
-        description: "Unable to verify email. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsVerifying(false);
-    }
-  };
+    };
+
+    verifyEmail();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [apiBaseUrl, navigate, pageType, sessionTokenKey, verifyToken]);
 
   const validateForm = useCallback(() => {
     setFormErrors({});
@@ -196,6 +243,9 @@ export default function AccessPage() {
     }
 
     try {
+      setNeedsVerification(false);
+      setVerificationEmail("");
+
       // Create Firebase user
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -234,7 +284,13 @@ export default function AccessPage() {
         throw new Error(data.error || "Signup failed");
       }
 
+      if (data.token) {
+        localStorage.setItem(sessionTokenKey, data.token);
+      }
+
       setEmailSentTo(formData.email);
+      setVerificationEmail(formData.email);
+      setEmailSentContext("verification");
       navigate("/access?page=email-sent");
       
       toast({
@@ -276,6 +332,9 @@ export default function AccessPage() {
     }
 
     try {
+      setNeedsVerification(false);
+      setVerificationEmail("");
+
       const userCredential = await signInWithEmailAndPassword(
         auth,
         formData.email,
@@ -294,20 +353,24 @@ export default function AccessPage() {
 
       const data = await response.json();
 
+      if (response.status === 403) {
+        setNeedsVerification(true);
+        setVerificationEmail(formData.email);
+        setEmailSentTo(formData.email);
+        toast({
+          title: "Email not verified",
+          description: data.message || "Please verify your email before logging in.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       if (!response.ok) {
-        if (response.status === 403 && data.error?.includes("verify")) {
-          toast({
-            title: "Email not verified",
-            description: "Please check your inbox and verify your email before logging in.",
-            variant: "destructive",
-          });
-          return;
-        }
         throw new Error(data.error || "Login failed");
       }
 
       if (data.token) {
-        localStorage.setItem("mailvet_session", data.token);
+        localStorage.setItem(sessionTokenKey, data.token);
       }
 
       toast({
@@ -353,6 +416,7 @@ export default function AccessPage() {
 
       // Always show success message to prevent email enumeration
       setEmailSentTo(formData.email);
+      setEmailSentContext("reset");
       navigate("/access?page=email-sent");
       
       toast({
@@ -412,45 +476,67 @@ export default function AccessPage() {
   };
 
   const handleResendVerification = async () => {
-    if (resendCooldown > 0 || isLoading) return;
+    if (resendCooldown > 0 || isResending) return;
 
-    const email = emailSentTo || formData.email;
-    if (!email) {
+    if (!auth) {
       toast({
-        title: "Email required",
-        description: "Please provide your email address.",
+        title: "Configuration error",
+        description: "Firebase is not configured. Please contact support.",
         variant: "destructive",
       });
       return;
     }
 
-    setIsLoading(true);
+    const user = auth.currentUser;
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in again before requesting another verification email.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsResending(true);
     try {
+      const idToken = await user.getIdToken(true);
+
       const response = await fetch(`${apiBaseUrl}/v1/auth/resend-verification`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({}),
       });
 
       const data = await response.json();
 
-      if (response.ok) {
-        setResendCooldown(60); // 60 second cooldown
-        toast({
-          title: "Email sent!",
-          description: data.message || "A new verification email has been sent to your inbox.",
-        });
-      } else if (response.status === 429) {
+      if (response.status === 429) {
         toast({
           title: "Please wait",
-          description: "You can request another verification email in a moment.",
+          description: data.error || "You can request another verification email in a moment.",
           variant: "destructive",
         });
-      } else {
-        throw new Error(data.error || "Failed to resend");
+        return;
       }
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to resend verification email");
+      }
+
+      setResendCooldown(60);
+      if (!emailSentTo && user.email) {
+        setEmailSentTo(user.email);
+      }
+      if (!verificationEmail && user.email) {
+        setVerificationEmail(user.email);
+      }
+
+      toast({
+        title: "Email sent!",
+        description: data.message || "A new verification email has been sent to your inbox.",
+      });
     } catch (error: any) {
       toast({
         title: "Failed to resend",
@@ -458,7 +544,7 @@ export default function AccessPage() {
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setIsResending(false);
     }
   };
 
@@ -494,7 +580,7 @@ export default function AccessPage() {
       }
 
       if (payload?.token) {
-        localStorage.setItem("mailvet_session", payload.token);
+        localStorage.setItem(sessionTokenKey, payload.token);
       }
 
       toast({
@@ -543,23 +629,33 @@ export default function AccessPage() {
               Click the link in the email to verify your account. If you don't see it, check your spam folder.
             </p>
             
-            <Button
-              variant="outline"
-              onClick={handleResendVerification}
-              disabled={isLoading || resendCooldown > 0}
-              className="w-full"
-            >
-              {isLoading ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Sending...
-                </span>
-              ) : resendCooldown > 0 ? (
-                `Resend in ${resendCooldown}s`
-              ) : (
-                "Resend verification email"
-              )}
-            </Button>
+            {emailSentContext === "verification" ? (
+              <Button
+                variant="outline"
+                onClick={handleResendVerification}
+                disabled={isResending || resendCooldown > 0}
+                className="w-full"
+              >
+                {isResending ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Sending...
+                  </span>
+                ) : resendCooldown > 0 ? (
+                  `Resend in ${resendCooldown}s`
+                ) : (
+                  "Resend verification email"
+                )}
+              </Button>
+            ) : (
+              <div className="rounded-lg border border-border/60 bg-muted/50 p-4 text-left text-sm text-muted-foreground">
+                Need another password reset email? Return to the
+                <Link to="/access?page=forgot" className="ml-1 text-primary hover:underline">
+                  forgot password
+                </Link>
+                page to request a fresh link.
+              </div>
+            )}
             
             <p className="mt-6 text-sm text-muted-foreground">
               Wrong email?{" "}
@@ -786,6 +882,43 @@ export default function AccessPage() {
                 ? "Enter your credentials to access your dashboard"
                 : "Start validating emails with 50 free credits"}
             </p>
+
+            {isLogin && needsVerification && (
+              <div className="mb-6 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="mt-0.5 h-5 w-5 text-amber-600" />
+                  <div className="flex-1 text-left">
+                    <p className="font-medium text-foreground">Verify your email to continue</p>
+                    <p className="text-sm text-muted-foreground">
+                      {`We've sent a verification link to ${verificationEmail || emailSentTo || formData.email || "your email"}.`}
+                    </p>
+                    <div className="mt-3 flex flex-wrap items-center gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleResendVerification}
+                        disabled={isResending || resendCooldown > 0}
+                      >
+                        {isResending ? (
+                          <span className="flex items-center gap-2">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Sending...
+                          </span>
+                        ) : resendCooldown > 0 ? (
+                          `Resend in ${resendCooldown}s`
+                        ) : (
+                          "Resend verification email"
+                        )}
+                      </Button>
+                      <p className="text-xs text-muted-foreground">
+                        Need help? Contact support if you can't find the email.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <AnimatePresence mode="wait">

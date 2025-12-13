@@ -236,9 +236,20 @@ router.get('/verify-email',
       // Send welcome email
       sendWelcomeEmail(user.email, user.name);
 
+      const sessionToken = generateSessionToken(user._id);
+
       res.json({ 
         message: 'Email verified successfully',
-        redirectUrl: `${process.env.DASHBOARD_URL}`
+        redirectUrl: `${process.env.DASHBOARD_URL}`,
+        token: sessionToken,
+        user: {
+          id: user._id,
+          email: user.email,
+          name: user.name,
+          emailVerified: user.emailVerified,
+          credits: user.credits,
+          plan: user.plan
+        }
       });
     } catch (error) {
       next(error);
@@ -248,16 +259,13 @@ router.get('/verify-email',
 
 /**
  * POST /auth/resend-verification
- * Resend verification email (by email address, no auth required)
+ * Resend verification email (requires authenticated Firebase session)
  */
 router.post('/resend-verification',
-  [body('email').isEmail().normalizeEmail()],
-  validate,
+  verifyFirebaseToken,
   async (req, res, next) => {
     try {
-      const { email } = req.body;
-      
-      const user = await User.findOne({ email })
+      const user = await User.findOne({ firebaseUid: req.firebaseUid })
         .select('+emailVerificationToken +emailVerificationExpires');
 
       // Always return success to prevent email enumeration
