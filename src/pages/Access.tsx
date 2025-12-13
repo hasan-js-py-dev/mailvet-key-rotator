@@ -65,8 +65,12 @@ export default function AccessPage() {
   const verifyToken = searchParams.get("token");
   const sessionTokenKey = "mailvet_session";
 
-  // Determine actual page type - if we have a token on reset page, show reset form
-  const pageType: PageType = pageParam === "reset" && resetToken ? "reset" : pageParam as PageType;
+  // Normalize page type: treat both `reset` and legacy `reset-password` as the reset flow
+  const isResetPage = (pageParam === "reset" || pageParam === "reset-password") && !!resetToken;
+  const allowedPages: PageType[] = ["login", "signup", "forgot", "verify-email", "email-sent"];
+  const pageType: PageType = isResetPage
+    ? "reset"
+    : (allowedPages.includes(pageParam as PageType) ? (pageParam as PageType) : "login");
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
