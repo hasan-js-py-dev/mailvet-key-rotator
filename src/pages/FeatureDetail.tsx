@@ -36,9 +36,7 @@ const colorMap: Record<string, { bg: string; border: string; text: string; gradi
   cyan: { bg: "bg-cyan-500/10", border: "border-cyan-500/30", text: "text-cyan-400", gradient: "from-cyan-500/20 to-cyan-600/5" }
 };
 
-import React from "react";
-
-const FeatureDetail = React.forwardRef<HTMLDivElement>((_, ref) => {
+const FeatureDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const feature = features.find(f => f.slug === slug);
 
@@ -336,8 +334,6 @@ const FeatureDetail = React.forwardRef<HTMLDivElement>((_, ref) => {
       <Footer />
     </>
   );
-});
-
-FeatureDetail.displayName = "FeatureDetail";
+};
 
 export default FeatureDetail;
