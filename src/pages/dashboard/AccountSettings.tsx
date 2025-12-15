@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   User, 
@@ -10,13 +10,14 @@ import {
   Loader2,
   CheckCircle,
   AlertTriangle,
+  Key,
+  CreditCard,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/useUser";
 import {
@@ -41,12 +42,11 @@ export default function AccountSettings() {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
   const sessionTokenKey = "mailvet_session";
 
-  // Set name when user loads
-  useState(() => {
+  useEffect(() => {
     if (user?.name) {
       setName(user.name);
     }
-  });
+  }, [user]);
 
   const handleSaveProfile = async () => {
     const token = localStorage.getItem(sessionTokenKey);
@@ -102,14 +102,41 @@ export default function AccountSettings() {
     return email.slice(0, 2).toUpperCase();
   };
 
+  const sections = [
+    {
+      id: "profile",
+      icon: User,
+      title: "Profile",
+      description: "Manage your personal information",
+    },
+    {
+      id: "security",
+      icon: Shield,
+      title: "Security",
+      description: "Password and authentication settings",
+    },
+    {
+      id: "notifications",
+      icon: Bell,
+      title: "Notifications",
+      description: "Email notification preferences",
+    },
+    {
+      id: "billing",
+      icon: CreditCard,
+      title: "Billing",
+      description: "Manage your subscription",
+    },
+  ];
+
   return (
     <DashboardLayout>
-      <div className="max-w-4xl space-y-8">
-        {/* Header */}
+      <div className="space-y-8 max-w-3xl">
+        {/* Page Header */}
         <div>
-          <h1 className="font-display text-3xl font-bold">Account Settings</h1>
+          <h1 className="text-3xl font-bold text-foreground">Account Settings</h1>
           <p className="text-muted-foreground mt-1">
-            Manage your account preferences and security settings
+            Manage your account preferences and settings
           </p>
         </div>
 
@@ -117,84 +144,86 @@ export default function AccountSettings() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="bg-card rounded-xl border border-border overflow-hidden"
+          className="bg-card border border-border rounded-lg"
         >
-          <div className="p-6 border-b border-border">
+          <div className="p-5 border-b border-border">
             <div className="flex items-center gap-3">
-              <User className="w-5 h-5 text-primary" />
-              <h2 className="font-display text-xl font-semibold">Profile Information</h2>
+              <User className="w-5 h-5 text-foreground" />
+              <div>
+                <h2 className="font-semibold text-foreground">Profile Information</h2>
+                <p className="text-sm text-muted-foreground">Update your personal details</p>
+              </div>
             </div>
           </div>
           
-          <div className="p-6 space-y-6">
+          <div className="p-5 space-y-5">
             {/* Avatar */}
-            <div className="flex items-center gap-6">
-              <div className="w-20 h-20 rounded-full gradient-bg flex items-center justify-center text-primary-foreground text-2xl font-bold">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-foreground text-xl font-semibold">
                 {isUserLoading ? "..." : getInitials(user?.name || null, user?.email || "")}
               </div>
               <div>
-                <p className="font-medium text-lg">{user?.name || "No name set"}</p>
-                <p className="text-muted-foreground">{user?.email}</p>
+                <p className="font-medium text-foreground">{user?.name || "No name set"}</p>
+                <p className="text-sm text-muted-foreground">{user?.email}</p>
                 {user?.emailVerified ? (
-                  <span className="inline-flex items-center gap-1 text-sm text-green-500 mt-1">
-                    <CheckCircle className="w-3.5 h-3.5" />
+                  <span className="inline-flex items-center gap-1 text-xs text-green-600 mt-1">
+                    <CheckCircle className="w-3 h-3" />
                     Email verified
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 text-sm text-yellow-500 mt-1">
-                    <AlertTriangle className="w-3.5 h-3.5" />
+                  <span className="inline-flex items-center gap-1 text-xs text-amber-500 mt-1">
+                    <AlertTriangle className="w-3 h-3" />
                     Email not verified
                   </span>
                 )}
               </div>
             </div>
 
-            <Separator />
+            <div className="border-t border-border pt-5 space-y-4">
+              {/* Name Field */}
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-foreground">Full Name</Label>
+                <Input
+                  id="name"
+                  value={name || user?.name || ""}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your full name"
+                  className="max-w-md"
+                />
+              </div>
 
-            {/* Name Field */}
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                value={name || user?.name || ""}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your full name"
-                className="max-w-md"
-              />
+              {/* Email Field (Read-only) */}
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-foreground">Email Address</Label>
+                <Input
+                  id="email"
+                  value={user?.email || ""}
+                  disabled
+                  className="max-w-md bg-muted/50"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Email cannot be changed. Contact support for assistance.
+                </p>
+              </div>
+
+              <Button 
+                onClick={handleSaveProfile} 
+                disabled={isSaving}
+                size="sm"
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Changes
+                  </>
+                )}
+              </Button>
             </div>
-
-            {/* Email Field (Read-only) */}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                value={user?.email || ""}
-                disabled
-                className="max-w-md bg-muted/50"
-              />
-              <p className="text-sm text-muted-foreground">
-                Email cannot be changed. Contact support for assistance.
-              </p>
-            </div>
-
-            <Button 
-              onClick={handleSaveProfile} 
-              disabled={isSaving}
-              variant="gradient"
-            >
-              {isSaving ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Changes
-                </>
-              )}
-            </Button>
           </div>
         </motion.div>
 
@@ -202,41 +231,55 @@ export default function AccountSettings() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-          className="bg-card rounded-xl border border-border overflow-hidden"
+          transition={{ delay: 0.1 }}
+          className="bg-card border border-border rounded-lg"
         >
-          <div className="p-6 border-b border-border">
+          <div className="p-5 border-b border-border">
             <div className="flex items-center gap-3">
-              <Shield className="w-5 h-5 text-primary" />
-              <h2 className="font-display text-xl font-semibold">Security</h2>
+              <Shield className="w-5 h-5 text-foreground" />
+              <div>
+                <h2 className="font-semibold text-foreground">Security</h2>
+                <p className="text-sm text-muted-foreground">Manage your security settings</p>
+              </div>
             </div>
           </div>
           
-          <div className="p-6 space-y-6">
-            <div className="flex items-center justify-between">
+          <div className="p-5 space-y-4">
+            <div className="flex items-center justify-between py-2">
               <div>
-                <p className="font-medium">Password</p>
-                <p className="text-sm text-muted-foreground">
-                  Last changed: Unknown
-                </p>
+                <p className="font-medium text-foreground">Password</p>
+                <p className="text-sm text-muted-foreground">Last changed: Unknown</p>
               </div>
               <Button variant="outline" size="sm">
                 Change Password
               </Button>
             </div>
 
-            <Separator />
-
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Two-Factor Authentication</p>
-                <p className="text-sm text-muted-foreground">
-                  Add an extra layer of security to your account
-                </p>
+            <div className="border-t border-border pt-4">
+              <div className="flex items-center justify-between py-2">
+                <div>
+                  <p className="font-medium text-foreground">Two-Factor Authentication</p>
+                  <p className="text-sm text-muted-foreground">Add an extra layer of security</p>
+                </div>
+                <Button variant="outline" size="sm" disabled>
+                  Coming Soon
+                </Button>
               </div>
-              <Button variant="outline" size="sm" disabled>
-                Coming Soon
-              </Button>
+            </div>
+
+            <div className="border-t border-border pt-4">
+              <div className="flex items-center justify-between py-2">
+                <div>
+                  <p className="font-medium text-foreground">API Token</p>
+                  <p className="text-sm text-muted-foreground">Manage your API access</p>
+                </div>
+                <Button variant="outline" size="sm" asChild>
+                  <a href="/dashboard/api-token">
+                    <Key className="w-4 h-4 mr-2" />
+                    Manage
+                  </a>
+                </Button>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -245,23 +288,24 @@ export default function AccountSettings() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-          className="bg-card rounded-xl border border-border overflow-hidden"
+          transition={{ delay: 0.2 }}
+          className="bg-card border border-border rounded-lg"
         >
-          <div className="p-6 border-b border-border">
+          <div className="p-5 border-b border-border">
             <div className="flex items-center gap-3">
-              <Bell className="w-5 h-5 text-primary" />
-              <h2 className="font-display text-xl font-semibold">Notifications</h2>
+              <Bell className="w-5 h-5 text-foreground" />
+              <div>
+                <h2 className="font-semibold text-foreground">Notifications</h2>
+                <p className="text-sm text-muted-foreground">Configure email preferences</p>
+              </div>
             </div>
           </div>
           
-          <div className="p-6 space-y-6">
-            <div className="flex items-center justify-between">
+          <div className="p-5 space-y-4">
+            <div className="flex items-center justify-between py-2">
               <div>
-                <p className="font-medium">Email Notifications</p>
-                <p className="text-sm text-muted-foreground">
-                  Receive emails about your account activity
-                </p>
+                <p className="font-medium text-foreground">Email Notifications</p>
+                <p className="text-sm text-muted-foreground">Receive emails about your account activity</p>
               </div>
               <Switch
                 checked={emailNotifications}
@@ -269,19 +313,17 @@ export default function AccountSettings() {
               />
             </div>
 
-            <Separator />
-
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Marketing Emails</p>
-                <p className="text-sm text-muted-foreground">
-                  Receive tips, product updates and offers
-                </p>
+            <div className="border-t border-border pt-4">
+              <div className="flex items-center justify-between py-2">
+                <div>
+                  <p className="font-medium text-foreground">Marketing Emails</p>
+                  <p className="text-sm text-muted-foreground">Receive tips, product updates and offers</p>
+                </div>
+                <Switch
+                  checked={marketingEmails}
+                  onCheckedChange={setMarketingEmails}
+                />
               </div>
-              <Switch
-                checked={marketingEmails}
-                onCheckedChange={setMarketingEmails}
-              />
             </div>
           </div>
         </motion.div>
@@ -290,20 +332,23 @@ export default function AccountSettings() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.3 }}
-          className="bg-card rounded-xl border border-destructive/30 overflow-hidden"
+          transition={{ delay: 0.3 }}
+          className="bg-card border border-destructive/30 rounded-lg"
         >
-          <div className="p-6 border-b border-destructive/30">
+          <div className="p-5 border-b border-destructive/30">
             <div className="flex items-center gap-3">
               <Trash2 className="w-5 h-5 text-destructive" />
-              <h2 className="font-display text-xl font-semibold text-destructive">Danger Zone</h2>
+              <div>
+                <h2 className="font-semibold text-destructive">Danger Zone</h2>
+                <p className="text-sm text-muted-foreground">Irreversible actions</p>
+              </div>
             </div>
           </div>
           
-          <div className="p-6">
+          <div className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium">Delete Account</p>
+                <p className="font-medium text-foreground">Delete Account</p>
                 <p className="text-sm text-muted-foreground">
                   Permanently delete your account and all associated data
                 </p>
@@ -336,6 +381,13 @@ export default function AccountSettings() {
             </div>
           </div>
         </motion.div>
+
+        {/* Footer */}
+        <div className="text-center pt-8 border-t border-border">
+          <p className="text-sm text-muted-foreground">
+            © {new Date().getFullYear()} MailVet. All rights reserved.
+          </p>
+        </div>
       </div>
     </DashboardLayout>
   );

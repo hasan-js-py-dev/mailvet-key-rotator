@@ -1,84 +1,88 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
+import { Mail, Folder, Upload, Zap, ChevronRight, Shield, Lock } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
 const plans = [
   {
-    name: "Starter",
-    price: "$9.99",
+    name: "Free Plan",
+    badge: "Basic",
+    price: "$0",
+    priceAnnual: "$0",
+    tagline: "Always Free",
     current: true,
     features: [
-      "100 free credits included",
-      "1 email/second rate limit",
-      "Single email validation",
-      "API access",
-      "Email support",
+      {
+        icon: Mail,
+        title: "Unlimited Verification Credits",
+        description: "Validate unlimited emails, no credit limits.",
+      },
+      {
+        icon: Folder,
+        title: "Basic Recent Lists Storage",
+        description: "Store up to 4 recent lists.",
+      },
+      {
+        icon: Upload,
+        title: "Upload 1,000 Emails per List",
+        description: "Upload up to 1,000 emails per list.",
+      },
+      {
+        icon: Zap,
+        title: "Standard Verification Queue",
+        description: "Standard processing speed for verifications.",
+      },
     ],
   },
   {
-    name: "Pro",
-    price: "$19.99",
+    name: "Pro Plan",
+    badge: "Upgrade",
+    price: "$29.99",
+    priceAnnual: "$24.99",
+    tagline: "Save 16.7% with annual billing",
     current: false,
     popular: true,
     features: [
-      "Everything in Starter",
-      "3 emails/second rate limit",
-      "CSV bulk upload",
-      "Priority support",
-      "Detailed analytics",
-      "Webhook notifications",
-    ],
-  },
-  {
-    name: "Ultimate",
-    price: "$29.99",
-    current: false,
-    features: [
-      "Everything in Pro",
-      "10 emails/second rate limit",
-      "Dedicated support",
-      "Custom integrations",
-      "SLA guarantee",
-      "White-label options",
+      {
+        icon: Mail,
+        title: "Unlimited Verification Credits",
+        description: "Validate unlimited emails, no credit limits.",
+      },
+      {
+        icon: Folder,
+        title: "Unlimited Recent Lists Storage",
+        description: "Store unlimited lists in your recent lists.",
+      },
+      {
+        icon: Upload,
+        title: "Upload 10,000 Emails per List",
+        description: "Increase upload up to 10,000 emails per list.",
+      },
+      {
+        icon: Zap,
+        title: "Faster Verification Queue",
+        description: "Priority processing speed for verifications.",
+      },
     ],
   },
 ];
 
 export default function PlanManagement() {
+  const [isAnnual, setIsAnnual] = useState(false);
+
   return (
     <DashboardLayout>
       <div className="space-y-8">
+        {/* Page Header */}
         <div>
-          <h1 className="font-display text-3xl font-bold mb-2">Plan & Billing</h1>
-          <p className="text-muted-foreground">
-            Manage your subscription and view billing details.
-          </p>
+          <h1 className="text-3xl font-bold text-foreground">Upgrade</h1>
         </div>
 
-        {/* Current Plan */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-card rounded-xl border border-border p-6"
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Current Plan</p>
-              <p className="font-display text-2xl font-bold">
-                Starter <span className="text-muted-foreground font-normal text-lg">$9.99/mo</span>
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm text-muted-foreground mb-1">Next billing date</p>
-              <p className="font-medium">January 15, 2025</p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Plan Options */}
-        <div className="grid md:grid-cols-3 gap-6">
+        {/* Plan Cards */}
+        <div className="grid md:grid-cols-2 gap-6 max-w-4xl">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
@@ -86,88 +90,122 @@ export default function PlanManagement() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               className={cn(
-                "relative rounded-xl border p-6",
-                plan.popular
-                  ? "gradient-border bg-card"
-                  : plan.current
-                  ? "border-primary/50 bg-primary/5"
-                  : "border-border bg-card"
+                "bg-card border rounded-lg p-6",
+                plan.popular ? "border-border" : "border-border"
               )}
             >
-              {plan.popular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 gradient-bg text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">
-                  Most Popular
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-foreground">{plan.name}</h2>
+                <span className={cn(
+                  "px-3 py-1 rounded-full text-xs font-medium border",
+                  plan.current 
+                    ? "bg-muted text-foreground border-border" 
+                    : "bg-card text-foreground border-border"
+                )}>
+                  {plan.badge}
                 </span>
-              )}
-              {plan.current && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">
-                  Current Plan
-                </span>
-              )}
-
-              <div className="mb-6 pt-2">
-                <h3 className="font-display text-xl font-bold">{plan.name}</h3>
-                <div className="flex items-baseline gap-1 mt-2">
-                  <span className="font-display text-3xl font-bold">{plan.price}</span>
-                  <span className="text-muted-foreground">/month</span>
-                </div>
               </div>
 
-              <ul className="space-y-3 mb-6">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-3 text-sm">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
+              {/* Billing Toggle for Pro */}
+              {plan.popular && (
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <span className={cn("text-sm", !isAnnual ? "text-foreground" : "text-muted-foreground")}>
+                    Monthly
+                  </span>
+                  <Switch
+                    checked={isAnnual}
+                    onCheckedChange={setIsAnnual}
+                  />
+                  <span className={cn("text-sm", isAnnual ? "text-foreground" : "text-muted-foreground")}>
+                    Annual
+                  </span>
+                </div>
+              )}
 
+              {/* Price */}
+              <div className="text-center mb-2">
+                <span className="text-4xl font-bold text-foreground">
+                  {plan.popular && isAnnual ? plan.priceAnnual : plan.price}
+                </span>
+                <span className="text-muted-foreground">/month</span>
+              </div>
+
+              {/* Tagline */}
+              <p className={cn(
+                "text-center text-sm mb-6",
+                plan.popular && isAnnual ? "text-amber-600" : "text-muted-foreground"
+              )}>
+                {plan.popular && isAnnual 
+                  ? "Save 16.7% with annual billing" 
+                  : plan.tagline}
+              </p>
+
+              {/* CTA Button */}
               <Button
-                variant={plan.current ? "outline" : plan.popular ? "cta" : "gradient-outline"}
-                className="w-full"
+                className={cn(
+                  "w-full mb-6",
+                  plan.current 
+                    ? "bg-muted text-muted-foreground hover:bg-muted cursor-default" 
+                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                )}
                 disabled={plan.current}
               >
-                {plan.current ? "Current Plan" : "Upgrade"}
+                {plan.current ? (
+                  "Free Plan"
+                ) : (
+                  <span className="flex items-center gap-2">
+                    Upgrade to Pro
+                    <ChevronRight className="w-4 h-4" />
+                  </span>
+                )}
               </Button>
+
+              {/* Divider */}
+              <div className="border-t border-border mb-6" />
+
+              {/* Features */}
+              <div className="space-y-4">
+                {plan.features.map((feature, featureIndex) => (
+                  <div key={featureIndex} className="flex items-start gap-3">
+                    <feature.icon className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-foreground text-sm">{feature.title}</p>
+                      <p className="text-sm text-muted-foreground">{feature.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Security Badge for Pro */}
+              {plan.popular && (
+                <div className="mt-6 pt-4 border-t border-border">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Lock className="w-4 h-4" />
+                    <span>Guaranteed safe and secure checkout. Powered by Stripe.</span>
+                  </div>
+                </div>
+              )}
             </motion.div>
           ))}
         </div>
 
-        {/* Billing History */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-card rounded-xl border border-border"
-        >
-          <div className="p-6 border-b border-border">
-            <h2 className="font-display text-xl font-semibold">Billing History</h2>
-          </div>
-          <div className="divide-y divide-border">
-            {[
-              { date: "Dec 15, 2024", amount: "$9.99", status: "Paid" },
-              { date: "Nov 15, 2024", amount: "$9.99", status: "Paid" },
-              { date: "Oct 15, 2024", amount: "$9.99", status: "Paid" },
-            ].map((invoice, index) => (
-              <div
-                key={index}
-                className="px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors"
-              >
-                <div>
-                  <p className="font-medium">{invoice.date}</p>
-                  <p className="text-sm text-muted-foreground">Starter Plan - Monthly</p>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-green-500 text-sm font-medium">{invoice.status}</span>
-                  <span className="font-medium">{invoice.amount}</span>
-                  <Button variant="ghost" size="sm">
-                    Download
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
+        {/* Contact */}
+        <div className="text-center pt-4">
+          <p className="text-sm text-muted-foreground">
+            Questions? Contact our team at{" "}
+            <a href="mailto:support@mailvet.app" className="text-primary hover:underline">
+              support@mailvet.app
+            </a>
+          </p>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center pt-8 border-t border-border">
+          <p className="text-sm text-muted-foreground">
+            © {new Date().getFullYear()} MailVet. All rights reserved.
+          </p>
+        </div>
       </div>
     </DashboardLayout>
   );
