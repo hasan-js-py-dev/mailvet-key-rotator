@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import PageTransition from "./PageTransition";
 import FloatingParticles from "./FloatingParticles";
@@ -20,14 +20,11 @@ import Terms from "@/pages/Terms";
 import NotFound from "@/pages/NotFound";
 
 // Dashboard pages
-import DashboardOverview from "@/pages/dashboard/Overview";
-import VerifyEmail from "@/pages/dashboard/VerifyEmail";
-import VerifyList from "@/pages/dashboard/VerifyList";
-import Reports from "@/pages/dashboard/Reports";
+import Lists from "@/pages/dashboard/Lists";
+import SingleEmail from "@/pages/dashboard/SingleEmail";
+import ApiDocs from "@/pages/dashboard/ApiDocs";
+import Settings from "@/pages/dashboard/Settings";
 import Plan from "@/pages/dashboard/Plan";
-import ApiToken from "@/pages/dashboard/ApiToken";
-import AccountSettings from "@/pages/dashboard/AccountSettings";
-import CatchAll from "@/pages/dashboard/CatchAll";
 
 interface AnimatedRoutesProps {
   type: "main" | "dashboard" | "development";
@@ -67,14 +64,12 @@ const DashboardRoutesComponent = ({ basePath = "" }: { basePath?: string }) => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path={`${basePath}/`} element={<ProtectedRoute><PageTransition><DashboardOverview /></PageTransition></ProtectedRoute>} />
-        <Route path={`${basePath}/verify-email`} element={<ProtectedRoute><PageTransition><VerifyEmail /></PageTransition></ProtectedRoute>} />
-        <Route path={`${basePath}/verify-list`} element={<ProtectedRoute><PageTransition><VerifyList /></PageTransition></ProtectedRoute>} />
-        <Route path={`${basePath}/reports`} element={<ProtectedRoute><PageTransition><Reports /></PageTransition></ProtectedRoute>} />
+        <Route path={`${basePath}/`} element={<ProtectedRoute><Navigate to={`${basePath}/lists`} replace /></ProtectedRoute>} />
+        <Route path={`${basePath}/lists`} element={<ProtectedRoute><PageTransition><Lists /></PageTransition></ProtectedRoute>} />
+        <Route path={`${basePath}/verify-email`} element={<ProtectedRoute><PageTransition><SingleEmail /></PageTransition></ProtectedRoute>} />
+        <Route path={`${basePath}/api`} element={<ProtectedRoute><PageTransition><ApiDocs /></PageTransition></ProtectedRoute>} />
+        <Route path={`${basePath}/settings`} element={<ProtectedRoute><PageTransition><Settings /></PageTransition></ProtectedRoute>} />
         <Route path={`${basePath}/plan`} element={<ProtectedRoute><PageTransition><Plan /></PageTransition></ProtectedRoute>} />
-        <Route path={`${basePath}/api-token`} element={<ProtectedRoute><PageTransition><ApiToken /></PageTransition></ProtectedRoute>} />
-        <Route path={`${basePath}/account-settings`} element={<ProtectedRoute><PageTransition><AccountSettings /></PageTransition></ProtectedRoute>} />
-        <Route path={`${basePath}/catch-all`} element={<ProtectedRoute><PageTransition><CatchAll /></PageTransition></ProtectedRoute>} />
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>
@@ -105,14 +100,12 @@ const DevelopmentRoutesComponent = () => {
           <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
           
           {/* Dashboard routes */}
-          <Route path="/dashboard" element={<ProtectedRoute><PageTransition><DashboardOverview /></PageTransition></ProtectedRoute>} />
-          <Route path="/dashboard/verify-email" element={<ProtectedRoute><PageTransition><VerifyEmail /></PageTransition></ProtectedRoute>} />
-          <Route path="/dashboard/verify-list" element={<ProtectedRoute><PageTransition><VerifyList /></PageTransition></ProtectedRoute>} />
-          <Route path="/dashboard/reports" element={<ProtectedRoute><PageTransition><Reports /></PageTransition></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Navigate to="/dashboard/lists" replace /></ProtectedRoute>} />
+          <Route path="/dashboard/lists" element={<ProtectedRoute><PageTransition><Lists /></PageTransition></ProtectedRoute>} />
+          <Route path="/dashboard/verify-email" element={<ProtectedRoute><PageTransition><SingleEmail /></PageTransition></ProtectedRoute>} />
+          <Route path="/dashboard/api" element={<ProtectedRoute><PageTransition><ApiDocs /></PageTransition></ProtectedRoute>} />
+          <Route path="/dashboard/settings" element={<ProtectedRoute><PageTransition><Settings /></PageTransition></ProtectedRoute>} />
           <Route path="/dashboard/plan" element={<ProtectedRoute><PageTransition><Plan /></PageTransition></ProtectedRoute>} />
-          <Route path="/dashboard/api-token" element={<ProtectedRoute><PageTransition><ApiToken /></PageTransition></ProtectedRoute>} />
-          <Route path="/dashboard/account-settings" element={<ProtectedRoute><PageTransition><AccountSettings /></PageTransition></ProtectedRoute>} />
-          <Route path="/dashboard/catch-all" element={<ProtectedRoute><PageTransition><CatchAll /></PageTransition></ProtectedRoute>} />
           
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
