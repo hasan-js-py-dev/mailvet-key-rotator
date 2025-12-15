@@ -31,6 +31,9 @@ const mainNavItems = [
   { icon: Code, label: "API", path: "/dashboard/api" },
 ];
 
+// Additional paths to check for active state
+const listsPaths = ["/dashboard/lists", "/dashboard/verify-list"];
+
 interface TopNavLayoutProps {
   children: React.ReactNode;
 }
@@ -95,7 +98,7 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
             <nav className="hidden md:flex items-center gap-1">
               {mainNavItems.map((item) => {
                 const isActive = location.pathname === item.path || 
-                  (item.path === "/dashboard/lists" && location.pathname === "/dashboard/verify-list");
+                  (item.path === "/dashboard/lists" && listsPaths.includes(location.pathname));
                 return (
                   <Link
                     key={item.path}
