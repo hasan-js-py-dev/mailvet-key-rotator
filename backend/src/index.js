@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 
 const authRoutes = require('./routes/auth.routes');
 const accountRoutes = require('./routes/account.routes');
@@ -15,12 +16,36 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
+// Allowed origins for CORS
+const allowedOrigins = [
+  'https://www.mailvet.app',
+  'https://mailvet.app',
+  'https://dashboard.mailvet.app',
+  process.env.FRONTEND_URL,
+  process.env.DASHBOARD_URL,
+  // Development
+  'http://localhost:5173',
+  'http://localhost:3000',
+].filter(Boolean);
+
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: [process.env.FRONTEND_URL, process.env.DASHBOARD_URL],
-  credentials: true
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Required for cookies
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
 }));
+app.use(cookieParser()); // Parse cookies for refresh token
 app.use(express.json());
 
 // Health check
