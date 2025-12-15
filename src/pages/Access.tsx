@@ -1113,7 +1113,7 @@ export default function AccessPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-[hsl(270,100%,2%)]">
       {/* Left side - Form */}
       <div className="flex-1 flex flex-col justify-center px-8 lg:px-16 xl:px-24">
         <div className="max-w-md w-full mx-auto">
@@ -1121,42 +1121,44 @@ export default function AccessPage() {
             <Logo size="lg" />
           </Link>
 
-          {renderForm()}
+          <div className="[&_h1]:text-white [&_p]:text-[hsl(270,20%,65%)] [&_label]:text-[hsl(270,20%,75%)] [&_.text-muted-foreground]:text-[hsl(270,20%,60%)] [&_.text-foreground]:text-white [&_input]:bg-[hsl(270,50%,8%)] [&_input]:border-[hsl(270,50%,20%)] [&_input]:text-white [&_input]:placeholder:text-[hsl(270,20%,40%)] [&_button[variant='outline']]:border-[hsl(270,50%,20%)] [&_button[variant='outline']]:text-white [&_button[variant='outline']]:bg-transparent [&_.border-border]:border-[hsl(270,50%,15%)] [&_.bg-background]:bg-[hsl(270,100%,2%)] [&_.text-primary]:text-[hsl(267,100%,65%)] [&_a.text-primary]:text-[hsl(267,100%,65%)]">
+            {renderForm()}
+          </div>
         </div>
       </div>
 
       {/* Right side - Gradient visual */}
-      <div className="hidden lg:flex flex-1 gradient-bg relative overflow-hidden">
-        <div className="absolute inset-0 bg-dark/20" />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-foreground/10 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-primary-foreground/5 rounded-full blur-[80px]" />
+      <div className="hidden lg:flex flex-1 relative overflow-hidden bg-gradient-to-br from-[hsl(267,100%,15%)] via-[hsl(270,80%,10%)] to-[hsl(270,100%,5%)]">
+        <div className="absolute inset-0 bg-[hsl(270,100%,2%)]/20" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[hsl(267,100%,50%)]/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-[hsl(267,100%,60%)]/5 rounded-full blur-[80px]" />
         
-        <div className="relative z-10 flex flex-col justify-center items-center p-16 text-primary-foreground">
+        <div className="relative z-10 flex flex-col justify-center items-center p-16 text-white">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-center"
           >
-            <h2 className="font-display text-4xl font-bold mb-4">
+            <h2 className="font-display text-4xl font-bold mb-4 text-white">
               Start Validating<br />Emails Today
             </h2>
-            <p className="text-xl text-primary-foreground/80 max-w-md">
+            <p className="text-xl text-[hsl(270,20%,70%)] max-w-md">
               Join thousands of businesses using MailVet to improve their email deliverability and sender reputation.
             </p>
 
             <div className="mt-12 grid grid-cols-3 gap-8">
               <div className="text-center">
-                <div className="text-4xl font-bold">99.9%</div>
-                <div className="text-sm text-primary-foreground/70">Accuracy</div>
+                <div className="text-4xl font-bold text-white">99.9%</div>
+                <div className="text-sm text-[hsl(270,20%,60%)]">Accuracy</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold">10M+</div>
-                <div className="text-sm text-primary-foreground/70">Emails Verified</div>
+                <div className="text-4xl font-bold text-white">10M+</div>
+                <div className="text-sm text-[hsl(270,20%,60%)]">Emails Verified</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold">5K+</div>
-                <div className="text-sm text-primary-foreground/70">Happy Users</div>
+                <div className="text-4xl font-bold text-white">5K+</div>
+                <div className="text-sm text-[hsl(270,20%,60%)]">Happy Users</div>
               </div>
             </div>
           </motion.div>

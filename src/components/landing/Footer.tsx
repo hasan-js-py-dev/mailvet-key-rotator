@@ -34,7 +34,7 @@ export const Footer = () => {
       <div className="container mx-auto px-6 relative z-10">
         {/* CTA Section */}
         <div className="py-16 border-b border-[hsl(270,50%,15%)]">
-          <div className="relative max-w-4xl mx-auto rounded-3xl overflow-hidden border border-[hsl(270,50%,20%)]">
+          <div className="relative max-w-4xl mx-auto rounded-3xl overflow-hidden border border-[hsl(270,50%,25%)] shadow-[0_0_60px_-12px_hsl(267,100%,50%,0.4),0_0_30px_-6px_hsl(267,100%,60%,0.3)]">
             {/* Dotted grid background */}
             <div 
               className="absolute inset-0 bg-gradient-to-br from-[#0d0628] via-[#120a3d] to-[#0a0520]"
@@ -43,6 +43,9 @@ export const Footer = () => {
                 backgroundSize: '24px 24px',
               }}
             />
+            
+            {/* Subtle glow overlay at edges */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[hsl(267,100%,60%,0.05)] via-transparent to-[hsl(267,100%,60%,0.05)]" />
             
             {/* Content */}
             <div className="relative z-10 py-16 px-8 text-center">
@@ -55,7 +58,7 @@ export const Footer = () => {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link to="/access?page=signup">
                   <Button size="lg" className="marketing-cta text-white font-semibold px-8 rounded-full">
-                    <span className="relative z-10">Get Started Free</span>
+                    <span className="relative z-10">100 Free Credits</span>
                   </Button>
                 </Link>
                 <a href="#pricing">
