@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,51 +6,29 @@
 
 @layer base {
   :root {
-    /* Dashboard: Clean white SaaS theme - Professional light mode */
+    /* Dashboard: Clean white SaaS theme */
     --background: 0 0% 98%;
     --foreground: 220 13% 18%;
-
     --card: 0 0% 100%;
     --card-foreground: 220 13% 18%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 220 13% 18%;
-
     --primary: 220 13% 18%;
     --primary-foreground: 0 0% 100%;
-
     --secondary: 220 14% 96%;
     --secondary-foreground: 220 13% 18%;
-
     --muted: 220 14% 96%;
     --muted-foreground: 220 9% 46%;
-
     --accent: 220 14% 96%;
     --accent-foreground: 220 13% 18%;
-
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-
     --border: 220 13% 91%;
     --input: 220 13% 91%;
     --ring: 220 13% 18%;
-
     --radius: 0.5rem;
 
-    /* Text color tokens */
-    --text-primary: 220 13% 18%;
-    --text-secondary: 220 9% 46%;
-    --text-muted: 220 9% 56%;
-    --text-disabled: 220 9% 70%;
-
-    /* Brand colors */
-    --brand-primary: 220 13% 18%;
-    --brand-accent: 45 93% 47%;
-    --success: 142 76% 36%;
-    --warning: 45 93% 47%;
-    --info: 200 100% 50%;
-
-    /* Dashboard specific */
+    /* Sidebar */
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 220 13% 18%;
     --sidebar-primary: 220 13% 18%;
@@ -60,24 +38,33 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 220 13% 18%;
 
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1);
-
-    /* Marketing/Landing page specific colors */
-    --landing-bg: 248 15% 4%;
+    /* VectorShift Marketing Theme */
+    --landing-bg: 270 100% 2%;
     --landing-foreground: 0 0% 98%;
-    --landing-muted: 248 10% 65%;
-    --landing-primary: 270 100% 65%;
-    --landing-primary-hover: 270 100% 70%;
-    --landing-accent: 195 100% 50%;
-    --landing-card: 248 15% 8%;
-    --landing-border: 248 10% 18%;
+    --landing-muted: 270 20% 70%;
+    --landing-card: 270 50% 6%;
+    --landing-border: 270 50% 15%;
     
-    /* Purple glow gradient for marketing */
-    --glow-purple: 270 100% 60%;
-    --glow-blue: 220 100% 60%;
+    /* VectorShift Violet (#2E00B3 → #6107CE → #9E35FD) */
+    --glow-violet: 264 100% 35%;
+    --glow-violet-mid: 269 100% 53%;
+    --glow-violet-end: 270 100% 60%;
+    
+    /* VectorShift Electric Blue (#012EE6 → #0070F3 → #00A2FF) */
+    --glow-blue: 222 99% 45%;
+    --glow-blue-mid: 207 100% 48%;
+    --glow-blue-end: 195 100% 50%;
+    
+    /* Gradient text (#B5A7FF → #A0BCFF) */
+    --gradient-text-start: 270 60% 82%;
+    --gradient-text-end: 217 60% 81%;
+    
+    /* Accent colors */
+    --cyan: 195 100% 50%;
+    --violet: 270 100% 60%;
+    --blue: 212 93% 52%;
+    --emerald: 152 76% 45%;
+    --amber: 45 93% 58%;
   }
 }
 
@@ -85,269 +72,73 @@
   * {
     @apply border-border;
   }
-
   html {
     scroll-behavior: smooth;
   }
-
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.6;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-  }
-
-  h1 {
-    font-size: 48px;
-    line-height: 1.1;
-  }
-
-  @media (min-width: 768px) {
-    h1 {
-      font-size: 48px;
-    }
-  }
-
-  h2 {
-    @apply text-3xl md:text-4xl;
-  }
-
-  h3 {
-    @apply text-xl md:text-2xl;
-  }
-
-  h4 {
-    @apply text-lg md:text-xl;
-  }
-
-  p {
-    @apply text-base md:text-lg;
-    line-height: 1.7;
-  }
-
-  /* Marketing/Landing pages dark theme */
-  .marketing-theme {
-    --background: var(--landing-bg);
-    --foreground: var(--landing-foreground);
-    --card: var(--landing-card);
-    --card-foreground: var(--landing-foreground);
-    --popover: var(--landing-card);
-    --popover-foreground: var(--landing-foreground);
-    --primary: var(--landing-primary);
-    --primary-foreground: 0 0% 100%;
-    --muted: 248 10% 14%;
-    --muted-foreground: var(--landing-muted);
-    --accent: var(--landing-accent);
-    --accent-foreground: 0 0% 0%;
-    --border: var(--landing-border);
-    --input: var(--landing-border);
-    --ring: var(--landing-primary);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 }
 
 @layer components {
-  /* Purple glow orb effect for marketing pages */
+  /* VectorShift Glow Orbs */
   .glow-orb {
     position: absolute;
     border-radius: 50%;
-    filter: blur(100px);
-    opacity: 0.6;
+    filter: blur(120px);
     pointer-events: none;
   }
-
-  .glow-orb-purple {
-    background: radial-gradient(circle, hsl(var(--glow-purple) / 0.5) 0%, transparent 70%);
+  .glow-orb-violet {
+    background: radial-gradient(circle, hsl(264 100% 35%) 0%, hsl(269 100% 53%) 40%, hsl(270 100% 60% / 0.3) 70%, transparent 100%);
   }
-
   .glow-orb-blue {
-    background: radial-gradient(circle, hsl(var(--glow-blue) / 0.4) 0%, transparent 70%);
+    background: radial-gradient(circle, hsl(222 99% 45%) 0%, hsl(207 100% 48%) 40%, hsl(195 100% 50% / 0.3) 70%, transparent 100%);
   }
 
-  /* Marketing gradient text */
+  /* Gradient text - lavender to pale blue */
   .marketing-gradient-text {
-    background: linear-gradient(135deg, hsl(270 100% 70%) 0%, hsl(220 100% 70%) 50%, hsl(195 100% 60%) 100%);
+    background: linear-gradient(135deg, hsl(270 60% 82%) 0%, hsl(217 60% 81%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .gradient-text {
+    background: linear-gradient(135deg, hsl(269 100% 53%) 0%, hsl(207 100% 48%) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* Marketing CTA button */
+  /* Marketing CTA - purple to blue pill */
   .marketing-cta {
-    @apply relative overflow-hidden;
-    background: linear-gradient(135deg, hsl(270 100% 60%) 0%, hsl(240 80% 55%) 100%);
+    @apply relative overflow-hidden rounded-full;
+    background: linear-gradient(135deg, hsl(267 100% 60%) 0%, hsl(212 93% 52%) 100%);
+    box-shadow: 0 0 30px -5px hsl(269 100% 53% / 0.5), 0 10px 40px -10px hsl(207 100% 48% / 0.4);
     transition: all 0.3s ease;
   }
-
   .marketing-cta:hover {
+    box-shadow: 0 0 40px -5px hsl(269 100% 53% / 0.7), 0 15px 50px -10px hsl(207 100% 48% / 0.6);
     transform: translateY(-2px);
-    box-shadow: 0 10px 40px hsl(270 100% 50% / 0.4);
   }
 
-  .marketing-cta::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, hsl(270 100% 65%) 0%, hsl(240 80% 60%) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .marketing-cta:hover::before {
-    opacity: 1;
-  }
-
-  /* Marketing card with subtle border glow */
+  /* Marketing card - dark purple panel */
   .marketing-card {
-    background: hsl(var(--landing-card));
-    border: 1px solid hsl(var(--landing-border) / 0.5);
+    background: linear-gradient(180deg, hsl(260 100% 10%) 0%, hsl(270 60% 15%) 100%);
+    border: 1px solid hsl(270 50% 20%);
     border-radius: 16px;
-    position: relative;
+  }
+  .marketing-card:hover {
+    border-color: hsl(269 100% 53% / 0.4);
   }
 
-  .marketing-card::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(135deg, hsl(270 100% 50% / 0.3) 0%, transparent 50%, hsl(220 100% 50% / 0.2) 100%);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-
-  /* Glass effect for marketing */
-  .marketing-glass {
-    background: hsl(var(--landing-card) / 0.8);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid hsl(var(--landing-border) / 0.3);
-  }
-
-  .text-nav {
-    @apply text-sm font-medium tracking-wide;
-  }
-
-  .text-body {
-    @apply text-base leading-relaxed;
-  }
-
-  .text-body-lg {
-    @apply text-lg md:text-xl leading-relaxed;
-  }
-
-  .text-caption {
-    @apply text-sm text-muted-foreground;
+  /* Dot pattern - white at 5% */
+  .dot-pattern {
+    background-image: radial-gradient(circle at center, hsl(0 0% 100% / 0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
   }
 
   .text-overline {
-    @apply text-xs uppercase tracking-widest font-semibold;
-  }
-
-  /* Dashboard card styles */
-  .dashboard-card {
-    @apply bg-card border border-border rounded-lg;
-  }
-
-  /* Active nav item for dashboard */
-  .nav-active {
-    @apply bg-primary text-primary-foreground;
-  }
-}
-
-@layer utilities {
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-20px);
-    }
-  }
-
-  @keyframes glow-pulse {
-    0%, 100% {
-      opacity: 0.4;
-      transform: scale(1);
-    }
-    50% {
-      opacity: 0.7;
-      transform: scale(1.05);
-    }
-  }
-
-  @keyframes logo-glow {
-    0%, 100% {
-      filter: drop-shadow(0 0 8px hsl(180, 100%, 50%, 0.4));
-    }
-    50% {
-      filter: drop-shadow(0 0 20px hsl(180, 100%, 50%, 0.7));
-    }
-  }
-
-  @keyframes gradient-shift {
-    0%, 100% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-  }
-
-  @keyframes fade-in-up {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-
-  .animate-glow-pulse {
-    animation: glow-pulse 3s ease-in-out infinite;
-  }
-
-  .animate-gradient {
-    background-size: 200% 200%;
-    animation: gradient-shift 8s ease infinite;
-  }
-
-  .animate-fade-in-up {
-    animation: fade-in-up 0.6s ease-out forwards;
-  }
-
-  .animation-delay-100 {
-    animation-delay: 100ms;
-  }
-
-  .animation-delay-200 {
-    animation-delay: 200ms;
-  }
-
-  .animation-delay-300 {
-    animation-delay: 300ms;
-  }
-
-  .animation-delay-400 {
-    animation-delay: 400ms;
-  }
-
-  .animation-delay-500 {
-    animation-delay: 500ms;
+    @apply text-xs uppercase tracking-[0.2em] font-semibold;
   }
 }

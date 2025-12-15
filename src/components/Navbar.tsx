@@ -15,7 +15,7 @@ export const Navbar = () => {
   const isHome = location.pathname === "/";
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-[hsl(248,15%,4%)]/80 backdrop-blur-xl">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-[hsl(270,50%,15%)/0.5] bg-[hsl(270,100%,2%)/0.85] backdrop-blur-2xl">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16 md:h-20">
           <Link to="/" className="relative z-10">
@@ -23,19 +23,18 @@ export const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-2">
-            {/* Pricing - anchor on home, link on other pages */}
+          <div className="hidden md:flex items-center gap-1">
             {isHome ? (
               <a
                 href="#pricing"
-                className="text-[15px] font-medium text-white/80 hover:text-white px-4 py-2 transition-colors duration-200"
+                className="text-[15px] font-medium text-[hsl(270,20%,75%)] hover:text-white px-4 py-2 transition-colors duration-200"
               >
                 Pricing
               </a>
             ) : (
               <Link
                 to="/#pricing"
-                className="text-[15px] font-medium text-white/80 hover:text-white px-4 py-2 transition-colors duration-200"
+                className="text-[15px] font-medium text-[hsl(270,20%,75%)] hover:text-white px-4 py-2 transition-colors duration-200"
               >
                 Pricing
               </Link>
@@ -49,7 +48,7 @@ export const Navbar = () => {
             >
               <Link
                 to="/features"
-                className="flex items-center gap-1 text-[15px] font-medium text-white/80 hover:text-white px-4 py-2 transition-colors duration-200"
+                className="flex items-center gap-1 text-[15px] font-medium text-[hsl(270,20%,75%)] hover:text-white px-4 py-2 transition-colors duration-200"
               >
                 Features
                 <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${featuresOpen ? 'rotate-180' : ''}`} />
@@ -62,15 +61,15 @@ export const Navbar = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-[hsl(248,15%,10%)] border border-white/10 rounded-xl shadow-2xl z-50"
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-[hsl(270,50%,6%)] border border-[hsl(270,50%,15%)] rounded-xl shadow-2xl z-50"
                   >
                     <div className="absolute -top-2 left-0 right-0 h-2" />
                     <FeaturesMenu onItemClick={() => setFeaturesOpen(false)} />
-                    <div className="px-4 py-3 border-t border-white/10">
+                    <div className="px-4 py-3 border-t border-[hsl(270,50%,15%)]">
                       <Link 
                         to="/features" 
                         onClick={() => setFeaturesOpen(false)}
-                        className="text-sm text-[hsl(270,100%,70%)] hover:text-[hsl(270,100%,80%)] font-medium"
+                        className="text-sm text-[hsl(267,100%,60%)] hover:text-[hsl(267,100%,70%)] font-medium"
                       >
                         View all features →
                       </Link>
@@ -88,7 +87,7 @@ export const Navbar = () => {
             >
               <Link
                 to="/use-cases"
-                className="flex items-center gap-1 text-[15px] font-medium text-white/80 hover:text-white px-4 py-2 transition-colors duration-200"
+                className="flex items-center gap-1 text-[15px] font-medium text-[hsl(270,20%,75%)] hover:text-white px-4 py-2 transition-colors duration-200"
               >
                 Use Cases
                 <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${useCasesOpen ? 'rotate-180' : ''}`} />
@@ -101,15 +100,15 @@ export const Navbar = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-[hsl(248,15%,10%)] border border-white/10 rounded-xl shadow-2xl z-50"
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-[hsl(270,50%,6%)] border border-[hsl(270,50%,15%)] rounded-xl shadow-2xl z-50"
                   >
                     <div className="absolute -top-2 left-0 right-0 h-2" />
                     <UseCasesMenu onItemClick={() => setUseCasesOpen(false)} />
-                    <div className="px-4 py-3 border-t border-white/10">
+                    <div className="px-4 py-3 border-t border-[hsl(270,50%,15%)]">
                       <Link 
                         to="/use-cases" 
                         onClick={() => setUseCasesOpen(false)}
-                        className="text-sm text-[hsl(270,100%,70%)] hover:text-[hsl(270,100%,80%)] font-medium"
+                        className="text-sm text-[hsl(267,100%,60%)] hover:text-[hsl(267,100%,70%)] font-medium"
                       >
                         View all use cases →
                       </Link>
@@ -122,12 +121,12 @@ export const Navbar = () => {
 
           <div className="hidden md:flex items-center gap-3 ml-10">
             <Link to="/access?page=login">
-              <Button variant="ghost" size="default" className="text-[15px] font-medium text-white/80 hover:text-white hover:bg-white/5">
+              <Button variant="ghost" size="default" className="text-[15px] font-medium text-[hsl(270,20%,75%)] hover:text-white hover:bg-[hsl(270,50%,10%)]">
                 Log in
               </Button>
             </Link>
             <Link to="/access?page=signup">
-              <Button size="default" className="marketing-cta text-[15px] font-semibold text-white px-6 rounded-lg">
+              <Button size="default" className="marketing-cta text-[15px] font-semibold text-white px-6 rounded-full">
                 <span className="relative z-10">Get started</span>
               </Button>
             </Link>
@@ -135,7 +134,7 @@ export const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 text-white/80"
+            className="md:hidden p-2 text-[hsl(270,20%,75%)]"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
           >
@@ -151,14 +150,13 @@ export const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-[hsl(248,15%,4%)]/98 backdrop-blur-xl border-b border-white/10"
+            className="md:hidden bg-[hsl(270,100%,2%)/0.98] backdrop-blur-2xl border-b border-[hsl(270,50%,15%)]"
           >
             <div className="container mx-auto px-6 py-6 flex flex-col gap-4">
-              {/* Pricing - anchor on home, link on other pages */}
               {isHome ? (
                 <a
                   href="#pricing"
-                  className="text-[15px] font-medium text-white/80 hover:text-white transition-colors py-3 px-4"
+                  className="text-[15px] font-medium text-[hsl(270,20%,75%)] hover:text-white transition-colors py-3 px-4"
                   onClick={() => setIsOpen(false)}
                 >
                   Pricing
@@ -166,7 +164,7 @@ export const Navbar = () => {
               ) : (
                 <Link
                   to="/#pricing"
-                  className="text-[15px] font-medium text-white/80 hover:text-white transition-colors py-3 px-4"
+                  className="text-[15px] font-medium text-[hsl(270,20%,75%)] hover:text-white transition-colors py-3 px-4"
                   onClick={() => setIsOpen(false)}
                 >
                   Pricing
@@ -174,24 +172,24 @@ export const Navbar = () => {
               )}
               <Link
                 to="/features"
-                className="text-[15px] font-medium text-white/80 hover:text-white transition-colors py-3 px-4"
+                className="text-[15px] font-medium text-[hsl(270,20%,75%)] hover:text-white transition-colors py-3 px-4"
                 onClick={() => setIsOpen(false)}
               >
                 Features
               </Link>
               <Link
                 to="/use-cases"
-                className="text-[15px] font-medium text-white/80 hover:text-white transition-colors py-3 px-4"
+                className="text-[15px] font-medium text-[hsl(270,20%,75%)] hover:text-white transition-colors py-3 px-4"
                 onClick={() => setIsOpen(false)}
               >
                 Use Cases
               </Link>
-              <div className="flex flex-col gap-3 pt-4 border-t border-white/10">
+              <div className="flex flex-col gap-3 pt-4 border-t border-[hsl(270,50%,15%)]">
                 <Link to="/access?page=login" onClick={() => setIsOpen(false)}>
-                  <Button variant="ghost" className="w-full text-[15px] font-medium text-white/80 hover:text-white hover:bg-white/5">Log in</Button>
+                  <Button variant="ghost" className="w-full text-[15px] font-medium text-[hsl(270,20%,75%)] hover:text-white hover:bg-[hsl(270,50%,10%)]">Log in</Button>
                 </Link>
                 <Link to="/access?page=signup" onClick={() => setIsOpen(false)}>
-                  <Button className="w-full marketing-cta text-[15px] font-semibold text-white">
+                  <Button className="w-full marketing-cta text-[15px] font-semibold text-white rounded-full">
                     <span className="relative z-10">Get started</span>
                   </Button>
                 </Link>

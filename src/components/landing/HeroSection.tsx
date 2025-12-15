@@ -4,7 +4,6 @@ import { ArrowRight, Shield, CheckCircle, Upload, Check, X, Globe, Server, Mail,
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 
-// Business emails for animated demo
 const businessEmails = [
   { email: "sarah.johnson@techcorp.io", valid: true },
   { email: "mike.chen@startup.com", valid: true },
@@ -15,7 +14,6 @@ const businessEmails = [
   { email: "sales@cloudservices.net", valid: true },
 ];
 
-// Animated email validation demo component
 const ValidationDemo = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
@@ -75,21 +73,21 @@ const ValidationDemo = () => {
       className="relative w-full max-w-md"
     >
       {/* Gradient glow effect */}
-      <div className="absolute -inset-2 bg-gradient-to-r from-[hsl(270,100%,60%)] via-[hsl(240,80%,55%)] to-[hsl(220,100%,60%)] rounded-2xl blur-2xl opacity-20" />
+      <div className="absolute -inset-3 bg-gradient-to-r from-[hsl(264,100%,35%)] via-[hsl(269,100%,53%)] to-[hsl(212,93%,52%)] rounded-3xl blur-2xl opacity-30" />
       
-      <div className="relative bg-[hsl(248,15%,8%)]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl">
+      <div className="relative bg-[hsl(270,50%,6%)]/95 backdrop-blur-xl border border-[hsl(270,50%,20%)] rounded-2xl p-6 shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-xs text-white/50 font-medium">Live Validation</span>
+            <div className="w-2 h-2 rounded-full bg-emerald animate-pulse" />
+            <span className="text-xs text-[hsl(270,20%,65%)] font-medium">Live Validation</span>
           </div>
-          <span className="text-xs text-[hsl(270,100%,70%)] font-mono">v2.0</span>
+          <span className="text-xs text-[hsl(267,100%,60%)] font-mono">v2.0</span>
         </div>
 
         {/* Email input display */}
-        <div className="flex items-center gap-3 mb-6 p-4 bg-white/5 rounded-xl border border-white/10">
-          <Mail className="w-4 h-4 text-[hsl(220,100%,70%)]" />
+        <div className="flex items-center gap-3 mb-6 p-4 bg-[hsl(270,50%,10%)] rounded-xl border border-[hsl(270,50%,15%)]">
+          <Mail className="w-4 h-4 text-[hsl(212,93%,52%)]" />
           <AnimatePresence mode="wait">
             <motion.span
               key={currentEmail.email}
@@ -107,7 +105,7 @@ const ValidationDemo = () => {
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
               >
-                <Zap className="w-4 h-4 text-[hsl(270,100%,70%)]" />
+                <Zap className="w-4 h-4 text-[hsl(267,100%,60%)]" />
               </motion.div>
             )}
           </div>
@@ -135,11 +133,11 @@ const ValidationDemo = () => {
                   className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-500 ${
                     isComplete 
                       ? currentEmail.valid || index < 3 
-                        ? 'bg-green-500/20 border-2 border-green-500' 
-                        : 'bg-red-500/20 border-2 border-red-500'
+                        ? 'bg-emerald/20 border-2 border-emerald' 
+                        : 'bg-destructive/20 border-2 border-destructive'
                       : isCurrent 
-                        ? 'bg-[hsl(270,100%,60%)]/20 border-2 border-[hsl(270,100%,70%)]' 
-                        : 'bg-white/5 border border-white/20'
+                        ? 'bg-[hsl(267,100%,60%)]/20 border-2 border-[hsl(267,100%,60%)]' 
+                        : 'bg-[hsl(270,50%,10%)] border border-[hsl(270,50%,20%)]'
                   }`}
                   animate={isCurrent ? { scale: [1, 1.1, 1] } : {}}
                   transition={{ duration: 0.8, repeat: isCurrent ? Infinity : 0 }}
@@ -151,9 +149,9 @@ const ValidationDemo = () => {
                       transition={{ type: "spring", duration: 0.4 }}
                     >
                       {currentEmail.valid || index < 3 ? (
-                        <Check className="w-4 h-4 text-green-500" />
+                        <Check className="w-4 h-4 text-emerald" />
                       ) : (
-                        <X className="w-4 h-4 text-red-500" />
+                        <X className="w-4 h-4 text-destructive" />
                       )}
                     </motion.div>
                   ) : isCurrent ? (
@@ -161,15 +159,15 @@ const ValidationDemo = () => {
                       animate={{ rotate: 360 }}
                       transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                     >
-                      <StepIcon className="w-4 h-4 text-[hsl(270,100%,70%)]" />
+                      <StepIcon className="w-4 h-4 text-[hsl(267,100%,60%)]" />
                     </motion.div>
                   ) : (
-                    <StepIcon className="w-3.5 h-3.5 text-white/30" />
+                    <StepIcon className="w-3.5 h-3.5 text-[hsl(270,20%,50%)]" />
                   )}
                 </motion.div>
                 <div className="flex-1 flex items-center justify-between">
                   <span className={`text-sm font-medium transition-all duration-500 ${
-                    isComplete ? 'text-white' : isCurrent ? 'text-[hsl(270,100%,70%)]' : 'text-white/40'
+                    isComplete ? 'text-white' : isCurrent ? 'text-[hsl(267,100%,60%)]' : 'text-[hsl(270,20%,50%)]'
                   }`}>
                     {step.label}
                   </span>
@@ -179,7 +177,7 @@ const ValidationDemo = () => {
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -10 }}
-                        className="text-xs text-[hsl(270,100%,70%)] font-medium"
+                        className="text-xs text-[hsl(267,100%,60%)] font-medium"
                       >
                         Checking...
                       </motion.span>
@@ -189,7 +187,7 @@ const ValidationDemo = () => {
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
                         className={`text-xs font-medium ${
-                          currentEmail.valid || index < 3 ? 'text-green-500' : 'text-red-500'
+                          currentEmail.valid || index < 3 ? 'text-emerald' : 'text-destructive'
                         }`}
                       >
                         {currentEmail.valid || index < 3 ? 'Passed' : 'Failed'}
@@ -211,35 +209,35 @@ const ValidationDemo = () => {
               exit={{ opacity: 0, y: -10 }}
               className={`p-4 rounded-xl border ${
                 currentEmail.valid 
-                  ? 'bg-green-500/10 border-green-500/30' 
-                  : 'bg-red-500/10 border-red-500/30'
+                  ? 'bg-emerald/10 border-emerald/30' 
+                  : 'bg-destructive/10 border-destructive/30'
               }`}
             >
               <div className="flex items-center gap-3 mb-3">
                 <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
                   currentEmail.valid 
-                    ? 'bg-green-500 text-white' 
-                    : 'bg-red-500 text-white'
+                    ? 'bg-emerald text-white' 
+                    : 'bg-destructive text-white'
                 }`}>
                   {currentEmail.valid ? 'Deliverable' : 'Invalid'}
                 </span>
-                <span className="text-xs text-white/50">
+                <span className="text-xs text-[hsl(270,20%,65%)]">
                   Score: {currentEmail.valid ? '98' : '12'}/100
                 </span>
               </div>
               
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div className="flex items-center gap-2">
-                  <Globe className="w-3 h-3 text-white/50" />
-                  <span className="text-white/50">Domain:</span>
-                  <span className={currentEmail.valid ? 'text-green-400' : 'text-red-400'}>
+                  <Globe className="w-3 h-3 text-[hsl(270,20%,65%)]" />
+                  <span className="text-[hsl(270,20%,65%)]">Domain:</span>
+                  <span className={currentEmail.valid ? 'text-emerald' : 'text-destructive'}>
                     {currentEmail.valid ? 'Valid' : 'Invalid'}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Server className="w-3 h-3 text-white/50" />
-                  <span className="text-white/50">MX:</span>
-                  <span className={currentEmail.valid ? 'text-green-400' : 'text-red-400'}>
+                  <Server className="w-3 h-3 text-[hsl(270,20%,65%)]" />
+                  <span className="text-[hsl(270,20%,65%)]">MX:</span>
+                  <span className={currentEmail.valid ? 'text-emerald' : 'text-destructive'}>
                     {currentEmail.valid ? 'Found' : 'Missing'}
                   </span>
                 </div>
@@ -249,8 +247,8 @@ const ValidationDemo = () => {
         </AnimatePresence>
 
         {/* CTA */}
-        <div className="mt-5 pt-5 border-t border-white/10">
-          <Button variant="outline" className="w-full justify-center gap-2 text-sm bg-transparent border-white/20 text-white hover:bg-white/5 hover:border-[hsl(270,100%,60%)]/50 transition-colors">
+        <div className="mt-5 pt-5 border-t border-[hsl(270,50%,15%)]">
+          <Button variant="outline" className="w-full justify-center gap-2 text-sm bg-transparent border-[hsl(270,50%,20%)] text-white hover:bg-[hsl(270,50%,10%)] hover:border-[hsl(267,100%,60%)]/50 transition-colors rounded-xl">
             <Upload className="w-4 h-4" />
             Unlimited bulk verify
           </Button>
@@ -264,7 +262,6 @@ export const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
       <div className="container mx-auto px-6 relative z-10 py-12 lg:py-20">
-        {/* 12-column grid: 7 cols (58%) left, 5 cols (42%) right with 32px gap */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
           
           {/* Left Content - 7 columns */}
@@ -276,13 +273,13 @@ export const HeroSection = () => {
               transition={{ duration: 0.5 }}
               className="mb-8"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
-                <Zap className="w-4 h-4 text-[hsl(270,100%,70%)]" />
-                <span className="text-sm text-white/80 font-medium">Unlimited Bulk Verification • 99% Accuracy</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(270,50%,10%)] border border-[hsl(270,50%,20%)] backdrop-blur-sm">
+                <Zap className="w-4 h-4 text-[hsl(267,100%,60%)]" />
+                <span className="text-sm text-[hsl(270,20%,75%)] font-medium">Unlimited Bulk Verification • 99% Accuracy</span>
               </div>
             </motion.div>
 
-            {/* Headline - Two lines: white first, gradient second */}
+            {/* Headline */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -301,30 +298,30 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-lg md:text-xl text-white/60 mb-8 max-w-xl leading-relaxed"
+              className="text-lg md:text-xl text-[hsl(270,20%,70%)] mb-8 max-w-xl leading-relaxed"
             >
               Enterprise-grade unlimited email verification with 99% accuracy. Validate millions of emails instantly, 
               reduce bounce rates by 98%, and protect your sender reputation with our unlimited bulk validation API.
             </motion.p>
 
-            {/* Trust badges - horizontal */}
+            {/* Trust badges */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex flex-wrap items-center gap-4 mb-10"
             >
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-                <Shield className="w-4 h-4 text-[hsl(270,100%,70%)]" />
-                <span className="text-sm text-white/70">SOC 2 Compliant</span>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[hsl(270,50%,8%)] border border-[hsl(270,50%,15%)]">
+                <Shield className="w-4 h-4 text-[hsl(267,100%,60%)]" />
+                <span className="text-sm text-[hsl(270,20%,70%)]">SOC 2 Compliant</span>
               </div>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-                <CheckCircle className="w-4 h-4 text-green-500" />
-                <span className="text-sm text-white/70">99.9% Uptime SLA</span>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[hsl(270,50%,8%)] border border-[hsl(270,50%,15%)]">
+                <CheckCircle className="w-4 h-4 text-emerald" />
+                <span className="text-sm text-[hsl(270,20%,70%)]">99.9% Uptime SLA</span>
               </div>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-                <Clock className="w-4 h-4 text-[hsl(220,100%,70%)]" />
-                <span className="text-sm text-white/70">&lt;100ms Response</span>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[hsl(270,50%,8%)] border border-[hsl(270,50%,15%)]">
+                <Clock className="w-4 h-4 text-[hsl(212,93%,52%)]" />
+                <span className="text-sm text-[hsl(270,20%,70%)]">&lt;100ms Response</span>
               </div>
             </motion.div>
 
@@ -338,7 +335,7 @@ export const HeroSection = () => {
               <Link to="/access?page=signup">
                 <Button 
                   size="lg" 
-                  className="marketing-cta text-white font-semibold px-8 py-6 text-base rounded-xl group"
+                  className="marketing-cta text-white font-semibold px-8 py-6 text-base rounded-full group"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Get started free
@@ -350,7 +347,7 @@ export const HeroSection = () => {
                 <Button 
                   variant="outline"
                   size="lg" 
-                  className="font-medium px-8 py-6 text-base rounded-xl bg-transparent border-white/20 text-white hover:bg-white/5 hover:border-white/30 transition-all"
+                  className="font-medium px-8 py-6 text-base rounded-full bg-transparent border-[hsl(270,50%,20%)] text-white hover:bg-[hsl(270,50%,10%)] hover:border-[hsl(270,50%,30%)] transition-all"
                 >
                   See Pricing
                 </Button>
