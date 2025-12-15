@@ -22,6 +22,7 @@ import VerifyList from "@/pages/dashboard/VerifyList";
 import Reports from "@/pages/dashboard/Reports";
 import Plan from "@/pages/dashboard/Plan";
 import ApiToken from "@/pages/dashboard/ApiToken";
+import AccountSettings from "@/pages/dashboard/AccountSettings";
 
 import NotFound from "@/pages/NotFound";
 
@@ -59,6 +60,7 @@ const DashboardRoutes = ({ basePath = "" }: { basePath?: string }) => (
     <Route path={`${basePath}/reports`} element={<Reports />} />
     <Route path={`${basePath}/plan`} element={<Plan />} />
     <Route path={`${basePath}/api-token`} element={<ApiToken />} />
+    <Route path={`${basePath}/account-settings`} element={<AccountSettings />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
@@ -90,6 +92,7 @@ const DevelopmentRoutes = () => (
     <Route path="/dashboard/reports" element={<Reports />} />
     <Route path="/dashboard/plan" element={<Plan />} />
     <Route path="/dashboard/api-token" element={<ApiToken />} />
+    <Route path="/dashboard/account-settings" element={<AccountSettings />} />
     
     <Route path="*" element={<NotFound />} />
   </Routes>
