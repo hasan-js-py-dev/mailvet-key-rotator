@@ -6,82 +6,78 @@
 
 @layer base {
   :root {
-    /* Pure black theme */
-    --background: 0 0% 0%;
-    --foreground: 0 0% 95%;
+    /* Clean white SaaS theme - Professional light mode */
+    --background: 0 0% 98%;
+    --foreground: 220 13% 18%;
 
-    --card: 0 0% 4%;
-    --card-foreground: 0 0% 95%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 18%;
 
-    --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 13% 18%;
 
-    --primary: 270 100% 55%;
+    --primary: 220 13% 18%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 243 76% 55%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 13% 18%;
 
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
 
-    --accent: 195 100% 50%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 220 14% 96%;
+    --accent-foreground: 220 13% 18%;
 
-    --destructive: 355 70% 56%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 270 100% 55%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 220 13% 18%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    /* Text color tokens for visibility */
-    --text-primary: 0 0% 95%;
-    --text-secondary: 0 0% 75%;
-    --text-muted: 0 0% 55%;
-    --text-disabled: 0 0% 40%;
+    /* Text color tokens */
+    --text-primary: 220 13% 18%;
+    --text-secondary: 220 9% 46%;
+    --text-muted: 220 9% 56%;
+    --text-disabled: 220 9% 70%;
 
-    /* Custom brand colors - Modern SaaS palette */
-    --purple: 270 100% 55%;
-    --indigo: 243 76% 55%;
-    --blue: 200 100% 50%;
-    --cyan: 180 70% 50%;
-    --off-white: 0 0% 95%;
-    --dark: 0 0% 8%;
-    --pure-black: 0 0% 0%;
-    --cta-red: 355 70% 56%;
+    /* Brand colors */
+    --brand-primary: 220 13% 18%;
+    --brand-accent: 45 93% 47%;
+    --success: 142 76% 36%;
+    --warning: 45 93% 47%;
+    --info: 200 100% 50%;
 
-    /* Dot pattern - small dots */
+    /* Dashboard specific */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 13% 18%;
+    --sidebar-primary: 220 13% 18%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent-foreground: 220 13% 18%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 220 13% 18%;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1);
+
+    /* Dot pattern for landing pages */
     --dot-color: 180 100% 50%;
     --dot-size: 1px;
     --dot-gap: 32px;
 
-    /* Gradients - Purple → Indigo → Blue */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--purple)) 0%, hsl(var(--indigo)) 50%, hsl(var(--blue)) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(var(--indigo)) 0%, hsl(var(--blue)) 100%);
-    --gradient-text: linear-gradient(135deg, hsl(var(--purple)) 0%, hsl(var(--blue)) 100%);
-
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
-    --shadow-md: 0 4px 12px -2px hsl(0 0% 0% / 0.4);
-    --shadow-lg: 0 12px 32px -8px hsl(0 0% 0% / 0.5);
-    --shadow-xl: 0 24px 48px -12px hsl(0 0% 0% / 0.6);
-    --shadow-glow: 0 0 60px hsl(var(--purple) / 0.4);
-    --shadow-glow-cyan: 0 0 40px hsl(var(--cyan) / 0.3);
-
-    --sidebar-background: 0 0% 3%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 0 0% 95%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 10%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 270 100% 65%;
+    /* Gradients for landing pages only */
+    --gradient-primary: linear-gradient(135deg, hsl(270, 100%, 55%) 0%, hsl(243, 76%, 55%) 50%, hsl(200, 100%, 50%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(243, 76%, 55%) 0%, hsl(200, 100%, 50%) 100%);
+    --gradient-text: linear-gradient(135deg, hsl(270, 100%, 55%) 0%, hsl(200, 100%, 50%) 100%);
   }
 
-  .dark {
+  /* Dark theme for landing pages only */
+  .landing-dark {
     --background: 0 0% 0%;
     --foreground: 0 0% 95%;
     --card: 0 0% 4%;
@@ -101,12 +97,6 @@
     --border: 0 0% 18%;
     --input: 0 0% 18%;
     --ring: 270 100% 55%;
-    
-    /* Text color tokens for visibility */
-    --text-primary: 0 0% 95%;
-    --text-secondary: 0 0% 75%;
-    --text-muted: 0 0% 55%;
-    --text-disabled: 0 0% 40%;
   }
 }
 
@@ -133,7 +123,6 @@
     line-height: 1.1;
   }
 
-  /* Professional typography scale */
   h1 {
     font-size: 48px;
     line-height: 1.1;
@@ -164,7 +153,7 @@
 }
 
 @layer components {
-  /* Animated dot pattern background - vikileads style */
+  /* Animated dot pattern background - for landing pages */
   .dot-pattern {
     background-image: radial-gradient(
       circle at center,
@@ -175,7 +164,6 @@
     background-position: center center;
   }
 
-  /* Falling dot styles */
   .falling-dot {
     background: hsl(195 100% 50%);
     box-shadow: 
@@ -252,20 +240,6 @@
     border: 1px solid hsl(var(--border) / 0.5);
   }
 
-  .glow {
-    box-shadow: var(--shadow-glow);
-  }
-
-  .glow-cyan {
-    box-shadow: var(--shadow-glow-cyan);
-  }
-
-  /* Logo animation */
-  .logo-animated {
-    animation: logo-glow 3s ease-in-out infinite;
-  }
-
-  /* Text sizes for professional SaaS */
   .text-nav {
     @apply text-sm font-medium tracking-wide;
   }
@@ -286,57 +260,24 @@
     @apply text-xs uppercase tracking-widest font-semibold;
   }
 
-  /* Deliverable badge */
-  .badge-deliverable {
-    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold;
-    background: hsl(142, 76%, 36%);
-    color: white;
+  /* Dashboard card styles */
+  .dashboard-card {
+    @apply bg-card border border-border rounded-lg;
   }
 
-  /* Score bar gradient */
-  .score-bar {
-    background: linear-gradient(90deg, 
-      hsl(0, 85%, 60%) 0%, 
-      hsl(0, 85%, 60%) 50%, 
-      hsl(45, 100%, 50%) 70%, 
-      hsl(142, 76%, 36%) 100%
-    );
+  /* Active nav item for dashboard */
+  .nav-active {
+    @apply bg-primary text-primary-foreground;
   }
 }
 
 @layer utilities {
-  @keyframes dot-pulse {
-    0%, 100% {
-      opacity: 0.3;
-    }
-    50% {
-      opacity: 0.5;
-    }
-  }
-
   @keyframes float {
     0%, 100% {
       transform: translateY(0);
     }
     50% {
       transform: translateY(-20px);
-    }
-  }
-
-  @keyframes float-particle {
-    0%, 100% {
-      transform: translateY(0) translateX(0);
-      opacity: 0;
-    }
-    10% {
-      opacity: 0.6;
-    }
-    50% {
-      transform: translateY(-100vh) translateX(50px);
-      opacity: 0.4;
-    }
-    90% {
-      opacity: 0.6;
     }
   }
 
@@ -380,21 +321,6 @@
     }
   }
 
-  @keyframes pulse-ring {
-    0% {
-      transform: scale(0.95);
-      opacity: 1;
-    }
-    50% {
-      transform: scale(1);
-      opacity: 0.5;
-    }
-    100% {
-      transform: scale(0.95);
-      opacity: 1;
-    }
-  }
-
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
@@ -410,10 +336,6 @@
 
   .animate-fade-in-up {
     animation: fade-in-up 0.6s ease-out forwards;
-  }
-
-  .animate-pulse-ring {
-    animation: pulse-ring 2s ease-in-out infinite;
   }
 
   .animation-delay-100 {

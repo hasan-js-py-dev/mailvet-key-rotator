@@ -2,32 +2,30 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LayoutDashboard,
+  Upload,
   Mail,
-  FileSpreadsheet,
-  BarChart3,
-  CreditCard,
-  Key,
-  Settings,
-  LogOut,
+  List,
+  Shield,
+  Zap,
+  ChevronRight,
   Menu,
   X,
   ChevronDown,
   ChevronUp,
+  Settings,
+  LogOut,
 } from "lucide-react";
-import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/hooks/useUser";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const navItems = [
-  { icon: LayoutDashboard, label: "Overview", path: "/dashboard" },
-  { icon: Mail, label: "Verify Email", path: "/dashboard/verify-email" },
-  { icon: FileSpreadsheet, label: "Verify List", path: "/dashboard/verify-list" },
-  { icon: BarChart3, label: "Reports", path: "/dashboard/reports" },
-  { icon: CreditCard, label: "Plan & Billing", path: "/dashboard/plan" },
-  { icon: Key, label: "API Token", path: "/dashboard/api-token" },
+  { icon: Upload, label: "Bulk Upload", path: "/dashboard/verify-list" },
+  { icon: Mail, label: "Single Email", path: "/dashboard/verify-email" },
+  { icon: List, label: "Recent Lists", path: "/dashboard/reports" },
+  { icon: Shield, label: "Catch-all", path: "/dashboard/catch-all" },
+  { icon: Zap, label: "Upgrade", path: "/dashboard/plan" },
 ];
 
 interface DashboardLayoutProps {
@@ -67,11 +65,13 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     return email.slice(0, maxLength) + "...";
   };
 
+  const currentPlan = "Free Plan";
+
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-screen bg-background">
       {/* Mobile header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 glass border-b border-border h-16 px-4 flex items-center justify-between">
-        <Logo size="sm" />
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-card border-b border-border h-14 px-4 flex items-center justify-between">
+        <span className="font-bold text-xl text-foreground">MailVet</span>
         <button onClick={() => setSidebarOpen(!sidebarOpen)}>
           {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
@@ -80,134 +80,137 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 w-64 bg-card border-r border-border transform transition-transform duration-300 lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-40 w-52 bg-card border-r border-border transform transition-transform duration-300 lg:translate-x-0 flex flex-col",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="h-full flex flex-col">
-          <div className="h-16 px-6 flex items-center border-b border-border">
-            <Logo size="md" />
-          </div>
+        {/* Logo */}
+        <div className="h-14 px-5 flex items-center border-b border-border">
+          <span className="font-bold text-xl text-foreground">MailVet</span>
+        </div>
 
-          <nav className="flex-1 p-4 space-y-1">
-            {navItems.map((item) => {
-              const isActive = location.pathname === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setSidebarOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
-                    isActive
-                      ? "gradient-bg text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                >
-                  <item.icon className="w-5 h-5" />
-                  <span className="font-medium">{item.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="p-4 border-t border-border">
-            {/* User Profile Card */}
-            <div className="relative">
-              <button
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
+        {/* Navigation */}
+        <nav className="flex-1 py-4 px-3 space-y-1">
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setSidebarOpen(false)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
-                  userMenuOpen ? "bg-muted" : "bg-muted/50 hover:bg-muted"
+                  "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground hover:bg-muted"
                 )}
               >
-                {isLoading ? (
-                  <>
-                    <Skeleton className="w-10 h-10 rounded-full" />
-                    <div className="flex-1 min-w-0 space-y-2">
-                      <Skeleton className="h-4 w-24" />
-                      <Skeleton className="h-3 w-32" />
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-10 h-10 rounded-full gradient-bg flex items-center justify-center text-primary-foreground font-semibold text-sm">
-                      {getInitials(user?.name, user?.email)}
-                    </div>
-                    <div className="flex-1 min-w-0 text-left">
-                      <p className="font-medium truncate text-sm">
-                        {user?.name || "No name set"}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {truncateEmail(user?.email)}
-                      </p>
-                    </div>
-                    {userMenuOpen ? (
-                      <ChevronUp className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                    )}
-                  </>
-                )}
-              </button>
+                <item.icon className="w-4 h-4" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
 
-              {/* Expandable Menu */}
-              <AnimatePresence>
-                {userMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="pt-2 space-y-1">
-                      <Link
-                        to="/dashboard/account-settings"
-                        onClick={() => {
-                          setSidebarOpen(false);
-                          setUserMenuOpen(false);
-                        }}
-                        className={cn(
-                          "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors text-sm",
-                          location.pathname === "/dashboard/account-settings"
-                            ? "bg-primary/10 text-primary"
-                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                        )}
-                      >
-                        <Settings className="w-4 h-4" />
-                        <span>Account Settings</span>
-                      </Link>
-                      <button
-                        onClick={handleSignOut}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        <span>Sign out</span>
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+        {/* User Section */}
+        <div className="border-t border-border p-3">
+          {/* User Account Button */}
+          <div className="relative">
+            <button
+              onClick={() => setUserMenuOpen(!userMenuOpen)}
+              className={cn(
+                "w-full flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors text-sm",
+                userMenuOpen ? "bg-muted" : "hover:bg-muted"
+              )}
+            >
+              {isLoading ? (
+                <>
+                  <Skeleton className="w-8 h-8 rounded-full" />
+                  <div className="flex-1 min-w-0 space-y-1.5">
+                    <Skeleton className="h-3.5 w-20" />
+                    <Skeleton className="h-3 w-16" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-foreground font-medium text-xs">
+                    {getInitials(user?.name, user?.email)}
+                  </div>
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="font-medium truncate text-foreground text-sm">
+                      {user?.name || "My Account"}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {currentPlan}
+                    </p>
+                  </div>
+                  {userMenuOpen ? (
+                    <ChevronUp className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  )}
+                </>
+              )}
+            </button>
 
-            {/* Sign out button when menu is collapsed */}
-            {!userMenuOpen && (
-              <button
-                onClick={handleSignOut}
-                className="mt-2 w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors text-sm"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Sign out</span>
-              </button>
-            )}
+            {/* Expandable Menu */}
+            <AnimatePresence>
+              {userMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <div className="pt-1 space-y-1">
+                    <Link
+                      to="/dashboard/account-settings"
+                      onClick={() => {
+                        setSidebarOpen(false);
+                        setUserMenuOpen(false);
+                      }}
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm",
+                        location.pathname === "/dashboard/account-settings"
+                          ? "bg-muted text-foreground"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      )}
+                    >
+                      <Settings className="w-4 h-4" />
+                      <span>Account Settings</span>
+                    </Link>
+                    <button
+                      onClick={handleSignOut}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign out</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
+
+          {/* Upgrade Button */}
+          <Button
+            onClick={() => navigate("/dashboard/plan")}
+            className="w-full mt-3 bg-primary text-primary-foreground hover:bg-primary/90 justify-between"
+            size="sm"
+          >
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4" />
+              <span>Upgrade to Pro</span>
+            </div>
+            <ChevronRight className="w-4 h-4" />
+          </Button>
         </div>
       </aside>
 
       {/* Main content */}
-      <main className="lg:pl-64 pt-16 lg:pt-0 min-h-screen">
-        <div className="p-6 lg:p-8">{children}</div>
+      <main className="lg:pl-52 pt-14 lg:pt-0 min-h-screen">
+        <div className="p-6 lg:p-8 max-w-6xl">{children}</div>
       </main>
 
       {/* Overlay for mobile */}
