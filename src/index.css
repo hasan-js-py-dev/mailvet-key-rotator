@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    /* Clean white SaaS theme - Professional light mode */
+    /* Dashboard: Clean white SaaS theme - Professional light mode */
     --background: 0 0% 98%;
     --foreground: 220 13% 18%;
 
@@ -65,38 +65,19 @@
     --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1);
     --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1);
 
-    /* Dot pattern for landing pages */
-    --dot-color: 180 100% 50%;
-    --dot-size: 1px;
-    --dot-gap: 32px;
-
-    /* Gradients for landing pages only */
-    --gradient-primary: linear-gradient(135deg, hsl(270, 100%, 55%) 0%, hsl(243, 76%, 55%) 50%, hsl(200, 100%, 50%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(243, 76%, 55%) 0%, hsl(200, 100%, 50%) 100%);
-    --gradient-text: linear-gradient(135deg, hsl(270, 100%, 55%) 0%, hsl(200, 100%, 50%) 100%);
-  }
-
-  /* Dark theme for landing pages only */
-  .landing-dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 95%;
-    --card: 0 0% 4%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 270 100% 55%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 243 76% 55%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 195 100% 50%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 355 70% 56%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 270 100% 55%;
+    /* Marketing/Landing page specific colors */
+    --landing-bg: 248 15% 4%;
+    --landing-foreground: 0 0% 98%;
+    --landing-muted: 248 10% 65%;
+    --landing-primary: 270 100% 65%;
+    --landing-primary-hover: 270 100% 70%;
+    --landing-accent: 195 100% 50%;
+    --landing-card: 248 15% 8%;
+    --landing-border: 248 10% 18%;
+    
+    /* Purple glow gradient for marketing */
+    --glow-purple: 270 100% 60%;
+    --glow-blue: 220 100% 60%;
   }
 }
 
@@ -111,13 +92,13 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     font-size: 16px;
     line-height: 1.6;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.1;
@@ -150,76 +131,93 @@
     @apply text-base md:text-lg;
     line-height: 1.7;
   }
+
+  /* Marketing/Landing pages dark theme */
+  .marketing-theme {
+    --background: var(--landing-bg);
+    --foreground: var(--landing-foreground);
+    --card: var(--landing-card);
+    --card-foreground: var(--landing-foreground);
+    --popover: var(--landing-card);
+    --popover-foreground: var(--landing-foreground);
+    --primary: var(--landing-primary);
+    --primary-foreground: 0 0% 100%;
+    --muted: 248 10% 14%;
+    --muted-foreground: var(--landing-muted);
+    --accent: var(--landing-accent);
+    --accent-foreground: 0 0% 0%;
+    --border: var(--landing-border);
+    --input: var(--landing-border);
+    --ring: var(--landing-primary);
+  }
 }
 
 @layer components {
-  /* Animated dot pattern background - for landing pages */
-  .dot-pattern {
-    background-image: radial-gradient(
-      circle at center,
-      hsl(var(--dot-color)) var(--dot-size),
-      transparent var(--dot-size)
-    );
-    background-size: var(--dot-gap) var(--dot-gap);
-    background-position: center center;
+  /* Purple glow orb effect for marketing pages */
+  .glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.6;
+    pointer-events: none;
   }
 
-  .falling-dot {
-    background: hsl(195 100% 50%);
-    box-shadow: 
-      0 0 4px hsl(195 100% 50% / 0.8),
-      0 0 8px hsl(195 100% 50% / 0.4);
-    animation: fall-down linear infinite;
+  .glow-orb-purple {
+    background: radial-gradient(circle, hsl(var(--glow-purple) / 0.5) 0%, transparent 70%);
   }
 
-  @keyframes fall-down {
-    0% {
-      transform: translateY(-20px);
-      opacity: 0;
-    }
-    10% {
-      opacity: var(--dot-opacity, 0.5);
-    }
-    90% {
-      opacity: var(--dot-opacity, 0.5);
-    }
-    100% {
-      transform: translateY(100vh);
-      opacity: 0;
-    }
+  .glow-orb-blue {
+    background: radial-gradient(circle, hsl(var(--glow-blue) / 0.4) 0%, transparent 70%);
   }
 
-  .gradient-text {
-    background: linear-gradient(135deg, hsl(180, 100%, 50%) 0%, hsl(180, 100%, 60%) 100%);
+  /* Marketing gradient text */
+  .marketing-gradient-text {
+    background: linear-gradient(135deg, hsl(270 100% 70%) 0%, hsl(220 100% 70%) 50%, hsl(195 100% 60%) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .gradient-text-primary {
-    background: var(--gradient-text);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  /* Marketing CTA button */
+  .marketing-cta {
+    @apply relative overflow-hidden;
+    background: linear-gradient(135deg, hsl(270 100% 60%) 0%, hsl(240 80% 55%) 100%);
+    transition: all 0.3s ease;
   }
 
-  .gradient-bg {
-    background: var(--gradient-primary);
+  .marketing-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px hsl(270 100% 50% / 0.4);
   }
 
-  .gradient-border {
-    position: relative;
-    background: hsl(var(--card));
-    border-radius: var(--radius);
-  }
-
-  .gradient-border::before {
+  .marketing-cta::before {
     content: '';
     position: absolute;
     inset: 0;
-    padding: 1px;
+    background: linear-gradient(135deg, hsl(270 100% 65%) 0%, hsl(240 80% 60%) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .marketing-cta:hover::before {
+    opacity: 1;
+  }
+
+  /* Marketing card with subtle border glow */
+  .marketing-card {
+    background: hsl(var(--landing-card));
+    border: 1px solid hsl(var(--landing-border) / 0.5);
+    border-radius: 16px;
+    position: relative;
+  }
+
+  .marketing-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
     border-radius: inherit;
-    background: var(--gradient-primary);
+    padding: 1px;
+    background: linear-gradient(135deg, hsl(270 100% 50% / 0.3) 0%, transparent 50%, hsl(220 100% 50% / 0.2) 100%);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
@@ -227,17 +225,12 @@
     pointer-events: none;
   }
 
-  .glass {
-    background: hsl(var(--background) / 0.8);
+  /* Glass effect for marketing */
+  .marketing-glass {
+    background: hsl(var(--landing-card) / 0.8);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-  }
-
-  .glass-card {
-    background: hsl(var(--card) / 0.6);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid hsl(var(--border) / 0.5);
+    border: 1px solid hsl(var(--landing-border) / 0.3);
   }
 
   .text-nav {

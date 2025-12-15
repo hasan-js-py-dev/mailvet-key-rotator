@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Helvetica', 'Arial', 'sans-serif'],
-        display: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Helvetica', 'Arial', 'sans-serif'],
+        sans: ['"DM Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Helvetica', 'Arial', 'sans-serif'],
+        display: ['"DM Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Helvetica', 'Arial', 'sans-serif'],
       },
       fontSize: {
         // Professional typography scale
@@ -66,13 +66,20 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        purple: "hsl(var(--purple))",
-        indigo: "hsl(var(--indigo))",
-        blue: "hsl(var(--blue))",
-        cyan: "hsl(var(--cyan))",
-        "off-white": "hsl(var(--off-white))",
-        dark: "hsl(var(--dark))",
-        "cta-red": "hsl(var(--cta-red))",
+        // Marketing theme colors
+        landing: {
+          bg: "hsl(var(--landing-bg))",
+          foreground: "hsl(var(--landing-foreground))",
+          muted: "hsl(var(--landing-muted))",
+          primary: "hsl(var(--landing-primary))",
+          accent: "hsl(var(--landing-accent))",
+          card: "hsl(var(--landing-card))",
+          border: "hsl(var(--landing-border))",
+        },
+        glow: {
+          purple: "hsl(var(--glow-purple))",
+          blue: "hsl(var(--glow-blue))",
+        },
         text: {
           primary: "hsl(var(--text-primary))",
           secondary: "hsl(var(--text-secondary))",
