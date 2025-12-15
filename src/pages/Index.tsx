@@ -17,12 +17,10 @@ import { Footer } from "@/components/landing/Footer";
 const Index = () => {
   const location = useLocation();
 
-  // Handle smooth scroll for hash navigation (e.g., /#pricing from other pages)
   useEffect(() => {
     if (location.hash) {
       const element = document.querySelector(location.hash);
       if (element) {
-        // Small delay to ensure page is fully loaded
         setTimeout(() => {
           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 100);
@@ -31,11 +29,12 @@ const Index = () => {
   }, [location]);
 
   return (
-    <div className="min-h-screen bg-[hsl(248,15%,4%)] text-[hsl(0,0%,98%)] relative overflow-hidden">
-      {/* Purple glow orbs */}
-      <div className="glow-orb glow-orb-purple w-[600px] h-[600px] -top-40 -left-40 fixed" />
-      <div className="glow-orb glow-orb-blue w-[500px] h-[500px] top-1/3 -right-60 fixed" />
-      <div className="glow-orb glow-orb-purple w-[400px] h-[400px] bottom-1/4 left-1/4 fixed opacity-40" />
+    <div className="min-h-screen bg-[hsl(270,100%,2%)] text-[hsl(0,0%,98%)] relative overflow-hidden">
+      {/* Luminous swirl orbs - VectorShift style */}
+      <div className="glow-orb glow-orb-violet w-[800px] h-[800px] -top-60 -left-60 fixed opacity-60" />
+      <div className="glow-orb glow-orb-blue w-[700px] h-[700px] top-1/3 -right-80 fixed opacity-50" />
+      <div className="glow-orb glow-orb-violet w-[500px] h-[500px] bottom-1/4 left-1/4 fixed opacity-30" />
+      <div className="glow-orb glow-orb-blue w-[400px] h-[400px] bottom-0 right-1/4 fixed opacity-40" />
       
       <Navbar />
       <main className="relative z-10">
