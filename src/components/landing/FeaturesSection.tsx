@@ -1,14 +1,5 @@
 import { motion } from "framer-motion";
-import { 
-  Mail, 
-  FileSpreadsheet, 
-  Zap, 
-  Shield, 
-  Code, 
-  Gift,
-  Globe,
-  Lock
-} from "lucide-react";
+import { Mail, FileSpreadsheet, Zap, Shield, Code, Gift, Globe, Lock } from "lucide-react";
 
 const features = [
   {
@@ -57,30 +48,23 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-    },
+    transition: { staggerChildren: 0.08 },
   },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4 },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
 export const FeaturesSection = () => {
   return (
     <section id="features" className="relative py-24 overflow-hidden">
-      {/* Background elements */}
-      <div className="absolute inset-0 bg-card/20" />
-      <div className="absolute inset-0 dot-pattern opacity-15" />
+      <div className="absolute inset-0 bg-[hsl(270,50%,4%)]" />
+      <div className="absolute inset-0 dot-pattern opacity-20" />
       
       {/* Glow */}
-      <div className="absolute top-0 right-1/4 w-[400px] h-[400px] bg-cyan/10 rounded-full blur-[150px] opacity-20" />
+      <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[hsl(267,100%,50%)] rounded-full blur-[200px] opacity-10" />
       
       <div className="container mx-auto px-6 relative z-10">
         <motion.div
@@ -90,12 +74,12 @@ export const FeaturesSection = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <p className="text-overline text-cyan mb-4">Features</p>
+          <p className="text-overline text-[hsl(267,100%,60%)] mb-4">Features</p>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-5">
-            Everything You Need to{" "}
-            <span className="gradient-text">Validate Emails</span>
+            <span className="text-white">Everything You Need to </span>
+            <span className="marketing-gradient-text">Validate Emails</span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-[hsl(270,20%,70%)] max-w-2xl mx-auto">
             Powerful email validation features designed to maintain clean email lists, 
             improve deliverability rates, and protect your sender reputation.
           </p>
@@ -114,12 +98,12 @@ export const FeaturesSection = () => {
               variants={itemVariants}
               className="group"
             >
-              <div className="h-full p-6 rounded-2xl border border-border/30 bg-background/50 hover:border-cyan/30 hover:bg-card/80 transition-all duration-300">
-                <div className="w-11 h-11 rounded-xl bg-cyan/10 border border-cyan/20 flex items-center justify-center mb-5 group-hover:bg-cyan/20 transition-colors">
-                  <feature.icon className="w-5 h-5 text-cyan" />
+              <div className="h-full p-6 rounded-2xl border border-[hsl(270,50%,15%)] bg-[hsl(270,50%,6%)] hover:border-[hsl(267,100%,60%)/0.4] hover:bg-[hsl(270,50%,8%)] transition-all duration-300">
+                <div className="w-11 h-11 rounded-xl bg-[hsl(267,100%,60%)/0.1] border border-[hsl(267,100%,60%)/0.2] flex items-center justify-center mb-5 group-hover:bg-[hsl(267,100%,60%)/0.15] transition-colors">
+                  <feature.icon className="w-5 h-5 text-[hsl(267,100%,60%)]" />
                 </div>
-                <h3 className="text-base font-semibold mb-2 text-foreground">{feature.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
+                <h3 className="text-base font-semibold mb-2 text-white">{feature.title}</h3>
+                <p className="text-[hsl(270,20%,65%)] text-sm leading-relaxed">{feature.description}</p>
               </div>
             </motion.div>
           ))}
