@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   List,
   Mail,
-  Code,
   Search,
   ChevronDown,
   Settings,
@@ -26,13 +25,14 @@ import { useAuthContext } from "@/components/AuthProvider";
 import { Logo } from "@/components/Logo";
 
 const mainNavItems = [
-  { icon: List, label: "Lists", path: "/dashboard/lists" },
   { icon: Mail, label: "Single", path: "/dashboard/verify-email" },
-  { icon: Code, label: "API", path: "/dashboard/api" },
+  { icon: List, label: "Lists", path: "/dashboard/lists" },
+  { icon: FileText, label: "Reports", path: "/dashboard/reports" },
 ];
 
 // Additional paths to check for active state
 const listsPaths = ["/dashboard/lists", "/dashboard/verify-list"];
+const singlePaths = ["/dashboard/verify-email", "/dashboard/single-email"];
 
 interface TopNavLayoutProps {
   children: React.ReactNode;
@@ -84,7 +84,7 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
   const credits = user?.credits ?? 0;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background font-geist">
       {/* Top Navigation */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border h-14">
         <div className="h-full px-4 lg:px-6 flex items-center justify-between max-w-screen-2xl mx-auto">
@@ -95,10 +95,11 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-2">
               {mainNavItems.map((item) => {
                 const isActive = location.pathname === item.path || 
-                  (item.path === "/dashboard/lists" && listsPaths.includes(location.pathname));
+                  (item.path === "/dashboard/lists" && listsPaths.includes(location.pathname)) ||
+                  (item.path === "/dashboard/verify-email" && singlePaths.includes(location.pathname));
                 return (
                   <Link
                     key={item.path}
