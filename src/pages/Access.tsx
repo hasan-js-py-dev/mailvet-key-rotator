@@ -1092,7 +1092,7 @@ export default function AccessPage() {
               <Button
                 variant="outline"
                 size="lg"
-                className="w-full mt-4"
+                className="w-full mt-4 text-foreground bg-card/80 border-border/50 hover:bg-card hover:text-foreground"
                 type="button"
                 onClick={handleGoogle}
                 disabled={isGoogleLoading || !isFirebaseConfigured}
