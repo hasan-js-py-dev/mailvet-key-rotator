@@ -30,27 +30,25 @@ const socialLinks = [
 
 export const Footer = () => {
   return (
-    <footer className="relative border-t border-border/20 bg-background">
-      <div className="absolute inset-0 dot-pattern opacity-5" />
-      
+    <footer className="relative border-t border-white/10 bg-[hsl(248,15%,4%)]">
       <div className="container mx-auto px-6 relative z-10">
         {/* CTA Section */}
-        <div className="py-16 border-b border-border/20">
+        <div className="py-16 border-b border-white/10">
           <div className="max-w-3xl mx-auto text-center">
-            <h3 className="text-2xl md:text-3xl font-bold mb-4">
+            <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white">
               Ready to clean your email lists?
             </h3>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-white/60 mb-8">
               Start validating emails today with 100 free credits. No credit card required.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/access?page=signup">
-                <Button size="lg" className="bg-cyan hover:bg-cyan/90 text-background font-semibold px-8">
-                  Get Started Free
+                <Button size="lg" className="marketing-cta text-white font-semibold px-8">
+                  <span className="relative z-10">Get Started Free</span>
                 </Button>
               </Link>
               <a href="#pricing">
-                <Button size="lg" variant="outline" className="border-border/50 hover:bg-card px-8">
+                <Button size="lg" variant="outline" className="bg-transparent border-white/20 text-white hover:bg-white/5 px-8">
                   View Pricing
                 </Button>
               </a>
@@ -64,7 +62,7 @@ export const Footer = () => {
             {/* Brand column */}
             <div className="lg:col-span-2">
               <Logo size="md" animated className="mb-5" />
-              <p className="text-muted-foreground text-sm max-w-xs leading-relaxed mb-6">
+              <p className="text-white/50 text-sm max-w-xs leading-relaxed mb-6">
                 Professional email validation API trusted by thousands of businesses worldwide. 
                 Protect your sender reputation with real-time verification.
               </p>
@@ -75,7 +73,7 @@ export const Footer = () => {
                   <a
                     key={social.label}
                     href={social.href}
-                    className="w-9 h-9 rounded-full border border-border/30 bg-card/30 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-cyan/50 transition-all duration-300"
+                    className="w-9 h-9 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:border-[hsl(270,100%,60%)]/50 transition-all duration-300"
                     aria-label={social.label}
                   >
                     <social.icon className="w-4 h-4" />
@@ -87,14 +85,14 @@ export const Footer = () => {
             {/* Link columns */}
             {Object.entries(footerLinks).map(([category, links]) => (
               <div key={category} className={category === "Resources" ? "lg:col-span-2" : ""}>
-                <h4 className="font-semibold text-sm text-foreground mb-4">{category}</h4>
+                <h4 className="font-semibold text-sm text-white mb-4">{category}</h4>
                 <ul className={`space-y-3 ${category === "Resources" ? "grid grid-cols-2 gap-x-6 gap-y-3 space-y-0" : ""}`}>
                   {links.map((link) => (
                     <li key={link.name}>
                       {link.isRoute ? (
                         <Link
                           to={link.href}
-                          className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 flex items-center gap-1 group"
+                          className="text-sm text-white/50 hover:text-white transition-colors duration-200 flex items-center gap-1 group"
                         >
                           {link.name}
                           <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
@@ -102,7 +100,7 @@ export const Footer = () => {
                       ) : (
                         <a
                           href={link.href}
-                          className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 flex items-center gap-1 group"
+                          className="text-sm text-white/50 hover:text-white transition-colors duration-200 flex items-center gap-1 group"
                         >
                           {link.name}
                           <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
@@ -117,14 +115,14 @@ export const Footer = () => {
         </div>
 
         {/* Bottom bar */}
-        <div className="py-6 border-t border-border/20 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground">
+        <div className="py-6 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-white/40">
             © {new Date().getFullYear()} MailVet.app. All rights reserved. Built with ❤️ for email marketers.
           </p>
           <div className="flex items-center gap-4">
             <a 
               href="mailto:contact@mailvet.app"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+              className="text-xs text-white/40 hover:text-white transition-colors flex items-center gap-1.5"
             >
               <Mail className="w-3 h-3" />
               contact@mailvet.app
