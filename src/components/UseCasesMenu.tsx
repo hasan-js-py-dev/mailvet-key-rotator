@@ -66,7 +66,7 @@ export const UseCasesMenu = ({ onItemClick }: UseCasesMenuProps) => {
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-2 p-4 min-w-[600px] bg-card border border-border rounded-xl shadow-xl">
+    <div className="grid grid-cols-3 gap-2 p-4 min-w-[600px] bg-marketing-dark-panel border border-marketing-violet/20 rounded-xl shadow-2xl">
       {columns.map((column, colIndex) => (
         <div key={colIndex} className="flex flex-col gap-1">
           {column.map((item) => {
@@ -81,7 +81,7 @@ export const UseCasesMenu = ({ onItemClick }: UseCasesMenuProps) => {
                 <div className={`w-8 h-8 rounded-lg ${item.bg} border ${item.border} flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}>
                   <IconComponent className={`w-4 h-4 ${item.color}`} />
                 </div>
-                <span className={`text-sm font-medium text-foreground group-hover:${item.color} transition-colors`}>
+                <span className="text-sm font-medium text-white group-hover:text-marketing-violet transition-colors">
                   {item.title}
                 </span>
               </Link>

@@ -89,7 +89,7 @@ const featureItems: FeatureMenuItem[] = [
 
 export const FeaturesMenu = ({ onItemClick }: FeaturesMenuProps) => {
   return (
-    <div className="w-[420px] p-4">
+    <div className="w-[420px] p-4 bg-marketing-dark-panel border border-marketing-violet/20 rounded-xl shadow-2xl">
       <div className="grid gap-2">
         {featureItems.map((feature) => {
           const Icon = feature.icon;
@@ -98,16 +98,16 @@ export const FeaturesMenu = ({ onItemClick }: FeaturesMenuProps) => {
               key={feature.slug}
               to={`/features/${feature.slug}`}
               onClick={onItemClick}
-              className="group flex items-start gap-4 p-3 rounded-xl hover:bg-card/80 transition-all duration-200"
+              className="group flex items-start gap-4 p-3 rounded-xl hover:bg-marketing-violet/10 transition-all duration-200"
             >
               <div className={`w-10 h-10 rounded-lg ${feature.bgColor} ${feature.borderColor} border flex items-center justify-center flex-shrink-0 ${feature.hoverBg} transition-colors`}>
                 <Icon className={`w-5 h-5 ${feature.iconColor}`} />
               </div>
               <div>
-                <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                <h4 className="font-semibold text-white group-hover:text-marketing-violet transition-colors">
                   {feature.title}
                 </h4>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-marketing-text-secondary">
                   {feature.description}
                 </p>
               </div>

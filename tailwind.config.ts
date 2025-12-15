@@ -67,6 +67,13 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         // Marketing theme colors
+        marketing: {
+          dark: "#02010C",
+          "dark-panel": "#0B0037",
+          violet: "#9E35FD",
+          blue: "#0070F3",
+          "text-secondary": "#B5B3C9",
+        },
         landing: {
           bg: "hsl(var(--landing-bg))",
           foreground: "hsl(var(--landing-foreground))",
