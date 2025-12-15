@@ -2,6 +2,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import PageTransition from "./PageTransition";
 import FloatingParticles from "./FloatingParticles";
+import { ProtectedRoute, GuestOnlyRoute } from "./ProtectedRoute";
 
 // Main site pages
 import Index from "@/pages/Index";
@@ -42,7 +43,7 @@ const MainRoutes = () => {
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PageTransition><Index /></PageTransition>} />
-          <Route path="/access" element={<PageTransition><Access /></PageTransition>} />
+          <Route path="/access" element={<GuestOnlyRoute><PageTransition><Access /></PageTransition></GuestOnlyRoute>} />
           <Route path="/use-cases" element={<PageTransition><UseCases /></PageTransition>} />
           <Route path="/use-cases/:slug" element={<PageTransition><UseCaseDetail /></PageTransition>} />
           <Route path="/features" element={<PageTransition><Features /></PageTransition>} />
@@ -66,14 +67,14 @@ const DashboardRoutesComponent = ({ basePath = "" }: { basePath?: string }) => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path={`${basePath}/`} element={<PageTransition><DashboardOverview /></PageTransition>} />
-        <Route path={`${basePath}/verify-email`} element={<PageTransition><VerifyEmail /></PageTransition>} />
-        <Route path={`${basePath}/verify-list`} element={<PageTransition><VerifyList /></PageTransition>} />
-        <Route path={`${basePath}/reports`} element={<PageTransition><Reports /></PageTransition>} />
-        <Route path={`${basePath}/plan`} element={<PageTransition><Plan /></PageTransition>} />
-        <Route path={`${basePath}/api-token`} element={<PageTransition><ApiToken /></PageTransition>} />
-        <Route path={`${basePath}/account-settings`} element={<PageTransition><AccountSettings /></PageTransition>} />
-        <Route path={`${basePath}/catch-all`} element={<PageTransition><CatchAll /></PageTransition>} />
+        <Route path={`${basePath}/`} element={<ProtectedRoute><PageTransition><DashboardOverview /></PageTransition></ProtectedRoute>} />
+        <Route path={`${basePath}/verify-email`} element={<ProtectedRoute><PageTransition><VerifyEmail /></PageTransition></ProtectedRoute>} />
+        <Route path={`${basePath}/verify-list`} element={<ProtectedRoute><PageTransition><VerifyList /></PageTransition></ProtectedRoute>} />
+        <Route path={`${basePath}/reports`} element={<ProtectedRoute><PageTransition><Reports /></PageTransition></ProtectedRoute>} />
+        <Route path={`${basePath}/plan`} element={<ProtectedRoute><PageTransition><Plan /></PageTransition></ProtectedRoute>} />
+        <Route path={`${basePath}/api-token`} element={<ProtectedRoute><PageTransition><ApiToken /></PageTransition></ProtectedRoute>} />
+        <Route path={`${basePath}/account-settings`} element={<ProtectedRoute><PageTransition><AccountSettings /></PageTransition></ProtectedRoute>} />
+        <Route path={`${basePath}/catch-all`} element={<ProtectedRoute><PageTransition><CatchAll /></PageTransition></ProtectedRoute>} />
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>
@@ -91,7 +92,7 @@ const DevelopmentRoutesComponent = () => {
         <Routes location={location} key={location.pathname}>
           {/* Main site routes */}
           <Route path="/" element={<PageTransition><Index /></PageTransition>} />
-          <Route path="/access" element={<PageTransition><Access /></PageTransition>} />
+          <Route path="/access" element={<GuestOnlyRoute><PageTransition><Access /></PageTransition></GuestOnlyRoute>} />
           <Route path="/use-cases" element={<PageTransition><UseCases /></PageTransition>} />
           <Route path="/use-cases/:slug" element={<PageTransition><UseCaseDetail /></PageTransition>} />
           <Route path="/features" element={<PageTransition><Features /></PageTransition>} />
@@ -104,14 +105,14 @@ const DevelopmentRoutesComponent = () => {
           <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
           
           {/* Dashboard routes */}
-          <Route path="/dashboard" element={<PageTransition><DashboardOverview /></PageTransition>} />
-          <Route path="/dashboard/verify-email" element={<PageTransition><VerifyEmail /></PageTransition>} />
-          <Route path="/dashboard/verify-list" element={<PageTransition><VerifyList /></PageTransition>} />
-          <Route path="/dashboard/reports" element={<PageTransition><Reports /></PageTransition>} />
-          <Route path="/dashboard/plan" element={<PageTransition><Plan /></PageTransition>} />
-          <Route path="/dashboard/api-token" element={<PageTransition><ApiToken /></PageTransition>} />
-          <Route path="/dashboard/account-settings" element={<PageTransition><AccountSettings /></PageTransition>} />
-          <Route path="/dashboard/catch-all" element={<PageTransition><CatchAll /></PageTransition>} />
+          <Route path="/dashboard" element={<ProtectedRoute><PageTransition><DashboardOverview /></PageTransition></ProtectedRoute>} />
+          <Route path="/dashboard/verify-email" element={<ProtectedRoute><PageTransition><VerifyEmail /></PageTransition></ProtectedRoute>} />
+          <Route path="/dashboard/verify-list" element={<ProtectedRoute><PageTransition><VerifyList /></PageTransition></ProtectedRoute>} />
+          <Route path="/dashboard/reports" element={<ProtectedRoute><PageTransition><Reports /></PageTransition></ProtectedRoute>} />
+          <Route path="/dashboard/plan" element={<ProtectedRoute><PageTransition><Plan /></PageTransition></ProtectedRoute>} />
+          <Route path="/dashboard/api-token" element={<ProtectedRoute><PageTransition><ApiToken /></PageTransition></ProtectedRoute>} />
+          <Route path="/dashboard/account-settings" element={<ProtectedRoute><PageTransition><AccountSettings /></PageTransition></ProtectedRoute>} />
+          <Route path="/dashboard/catch-all" element={<ProtectedRoute><PageTransition><CatchAll /></PageTransition></ProtectedRoute>} />
           
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>

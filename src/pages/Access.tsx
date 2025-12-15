@@ -12,6 +12,7 @@ import { auth, googleProvider, isFirebaseConfigured } from "@/lib/firebase";
 import { z } from "zod";
 import { PasswordStrength } from "@/components/PasswordStrength";
 import { FormSkeleton } from "@/components/FormSkeleton";
+import { useAuthContext } from "@/components/AuthProvider";
 
 // Validation schemas
 const signupSchema = z.object({
@@ -62,10 +63,10 @@ type EmailSentContext = "verification" | "reset";
 export default function AccessPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { login } = useAuthContext();
   const pageParam = searchParams.get("page") || "login";
   const resetToken = searchParams.get("token");
   const verifyToken = searchParams.get("token");
-  const sessionTokenKey = "mailvet_session";
 
   // Normalize page type: treat both `reset` and legacy `reset-password` as the reset flow
   const isResetPage = (pageParam === "reset" || pageParam === "reset-password") && !!resetToken;
@@ -140,7 +141,8 @@ export default function AccessPage() {
 
       try {
         const response = await fetch(
-          `${apiBaseUrl}/v1/auth/verify-email?token=${verifyToken}`
+          `${apiBaseUrl}/v1/auth/verify-email?token=${verifyToken}`,
+          { credentials: 'include' }
         );
         const data = await response.json();
 
@@ -148,8 +150,8 @@ export default function AccessPage() {
           throw new Error(data.error || "Invalid or expired verification link");
         }
 
-        if (data.token) {
-          localStorage.setItem(sessionTokenKey, data.token);
+        if (data.accessToken) {
+          await login(data.accessToken);
         }
 
         if (isMounted) {
@@ -193,7 +195,7 @@ export default function AccessPage() {
     return () => {
       isMounted = false;
     };
-  }, [apiBaseUrl, navigate, pageType, sessionTokenKey, verifyToken]);
+  }, [apiBaseUrl, navigate, pageType, verifyToken, login]);
 
   const validateForm = useCallback(() => {
     setFormErrors({});
@@ -277,6 +279,7 @@ export default function AccessPage() {
       // Register with backend
       const response = await fetch(`${apiBaseUrl}/v1/auth/signup`, {
         method: "POST",
+        credentials: 'include',
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${idToken}`,
@@ -303,8 +306,8 @@ export default function AccessPage() {
         throw new Error(data.error || "Signup failed");
       }
 
-      if (data.token) {
-        localStorage.setItem(sessionTokenKey, data.token);
+      if (data.accessToken) {
+        await login(data.accessToken);
       }
 
       setEmailSentTo(formData.email);
@@ -364,6 +367,7 @@ export default function AccessPage() {
 
       const response = await fetch(`${apiBaseUrl}/v1/auth/login`, {
         method: "POST",
+        credentials: 'include',
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${idToken}`,
@@ -388,8 +392,8 @@ export default function AccessPage() {
         throw new Error(data.error || "Login failed");
       }
 
-      if (data.token) {
-        localStorage.setItem(sessionTokenKey, data.token);
+      if (data.accessToken) {
+        await login(data.accessToken);
       }
 
       toast({
@@ -586,6 +590,7 @@ export default function AccessPage() {
 
       const response = await fetch(`${apiBaseUrl}/v1/auth/social/google`, {
         method: "POST",
+        credentials: 'include',
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${idToken}`,
@@ -598,8 +603,8 @@ export default function AccessPage() {
         throw new Error(payload?.error || "Google sign-in failed");
       }
 
-      if (payload?.token) {
-        localStorage.setItem(sessionTokenKey, payload.token);
+      if (payload?.accessToken) {
+        await login(payload.accessToken);
       }
 
       toast({
