@@ -10,6 +10,8 @@ import { toast } from "@/hooks/use-toast";
 import { signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth, googleProvider, isFirebaseConfigured } from "@/lib/firebase";
 import { z } from "zod";
+import { PasswordStrength } from "@/components/PasswordStrength";
+import { FormSkeleton } from "@/components/FormSkeleton";
 
 // Validation schemas
 const signupSchema = z.object({
@@ -87,6 +89,7 @@ export default function AccessPage() {
   const [isResending, setIsResending] = useState(false);
   const [needsVerification, setNeedsVerification] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState("");
+  const [isFirebaseReady, setIsFirebaseReady] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -96,6 +99,15 @@ export default function AccessPage() {
   });
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
+
+  // Firebase ready check
+  useEffect(() => {
+    // Simulate a brief check for Firebase initialization
+    const timer = setTimeout(() => {
+      setIsFirebaseReady(true);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Resend cooldown timer
   useEffect(() => {
@@ -875,6 +887,19 @@ export default function AccessPage() {
         // Login & Signup forms
         const isLogin = pageType === "login";
         
+        // Show skeleton while Firebase initializes
+        if (!isFirebaseReady) {
+          return (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="relative overflow-hidden"
+            >
+              <FormSkeleton />
+            </motion.div>
+          );
+        }
+        
         return (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1009,13 +1034,13 @@ export default function AccessPage() {
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
+                {!isLogin && (
+                  <AnimatePresence>
+                    <PasswordStrength password={formData.password} />
+                  </AnimatePresence>
+                )}
                 {formErrors.password && (
                   <p className="text-sm text-destructive">{formErrors.password}</p>
-                )}
-                {!isLogin && !formErrors.password && (
-                  <p className="text-xs text-muted-foreground">
-                    Min. 8 characters with uppercase, lowercase, and number
-                  </p>
                 )}
               </div>
 
