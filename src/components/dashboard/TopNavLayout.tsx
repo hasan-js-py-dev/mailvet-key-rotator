@@ -89,35 +89,35 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border h-14">
         <div className="h-full px-4 lg:px-6 flex items-center justify-between max-w-screen-2xl mx-auto">
           {/* Left: Logo */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center">
             <Link to="/dashboard" className="flex items-center gap-2">
               <Logo className="h-8 w-auto" />
             </Link>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-2">
-              {mainNavItems.map((item) => {
-                const isActive = location.pathname === item.path || 
-                  (item.path === "/dashboard/lists" && listsPaths.includes(location.pathname)) ||
-                  (item.path === "/dashboard/verify-email" && singlePaths.includes(location.pathname));
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={cn(
-                      "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-muted text-foreground"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                    )}
-                  >
-                    <item.icon className="w-4 h-4" />
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
-            </nav>
           </div>
+
+          {/* Center: Navigation */}
+          <nav className="hidden md:flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
+            {mainNavItems.map((item) => {
+              const isActive = location.pathname === item.path || 
+                (item.path === "/dashboard/lists" && listsPaths.includes(location.pathname)) ||
+                (item.path === "/dashboard/verify-email" && singlePaths.includes(location.pathname));
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors",
+                    isActive
+                      ? "bg-muted text-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  )}
+                >
+                  <item.icon className="w-4 h-4" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
 
           {/* Right: Credits + User Menu */}
           <div className="flex items-center gap-4">
