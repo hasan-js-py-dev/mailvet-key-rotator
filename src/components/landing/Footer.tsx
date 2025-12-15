@@ -34,24 +34,36 @@ export const Footer = () => {
       <div className="container mx-auto px-6 relative z-10">
         {/* CTA Section */}
         <div className="py-16 border-b border-[hsl(270,50%,15%)]">
-          <div className="max-w-3xl mx-auto text-center">
-            <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white">
-              Ready to clean your email lists?
-            </h3>
-            <p className="text-[hsl(270,20%,65%)] mb-8">
-              Start validating emails today with 100 free credits. No credit card required.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/access?page=signup">
-                <Button size="lg" className="marketing-cta text-white font-semibold px-8 rounded-full">
-                  <span className="relative z-10">Get Started Free</span>
-                </Button>
-              </Link>
-              <a href="#pricing">
-                <Button size="lg" variant="outline" className="bg-transparent border-[hsl(270,50%,20%)] text-white hover:bg-[hsl(270,50%,10%)] px-8 rounded-full">
-                  View Pricing
-                </Button>
-              </a>
+          <div className="relative max-w-4xl mx-auto rounded-3xl overflow-hidden border border-[hsl(270,50%,20%)]">
+            {/* Dotted grid background */}
+            <div 
+              className="absolute inset-0 bg-gradient-to-br from-[#0d0628] via-[#120a3d] to-[#0a0520]"
+              style={{
+                backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px)`,
+                backgroundSize: '24px 24px',
+              }}
+            />
+            
+            {/* Content */}
+            <div className="relative z-10 py-16 px-8 text-center">
+              <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white">
+                Ready to clean your email lists?
+              </h3>
+              <p className="text-[hsl(270,20%,65%)] mb-8">
+                Start validating emails today with 100 free credits. No credit card required.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Link to="/access?page=signup">
+                  <Button size="lg" className="marketing-cta text-white font-semibold px-8 rounded-full">
+                    <span className="relative z-10">Get Started Free</span>
+                  </Button>
+                </Link>
+                <a href="#pricing">
+                  <Button size="lg" variant="outline" className="bg-transparent border-[hsl(270,50%,20%)] text-white hover:bg-[hsl(270,50%,10%)] px-8 rounded-full">
+                    View Pricing
+                  </Button>
+                </a>
+              </div>
             </div>
           </div>
         </div>
