@@ -5,9 +5,16 @@ const router = express.Router();
 const User = require('../models/User');
 const admin = require('../config/firebase');
 const { authLimiter } = require('../middleware/rateLimit');
-const { verifyFirebaseToken, verifyToken } = require('../middleware/auth');
+const { verifyFirebaseToken, verifyToken, verifyRefreshTokenMiddleware } = require('../middleware/auth');
 const { sendVerificationEmail, sendPasswordResetEmail, sendWelcomeEmail } = require('../services/email.service');
-const { generateSessionToken, generateVerificationToken, generatePasswordResetToken, generateApiToken } = require('../services/token.service');
+const { 
+  generateAccessToken, 
+  generateRefreshToken, 
+  generateVerificationToken, 
+  generatePasswordResetToken, 
+  generateApiToken,
+  getRefreshTokenCookieOptions 
+} = require('../services/token.service');
 
 // Apply rate limiting to all auth routes
 router.use(authLimiter);
@@ -22,8 +29,45 @@ const validate = (req, res, next) => {
 };
 
 /**
+ * Helper: Set auth tokens (access in response, refresh in cookie)
+ */
+const setAuthTokens = async (res, user) => {
+  const accessToken = generateAccessToken(user._id);
+  const { token: refreshToken, hash, expires } = await generateRefreshToken();
+  
+  // Store hashed refresh token in database
+  user.refreshTokenHash = hash;
+  user.refreshTokenExpires = expires;
+  await user.save();
+  
+  // Set refresh token as HttpOnly cookie
+  res.cookie('refresh_token', refreshToken, getRefreshTokenCookieOptions());
+  
+  return accessToken;
+};
+
+/**
+ * Helper: Clear auth tokens
+ */
+const clearAuthTokens = async (res, user) => {
+  if (user) {
+    user.refreshTokenHash = undefined;
+    user.refreshTokenExpires = undefined;
+    await user.save();
+  }
+  
+  res.clearCookie('refresh_token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/'
+  });
+};
+
+/**
  * POST /auth/signup
  * Register with email/password via Firebase
+ * Returns: access token in JSON, refresh token in HttpOnly cookie
  */
 router.post('/signup',
   [
@@ -68,12 +112,12 @@ router.post('/signup',
       // Send verification email
       await sendVerificationEmail(email, verificationToken, name);
 
-      // Generate session token
-      const sessionToken = generateSessionToken(user._id);
+      // Generate tokens
+      const accessToken = await setAuthTokens(res, user);
 
       res.status(201).json({
         message: 'Account created. Please verify your email.',
-        token: sessionToken,
+        accessToken,
         user: {
           id: user._id,
           email: user.email,
@@ -84,6 +128,10 @@ router.post('/signup',
         }
       });
     } catch (error) {
+      // Handle duplicate key errors
+      if (error.code === 11000) {
+        return res.status(409).json({ error: 'User already exists' });
+      }
       next(error);
     }
   }
@@ -92,6 +140,7 @@ router.post('/signup',
 /**
  * POST /auth/social/google
  * Handle Google OAuth sign-up/login via Firebase
+ * Returns: access token in JSON, refresh token in HttpOnly cookie
  */
 router.post('/social/google',
   verifyFirebaseToken,
@@ -106,7 +155,6 @@ router.post('/social/google',
       if (user) {
         // Existing user - update last login
         user.updatedAt = new Date();
-        await user.save();
       } else {
         // Check if email exists with different auth method
         const emailUser = await User.findOne({ email });
@@ -115,7 +163,6 @@ router.post('/social/google',
           emailUser.firebaseUid = firebaseUid;
           emailUser.googleId = firebaseUid;
           emailUser.emailVerified = true; // Google accounts are pre-verified
-          await emailUser.save();
           user = emailUser;
         } else {
           // New user
@@ -128,18 +175,17 @@ router.post('/social/google',
             credits: 50,
             plan: 'free'
           });
-          await user.save();
 
           // Send welcome email
           sendWelcomeEmail(email, name);
         }
       }
 
-      // Generate session token
-      const sessionToken = generateSessionToken(user._id);
+      // Generate tokens
+      const accessToken = await setAuthTokens(res, user);
 
       res.json({
-        token: sessionToken,
+        accessToken,
         user: {
           id: user._id,
           email: user.email,
@@ -158,6 +204,7 @@ router.post('/social/google',
 /**
  * POST /auth/login
  * Login with email/password via Firebase token
+ * Returns: access token in JSON, refresh token in HttpOnly cookie
  */
 router.post('/login',
   verifyFirebaseToken,
@@ -180,15 +227,11 @@ router.post('/login',
         });
       }
 
-      // Update last login
-      user.updatedAt = new Date();
-      await user.save();
-
-      // Generate session token
-      const sessionToken = generateSessionToken(user._id);
+      // Generate tokens
+      const accessToken = await setAuthTokens(res, user);
 
       res.json({
-        token: sessionToken,
+        accessToken,
         user: {
           id: user._id,
           email: user.email,
@@ -198,6 +241,79 @@ router.post('/login',
           plan: user.plan
         }
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
+ * POST /auth/refresh
+ * Refresh access token using refresh token from cookie
+ * Optionally rotates refresh token for enhanced security
+ */
+router.post('/refresh',
+  verifyRefreshTokenMiddleware,
+  async (req, res, next) => {
+    try {
+      const user = req.user;
+
+      // Rotate refresh token (generate new one)
+      const accessToken = await setAuthTokens(res, user);
+
+      res.json({
+        accessToken,
+        user: {
+          id: user._id,
+          email: user.email,
+          name: user.name,
+          emailVerified: user.emailVerified,
+          credits: user.credits,
+          plan: user.plan
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
+ * POST /auth/logout
+ * Clear refresh token cookie and invalidate token in database
+ */
+router.post('/logout',
+  async (req, res, next) => {
+    try {
+      const refreshToken = req.cookies?.refresh_token;
+      
+      if (refreshToken) {
+        // Find and invalidate the user's refresh token
+        const users = await User.find({
+          refreshTokenExpires: { $gt: new Date() }
+        }).select('+refreshTokenHash +refreshTokenExpires');
+
+        for (const user of users) {
+          if (user.refreshTokenHash) {
+            const bcrypt = require('bcryptjs');
+            const isMatch = await bcrypt.compare(refreshToken, user.refreshTokenHash);
+            if (isMatch) {
+              await clearAuthTokens(res, user);
+              break;
+            }
+          }
+        }
+      }
+      
+      // Clear cookie regardless
+      res.clearCookie('refresh_token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/'
+      });
+
+      res.json({ message: 'Logged out successfully' });
     } catch (error) {
       next(error);
     }
@@ -231,17 +347,17 @@ router.get('/verify-email',
       user.emailVerified = true;
       user.emailVerificationToken = undefined;
       user.emailVerificationExpires = undefined;
-      await user.save();
 
       // Send welcome email
       sendWelcomeEmail(user.email, user.name);
 
-      const sessionToken = generateSessionToken(user._id);
+      // Generate tokens
+      const accessToken = await setAuthTokens(res, user);
 
       res.json({ 
         message: 'Email verified successfully',
         redirectUrl: `${process.env.DASHBOARD_URL}`,
-        token: sessionToken,
+        accessToken,
         user: {
           id: user._id,
           email: user.email,
@@ -388,10 +504,10 @@ router.post('/reset-password',
 );
 
 /**
- * POST /auth/refresh-token
+ * POST /auth/regenerate-api-token
  * Regenerate API token (for Enterprise users)
  */
-router.post('/refresh-token',
+router.post('/regenerate-api-token',
   verifyToken,
   async (req, res, next) => {
     try {

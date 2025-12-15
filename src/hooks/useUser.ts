@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { authenticatedFetch } from '@/lib/auth';
 
 interface User {
   id: string;
@@ -27,30 +28,16 @@ export const useUser = (): UseUserReturn => {
   const [error, setError] = useState<string | null>(null);
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
-  const sessionTokenKey = "mailvet_session";
 
   const fetchUser = async () => {
-    const token = localStorage.getItem(sessionTokenKey);
-    
-    if (!token) {
-      setIsLoading(false);
-      setError("Not authenticated");
-      return;
-    }
-
     try {
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch(`${apiBaseUrl}/v1/account`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await authenticatedFetch(`${apiBaseUrl}/v1/account`);
 
       if (!response.ok) {
         if (response.status === 401) {
-          localStorage.removeItem(sessionTokenKey);
           setError("Session expired");
           return;
         }

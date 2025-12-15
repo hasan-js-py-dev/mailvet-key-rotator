@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/hooks/useUser";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuthContext } from "@/components/AuthProvider";
 
 const navItems = [
   { icon: Upload, label: "Bulk Upload", path: "/dashboard/verify-list" },
@@ -38,10 +39,10 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isLoading } = useUser();
+  const { logout } = useAuthContext();
 
-  const handleSignOut = () => {
-    localStorage.removeItem("mailvet_session");
-    navigate("/access?page=login");
+  const handleSignOut = async () => {
+    await logout();
   };
 
   const getInitials = (name: string | null | undefined, email: string | undefined) => {

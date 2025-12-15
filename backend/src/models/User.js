@@ -83,6 +83,15 @@ const userSchema = new mongoose.Schema({
   renewalDate: {
     type: Date
   },
+  // Refresh token storage for secure session management
+  refreshTokenHash: {
+    type: String,
+    select: false
+  },
+  refreshTokenExpires: {
+    type: Date,
+    select: false
+  },
   createdAt: {
     type: Date,
     default: Date.now

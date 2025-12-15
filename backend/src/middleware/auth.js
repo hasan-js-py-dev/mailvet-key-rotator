@@ -1,8 +1,12 @@
 const jwt = require('jsonwebtoken');
 const admin = require('../config/firebase');
 const User = require('../models/User');
+const { verifyAccessToken, verifyRefreshToken } = require('../services/token.service');
 
-// Verify JWT token from session
+/**
+ * Verify access token from Authorization header
+ * Returns 401 if token is missing, invalid, or expired
+ */
 const verifyToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -13,8 +17,20 @@ const verifyToken = async (req, res, next) => {
 
     const token = authHeader.split(' ')[1];
     
-    // Verify JWT
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Verify access token
+    let decoded;
+    try {
+      decoded = verifyAccessToken(token);
+    } catch (err) {
+      // Handle specific JWT errors
+      if (err.name === 'TokenExpiredError') {
+        return res.status(401).json({ error: 'Token expired', code: 'TOKEN_EXPIRED' });
+      }
+      if (err.name === 'JsonWebTokenError') {
+        return res.status(401).json({ error: 'Invalid token', code: 'INVALID_TOKEN' });
+      }
+      throw err;
+    }
     
     // Find user
     const user = await User.findById(decoded.userId);
@@ -28,6 +44,45 @@ const verifyToken = async (req, res, next) => {
   } catch (error) {
     console.error('Auth error:', error);
     return res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
+/**
+ * Verify refresh token from cookie
+ * Used for /auth/refresh endpoint
+ */
+const verifyRefreshTokenMiddleware = async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies?.refresh_token;
+    
+    if (!refreshToken) {
+      return res.status(401).json({ error: 'No refresh token provided', code: 'NO_REFRESH_TOKEN' });
+    }
+
+    // Find users with refresh tokens (we need to check hash)
+    const users = await User.find({
+      refreshTokenExpires: { $gt: new Date() }
+    }).select('+refreshTokenHash +refreshTokenExpires');
+
+    let matchedUser = null;
+    for (const user of users) {
+      if (user.refreshTokenHash && await verifyRefreshToken(refreshToken, user.refreshTokenHash)) {
+        matchedUser = user;
+        break;
+      }
+    }
+
+    if (!matchedUser) {
+      return res.status(403).json({ error: 'Invalid or expired refresh token', code: 'INVALID_REFRESH_TOKEN' });
+    }
+
+    req.user = matchedUser;
+    req.userId = matchedUser._id;
+    req.refreshToken = refreshToken;
+    next();
+  } catch (error) {
+    console.error('Refresh token error:', error);
+    return res.status(403).json({ error: 'Invalid refresh token' });
   }
 };
 
@@ -122,6 +177,7 @@ const requireVerifiedEmail = (req, res, next) => {
 
 module.exports = {
   verifyToken,
+  verifyRefreshTokenMiddleware,
   verifyFirebaseToken,
   verifyApiToken,
   requirePlan,
