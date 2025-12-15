@@ -127,7 +127,7 @@ export const Navbar = () => {
             </Link>
             <Link to="/access?page=signup">
               <Button size="default" className="marketing-cta text-[15px] font-semibold text-white px-6 rounded-full">
-                <span className="relative z-10">Get started – 100 Free Credits</span>
+                <span className="relative z-10">100 Free Credits</span>
               </Button>
             </Link>
           </div>
@@ -190,7 +190,7 @@ export const Navbar = () => {
                 </Link>
                 <Link to="/access?page=signup" onClick={() => setIsOpen(false)}>
                   <Button className="w-full marketing-cta text-[15px] font-semibold text-white rounded-full">
-                    <span className="relative z-10">Get started – 100 Free Credits</span>
+                    <span className="relative z-10">100 Free Credits</span>
                   </Button>
                 </Link>
               </div>
