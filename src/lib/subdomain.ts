@@ -7,7 +7,7 @@
 export type AppSubdomain = 'main' | 'dashboard';
 
 const DASHBOARD_SUBDOMAIN = 'dashboard';
-const PRODUCTION_DOMAINS = ['mailvet.app', 'mailvet.com']; // Add your production domains
+const PRODUCTION_DOMAINS = ['mailvet.app']; // Add your production domains
 
 /**
  * Detects if we're running in a local development environment
