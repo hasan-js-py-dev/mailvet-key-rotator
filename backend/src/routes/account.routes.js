@@ -47,7 +47,8 @@ router.get('/', async (req, res, next) => {
       monthlyValidations: user.monthlyValidations,
       billingStatus: user.billingStatus,
       renewalDate: user.renewalDate,
-      createdAt: user.createdAt
+      createdAt: user.createdAt,
+      authMethod: user.googleId ? 'google' : 'password'
     });
   } catch (error) {
     next(error);

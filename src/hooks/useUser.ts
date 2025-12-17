@@ -14,6 +14,7 @@ interface User {
   billingStatus: string;
   renewalDate: string | null;
   createdAt: string;
+  authMethod?: 'google' | 'password';
 }
 
 interface UseUserReturn {

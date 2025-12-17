@@ -345,15 +345,32 @@ export default function Settings() {
               {/* Password Section */}
               <div className="border-t border-border pt-8">
                 <h2 className="text-lg font-semibold text-foreground mb-4">Update password</h2>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-foreground">Request password update</p>
-                  <p className="text-sm text-muted-foreground">
-                    You will receive a link at {user?.email} with instructions on how to change your password.
-                  </p>
-                  <Button variant="outline" onClick={handleRequestPasswordChange} className="mt-2">
-                    Request change
-                  </Button>
-                </div>
+                {user?.authMethod === "google" ? (
+                  <div className="bg-muted/50 border border-border rounded-lg p-4">
+                    <p className="text-sm text-muted-foreground">
+                      You signed in with Google, so your password is managed by your Google account.
+                      To change your password, visit your{" "}
+                      <a
+                        href="https://myaccount.google.com/security"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        Google account security settings
+                      </a>.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-foreground">Request password update</p>
+                    <p className="text-sm text-muted-foreground">
+                      You will receive a link at {user?.email} with instructions on how to change your password.
+                    </p>
+                    <Button variant="outline" onClick={handleRequestPasswordChange} className="mt-2">
+                      Request change
+                    </Button>
+                  </div>
+                )}
               </div>
 
               {/* Danger Zone - Delete Account */}
