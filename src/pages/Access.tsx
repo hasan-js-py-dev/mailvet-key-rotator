@@ -693,41 +693,45 @@ export default function AccessPage() {
             </div>
             <h1 className="font-display text-3xl font-bold mb-2">Check your email</h1>
             <p className="text-muted-foreground mb-6">
-              We've sent a verification link to<br />
+              {emailSentContext === "verification" ? (
+                <>We've sent a verification link to<br /></>
+              ) : (
+                <>We've sent a password reset link to<br /></>
+              )}
               <span className="font-medium text-foreground">{emailSentTo}</span>
             </p>
             <p className="text-sm text-muted-foreground mb-6">
-              Click the link in the email to verify your account. If you don't see it, check your spam folder.
+              {emailSentContext === "verification"
+                ? "Click the link in the email to verify your account. If you don't see it, check your spam folder."
+                : "Click the link in the email to reset your password. If you don't see it, check your spam folder."}
             </p>
-            
-            {emailSentContext === "verification" ? (
-              <Button
-                variant="outline"
-                onClick={handleResendVerification}
-                disabled={isResending || resendCooldown > 0}
-                className="w-full"
-              >
-                {isResending ? (
-                  <span className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Sending...
-                  </span>
-                ) : resendCooldown > 0 ? (
-                  `Resend in ${resendCooldown}s`
-                ) : (
-                  "Resend verification email"
-                )}
-              </Button>
-            ) : (
-              <div className="rounded-lg border border-border/60 bg-muted/50 p-4 text-left text-sm text-muted-foreground">
-                Need another password reset email? Return to the
-                <Link to="/access?page=forgot" className="ml-1 text-primary hover:underline">
-                  forgot password
-                </Link>
-                page to request a fresh link.
-              </div>
+
+            <Button
+              variant="outline"
+              onClick={emailSentContext === "verification" ? handleResendVerification : handleResendPasswordReset}
+              disabled={isResending || resendCooldown > 0}
+              className="w-full"
+            >
+              {isResending ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Sending...
+                </span>
+              ) : resendCooldown > 0 ? (
+                `Resend in ${resendCooldown}s`
+              ) : emailSentContext === "verification" ? (
+                "Resend verification email"
+              ) : (
+                "Resend reset email"
+              )}
+            </Button>
+
+            {emailSentContext === "reset" && (
+              <p className="mt-4 text-xs text-muted-foreground">
+                Tip: If you signed up with Google, password reset emails won't be sent—use Google Sign-In instead.
+              </p>
             )}
-            
+
             <p className="mt-6 text-sm text-muted-foreground">
               Wrong email?{" "}
               <Link to="/access?page=signup" className="text-primary hover:underline">

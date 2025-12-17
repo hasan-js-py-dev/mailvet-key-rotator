@@ -25,6 +25,7 @@ import SingleEmail from "@/pages/dashboard/SingleEmail";
 import ApiDocs from "@/pages/dashboard/ApiDocs";
 import Settings from "@/pages/dashboard/Settings";
 import Plan from "@/pages/dashboard/Plan";
+import AdminEmailLogs from "@/pages/dashboard/AdminEmailLogs";
 
 interface AnimatedRoutesProps {
   type: "main" | "dashboard" | "development";
@@ -106,6 +107,7 @@ const DevelopmentRoutesComponent = () => {
           <Route path="/dashboard/api" element={<ProtectedRoute><PageTransition><ApiDocs /></PageTransition></ProtectedRoute>} />
           <Route path="/dashboard/settings" element={<ProtectedRoute><PageTransition><Settings /></PageTransition></ProtectedRoute>} />
           <Route path="/dashboard/plan" element={<ProtectedRoute><PageTransition><Plan /></PageTransition></ProtectedRoute>} />
+          <Route path="/dashboard/admin/email-logs" element={<ProtectedRoute><PageTransition><AdminEmailLogs /></PageTransition></ProtectedRoute>} />
           
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
