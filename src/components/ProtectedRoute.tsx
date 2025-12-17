@@ -49,8 +49,22 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
  * Shows loading spinner while checking auth status
  */
 export const GuestOnlyRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuthContext();
+  const { isAuthenticated, isLoading, clearSession } = useAuthContext();
   const location = useLocation();
+
+  // Check if this is a password reset page - always allow access
+  const params = new URLSearchParams(location.search);
+  const pageType = params.get('page');
+  const isResetPage = (pageType === 'reset' || pageType === 'reset-password') && params.get('token');
+
+  // Password reset pages should ALWAYS be accessible, clear any existing session
+  if (isResetPage) {
+    // Clear session to ensure user can reset password without being redirected
+    if (isAuthenticated) {
+      clearSession();
+    }
+    return <>{children}</>;
+  }
 
   if (isLoading) {
     return (
@@ -67,7 +81,6 @@ export const GuestOnlyRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   // Unverified users (hasSession but !emailVerified) can stay on auth pages
   if (isAuthenticated) {
     // Check for return URL
-    const params = new URLSearchParams(location.search);
     const returnUrl = params.get('returnUrl');
     return <Navigate to={returnUrl ? decodeURIComponent(returnUrl) : '/dashboard'} replace />;
   }
