@@ -34,8 +34,12 @@ import {
 
 export default function AccountSettings() {
   const { user, isLoading: isUserLoading, refetch } = useUser();
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [marketingEmails, setMarketingEmails] = useState(false);
 
@@ -44,7 +48,12 @@ export default function AccountSettings() {
 
   useEffect(() => {
     if (user?.name) {
-      setName(user.name);
+      const nameParts = user.name.split(" ");
+      setFirstName(nameParts[0] || "");
+      setLastName(nameParts.slice(1).join(" ") || "");
+    }
+    if (user?.companyName !== undefined) {
+      setCompanyName(user.companyName || "");
     }
   }, [user]);
 
@@ -60,7 +69,10 @@ export default function AccountSettings() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ 
+          name: `${firstName} ${lastName}`.trim(),
+          companyName: companyName.trim() 
+        }),
       });
 
       if (!response.ok) {
@@ -83,11 +95,73 @@ export default function AccountSettings() {
     }
   };
 
+  const handlePasswordReset = async () => {
+    if (!user?.email) return;
+    
+    setIsResettingPassword(true);
+    try {
+      const response = await fetch(`${apiBaseUrl}/v1/auth/password-reset`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: user.email }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send reset email");
+      }
+
+      toast({
+        title: "Reset link sent",
+        description: "Check your email for a password reset link.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send reset email. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsResettingPassword(false);
+    }
+  };
+
   const handleDeleteAccount = async () => {
-    toast({
-      title: "Account deletion",
-      description: "Please contact support to delete your account.",
-    });
+    const token = localStorage.getItem(sessionTokenKey);
+    if (!token) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`${apiBaseUrl}/v1/account`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete account");
+      }
+
+      // Clear session and redirect
+      localStorage.removeItem(sessionTokenKey);
+      toast({
+        title: "Account deleted",
+        description: "Your account has been permanently deleted.",
+      });
+      
+      // Redirect to marketing site
+      window.location.href = "/";
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete account. Please try again.",
+        variant: "destructive",
+      });
+      setIsDeleting(false);
+    }
   };
 
   const getInitials = (name: string | null, email: string) => {
@@ -180,14 +254,38 @@ export default function AccountSettings() {
             </div>
 
             <div className="border-t border-border pt-5 space-y-4">
-              {/* Name Field */}
+              {/* First Name Field */}
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-foreground">Full Name</Label>
+                <Label htmlFor="firstName" className="text-foreground">First Name</Label>
                 <Input
-                  id="name"
-                  value={name || user?.name || ""}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter your full name"
+                  id="firstName"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="Enter your first name"
+                  className="max-w-md"
+                />
+              </div>
+
+              {/* Last Name Field */}
+              <div className="space-y-2">
+                <Label htmlFor="lastName" className="text-foreground">Last Name</Label>
+                <Input
+                  id="lastName"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder="Enter your last name"
+                  className="max-w-md"
+                />
+              </div>
+
+              {/* Company Name Field */}
+              <div className="space-y-2">
+                <Label htmlFor="companyName" className="text-foreground">Company Name (Optional)</Label>
+                <Input
+                  id="companyName"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  placeholder="Enter your company name"
                   className="max-w-md"
                 />
               </div>
@@ -250,8 +348,20 @@ export default function AccountSettings() {
                 <p className="font-medium text-foreground">Password</p>
                 <p className="text-sm text-muted-foreground">Last changed: Unknown</p>
               </div>
-              <Button variant="outline" size="sm">
-                Change Password
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handlePasswordReset}
+                disabled={isResettingPassword}
+              >
+                {isResettingPassword ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  "Change Password"
+                )}
               </Button>
             </div>
 
@@ -371,9 +481,17 @@ export default function AccountSettings() {
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleDeleteAccount}
+                      disabled={isDeleting}
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                      Delete Account
+                      {isDeleting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Deleting...
+                        </>
+                      ) : (
+                        "Delete Account"
+                      )}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>

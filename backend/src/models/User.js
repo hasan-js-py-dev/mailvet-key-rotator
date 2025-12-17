@@ -63,6 +63,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  companyName: {
+    type: String,
+    trim: true,
+    default: ''
+  },
   totalValidations: {
     type: Number,
     default: 0
