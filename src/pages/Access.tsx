@@ -435,21 +435,26 @@ export default function AccessPage() {
         body: JSON.stringify({ email: formData.email }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
-      // Always show success message to prevent email enumeration
+      if (!response.ok) {
+        throw new Error(data?.error || "Unable to send reset email. Please try again.");
+      }
+
+      // Always show generic success message to prevent email enumeration
       setEmailSentTo(formData.email);
       setEmailSentContext("reset");
+      setResendCooldown(60);
       navigate("/access?page=email-sent");
-      
+
       toast({
         title: "Reset email sent",
         description: "If an account exists with this email, you'll receive a password reset link.",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Request failed",
-        description: "Unable to send reset email. Please try again.",
+        description: error?.message || "Unable to send reset email. Please try again.",
         variant: "destructive",
       });
     }
@@ -564,6 +569,48 @@ export default function AccessPage() {
       toast({
         title: "Failed to resend",
         description: error.message || "Unable to resend verification email.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  const handleResendPasswordReset = async () => {
+    if (resendCooldown > 0 || isResending) return;
+
+    const email = emailSentTo || formData.email;
+    if (!email) {
+      navigate("/access?page=forgot");
+      return;
+    }
+
+    setIsResending(true);
+    try {
+      const response = await fetch(`${apiBaseUrl}/v1/auth/password-reset`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data?.error || "Unable to send reset email. Please try again.");
+      }
+
+      setResendCooldown(60);
+
+      toast({
+        title: "Email sent!",
+        description: "If an account exists with this email, you'll receive a password reset link.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Request failed",
+        description: error?.message || "Unable to send reset email. Please try again.",
         variant: "destructive",
       });
     } finally {
