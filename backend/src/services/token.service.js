@@ -76,13 +76,19 @@ const generateApiToken = async () => {
 };
 
 // Cookie configuration for refresh token
-const getRefreshTokenCookieOptions = () => ({
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
-  maxAge: REFRESH_TOKEN_EXPIRES_MS,
-  path: '/'
-});
+// Configurable via environment variables for local vs production
+const getRefreshTokenCookieOptions = () => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  return {
+    httpOnly: true,
+    secure: process.env.COOKIE_SECURE === 'true' || isProduction,
+    sameSite: process.env.COOKIE_SAMESITE || (isProduction ? 'strict' : 'lax'),
+    domain: process.env.COOKIE_DOMAIN || undefined,
+    maxAge: REFRESH_TOKEN_EXPIRES_MS,
+    path: '/'
+  };
+};
 
 module.exports = {
   generateAccessToken,

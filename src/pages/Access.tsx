@@ -48,7 +48,7 @@ const resetPasswordSchema = z.object({
   path: ["confirmPassword"],
 });
 
-type PageType = "login" | "signup" | "forgot" | "reset" | "verify-email" | "email-sent";
+type PageType = "login" | "signup" | "forgot" | "reset" | "reset-success" | "verify-email" | "email-sent";
 
 interface FormErrors {
   name?: string;
@@ -70,9 +70,12 @@ export default function AccessPage() {
 
   // Normalize page type: treat both `reset` and legacy `reset-password` as the reset flow
   const isResetPage = (pageParam === "reset" || pageParam === "reset-password") && !!resetToken;
-  const allowedPages: PageType[] = ["login", "signup", "forgot", "verify-email", "email-sent"];
+  const isResetSuccessPage = pageParam === "reset-success";
+  const allowedPages: PageType[] = ["login", "signup", "forgot", "verify-email", "email-sent", "reset-success"];
   const pageType: PageType = isResetPage
     ? "reset"
+    : isResetSuccessPage
+    ? "reset-success"
     : (allowedPages.includes(pageParam as PageType) ? (pageParam as PageType) : "login");
 
   const [showPassword, setShowPassword] = useState(false);
@@ -496,12 +499,8 @@ export default function AccessPage() {
       // Clear any local session to ensure user must login with the new password
       clearSession();
 
-      toast({
-        title: "Password updated!",
-        description: "Your password has been reset. Please login with your new password.",
-      });
-
-      navigate("/access?page=login", { replace: true });
+      // Navigate to success screen instead of auto-redirecting
+      navigate("/access?page=reset-success", { replace: true });
     } catch (error: any) {
       toast({
         title: "Reset failed",
@@ -944,6 +943,34 @@ export default function AccessPage() {
                 )}
               </Button>
             </form>
+          </motion.div>
+        );
+
+      case "reset-success":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
+          >
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/10 flex items-center justify-center">
+              <CheckCircle className="w-10 h-10 text-green-500" />
+            </div>
+            <h1 className="font-display text-3xl font-bold mb-2">Password Updated!</h1>
+            <p className="text-muted-foreground mb-8">
+              Your password has been reset successfully. You can now log in with your new password.
+            </p>
+            <Button
+              variant="gradient"
+              size="lg"
+              className="w-full"
+              onClick={() => navigate("/access?page=login", { replace: true })}
+            >
+              <span className="flex items-center gap-2">
+                Log in now
+                <ArrowRight className="w-5 h-5" />
+              </span>
+            </Button>
           </motion.div>
         );
 

@@ -74,11 +74,14 @@ const clearAuthTokens = async (res, user) => {
     await user.save();
   }
   
+  // Use same cookie options as set for consistency
+  const cookieOptions = getRefreshTokenCookieOptions();
   res.clearCookie('refresh_token', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/'
+    httpOnly: cookieOptions.httpOnly,
+    secure: cookieOptions.secure,
+    sameSite: cookieOptions.sameSite,
+    domain: cookieOptions.domain,
+    path: cookieOptions.path
   });
 };
 
@@ -593,6 +596,46 @@ router.post('/regenerate-api-token',
       res.json({ 
         message: 'API token regenerated',
         apiToken: token // Only shown once
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
+ * POST /auth/logout-all
+ * Force logout from all sessions (invalidates refresh token)
+ * Useful after password change or security concerns
+ */
+router.post('/logout-all',
+  verifyToken,
+  async (req, res, next) => {
+    try {
+      const user = await User.findById(req.userId);
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Clear all refresh tokens (invalidates all sessions)
+      user.refreshTokenHash = undefined;
+      user.refreshTokenExpires = undefined;
+      await user.save();
+
+      // Clear current session's cookie
+      const cookieOptions = getRefreshTokenCookieOptions();
+      res.clearCookie('refresh_token', {
+        httpOnly: cookieOptions.httpOnly,
+        secure: cookieOptions.secure,
+        sameSite: cookieOptions.sameSite,
+        domain: cookieOptions.domain,
+        path: cookieOptions.path
+      });
+
+      res.json({ 
+        message: 'Successfully logged out from all sessions',
+        requiresLogin: true
       });
     } catch (error) {
       next(error);

@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
   User, 
-  Mail, 
   Shield, 
   Bell, 
   Trash2,
@@ -11,8 +10,10 @@ import {
   Loader2,
   CheckCircle,
   AlertTriangle,
-  Key,
   CreditCard,
+  Crown,
+  ArrowUpRight,
+  Receipt,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -61,7 +62,7 @@ export default function AccountSettings() {
     }
   };
 
-  const apiTokenTo = getInternalPathOrUrl(getDashboardUrl("/api-token"));
+  const planTo = getInternalPathOrUrl(getDashboardUrl("/plan"));
 
   useEffect(() => {
     if (user?.name) {
@@ -200,32 +201,18 @@ export default function AccountSettings() {
     return email.slice(0, 2).toUpperCase();
   };
 
-  const sections = [
-    {
-      id: "profile",
-      icon: User,
-      title: "Profile",
-      description: "Manage your personal information",
-    },
-    {
-      id: "security",
-      icon: Shield,
-      title: "Security",
-      description: "Password and authentication settings",
-    },
-    {
-      id: "notifications",
-      icon: Bell,
-      title: "Notifications",
-      description: "Email notification preferences",
-    },
-    {
-      id: "billing",
-      icon: CreditCard,
-      title: "Billing",
-      description: "Manage your subscription",
-    },
-  ];
+  const getPlanDisplayName = (plan: string) => {
+    switch (plan) {
+      case 'pro':
+        return 'Pro Plan';
+      case 'enterprise':
+        return 'Enterprise Plan';
+      default:
+        return 'Free Plan';
+    }
+  };
+
+  const isPaidPlan = user?.plan && user.plan !== 'free';
 
   return (
     <DashboardLayout>
@@ -349,11 +336,121 @@ export default function AccountSettings() {
           </div>
         </motion.div>
 
-        {/* Security Section */}
+        {/* Subscription & Billing Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
+          className="bg-card border border-border rounded-lg"
+        >
+          <div className="p-5 border-b border-border">
+            <div className="flex items-center gap-3">
+              <CreditCard className="w-5 h-5 text-foreground" />
+              <div>
+                <h2 className="font-semibold text-foreground">Subscription & Billing</h2>
+                <p className="text-sm text-muted-foreground">Manage your plan and billing</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-5 space-y-4">
+            {/* Current Plan */}
+            <div className="flex items-center justify-between py-3 px-4 bg-muted/30 rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-full ${isPaidPlan ? 'bg-primary/10' : 'bg-muted'}`}>
+                  <Crown className={`w-5 h-5 ${isPaidPlan ? 'text-primary' : 'text-muted-foreground'}`} />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">{getPlanDisplayName(user?.plan || 'free')}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {isPaidPlan 
+                      ? `Billing status: ${user?.billingStatus || 'Active'}`
+                      : 'Unlimited email verifications'}
+                  </p>
+                </div>
+              </div>
+              <Button variant="outline" size="sm" asChild>
+                <Link to={planTo}>
+                  {isPaidPlan ? 'Manage Plan' : 'Upgrade'}
+                  <ArrowUpRight className="w-4 h-4 ml-1" />
+                </Link>
+              </Button>
+            </div>
+
+            {/* Credits Display */}
+            <div className="flex items-center justify-between py-2">
+              <div>
+                <p className="font-medium text-foreground">Verification Credits</p>
+                <p className="text-sm text-muted-foreground">
+                  {user?.plan === 'free' 
+                    ? `${user?.credits ?? 100} credits remaining`
+                    : 'Unlimited verifications'}
+                </p>
+              </div>
+              {user?.plan === 'free' && (user?.credits ?? 100) < 20 && (
+                <Button size="sm" asChild>
+                  <Link to={planTo}>
+                    Get More Credits
+                  </Link>
+                </Button>
+              )}
+            </div>
+
+            {/* Billing History */}
+            <div className="border-t border-border pt-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Receipt className="w-4 h-4 text-muted-foreground" />
+                <p className="font-medium text-foreground">Billing History</p>
+              </div>
+              
+              {isPaidPlan ? (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between py-2 px-3 bg-muted/20 rounded text-sm">
+                    <span className="text-muted-foreground">
+                      {user?.renewalDate 
+                        ? `Next billing: ${new Date(user.renewalDate).toLocaleDateString()}`
+                        : 'Active subscription'}
+                    </span>
+                    <span className="text-foreground font-medium capitalize">{user?.billingStatus || 'Active'}</span>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground py-2">
+                  No billing history. Upgrade to a paid plan to see invoices here.
+                </p>
+              )}
+            </div>
+
+            {/* Upgrade CTA for Free Users */}
+            {!isPaidPlan && (
+              <div className="border-t border-border pt-4">
+                <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <Crown className="w-5 h-5 text-primary mt-0.5" />
+                    <div className="flex-1">
+                      <p className="font-medium text-foreground">Upgrade to Pro</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Get unlimited list storage, faster processing, and upload up to 10,000 emails per list.
+                      </p>
+                      <Button size="sm" className="mt-3" asChild>
+                        <Link to={planTo}>
+                          View Plans
+                          <ArrowUpRight className="w-4 h-4 ml-1" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Security Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
           className="bg-card border border-border rounded-lg"
         >
           <div className="p-5 border-b border-border">
@@ -400,21 +497,6 @@ export default function AccountSettings() {
                 </Button>
               </div>
             </div>
-
-            <div className="border-t border-border pt-4">
-              <div className="flex items-center justify-between py-2">
-                <div>
-                  <p className="font-medium text-foreground">API Token</p>
-                  <p className="text-sm text-muted-foreground">Manage your API access</p>
-                </div>
-                <Button variant="outline" size="sm" asChild>
-                  <Link to={apiTokenTo}>
-                    <Key className="w-4 h-4 mr-2" />
-                    Manage
-                  </Link>
-                </Button>
-              </div>
-            </div>
           </div>
         </motion.div>
 
@@ -422,7 +504,7 @@ export default function AccountSettings() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.3 }}
           className="bg-card border border-border rounded-lg"
         >
           <div className="p-5 border-b border-border">
@@ -466,7 +548,7 @@ export default function AccountSettings() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.4 }}
           className="bg-card border border-destructive/30 rounded-lg"
         >
           <div className="p-5 border-b border-destructive/30">
