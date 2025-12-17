@@ -427,12 +427,14 @@ export default function AccessPage() {
 
   const handleForgotPassword = async () => {
     try {
+      const email = formData.email.trim();
+
       const response = await fetch(`${apiBaseUrl}/v1/auth/password-reset`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: formData.email }),
+        body: JSON.stringify({ email }),
       });
 
       const data = await response.json().catch(() => ({}));
@@ -442,7 +444,7 @@ export default function AccessPage() {
       }
 
       // Always show generic success message to prevent email enumeration
-      setEmailSentTo(formData.email);
+      setEmailSentTo(email);
       setEmailSentContext("reset");
       setResendCooldown(60);
       navigate("/access?page=email-sent");
@@ -579,7 +581,7 @@ export default function AccessPage() {
   const handleResendPasswordReset = async () => {
     if (resendCooldown > 0 || isResending) return;
 
-    const email = emailSentTo || formData.email;
+    const email = (emailSentTo || formData.email).trim();
     if (!email) {
       navigate("/access?page=forgot");
       return;

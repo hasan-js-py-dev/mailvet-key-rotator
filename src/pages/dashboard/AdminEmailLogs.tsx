@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { RefreshCw, Trash2, CheckCircle, XCircle, Mail, Loader2, Shield } from "lucide-react";
+import { RefreshCw, Trash2, CheckCircle, XCircle, Mail, Loader2, Shield, UserSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { authenticatedFetch } from "@/lib/auth";
 import { TopNavLayout } from "@/components/dashboard/TopNavLayout";
@@ -19,11 +21,34 @@ interface EmailLog {
   error?: string;
 }
 
+interface UserLookupResponse {
+  exists: boolean;
+  foundBy?: string | null;
+  query?: {
+    normalizedEmail?: string;
+  };
+  environment?: {
+    nodeEnv?: string;
+    mongoDb?: string | null;
+  };
+  user?: {
+    id: string;
+    email: string;
+    emailVerified: boolean;
+    authMethod: "google" | "password";
+    createdAt: string;
+  } | null;
+}
+
 export default function AdminEmailLogs() {
   const [logs, setLogs] = useState<EmailLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isClearing, setIsClearing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [lookupEmail, setLookupEmail] = useState("");
+  const [lookupResult, setLookupResult] = useState<UserLookupResponse | null>(null);
+  const [isLookingUp, setIsLookingUp] = useState(false);
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
 
@@ -71,6 +96,43 @@ export default function AdminEmailLogs() {
       });
     } finally {
       setIsClearing(false);
+    }
+  };
+
+  const lookupUser = async () => {
+    const email = lookupEmail.trim();
+    if (!email) return;
+
+    setIsLookingUp(true);
+    setLookupResult(null);
+
+    try {
+      const response = await authenticatedFetch(
+        `${apiBaseUrl}/v1/admin/users/lookup?email=${encodeURIComponent(email)}`
+      );
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data?.error || "Failed to lookup user");
+      }
+
+      const data: UserLookupResponse = await response.json();
+      setLookupResult(data);
+
+      toast({
+        title: data.exists ? "User found" : "User not found",
+        description: data.exists
+          ? `Match: ${data.foundBy || "unknown"}`
+          : "No user record exists in this database for that email.",
+        variant: data.exists ? undefined : "destructive",
+      });
+    } catch (err: any) {
+      toast({
+        title: "Lookup failed",
+        description: err.message || "Failed to lookup user",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLookingUp(false);
     }
   };
 
@@ -132,9 +194,9 @@ export default function AdminEmailLogs() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <CheckCircle className="w-5 h-5 text-muted-foreground" />
                   <div>
-                    <p className="text-2xl font-bold text-green-600">{successCount}</p>
+                    <p className="text-2xl font-bold">{successCount}</p>
                     <p className="text-xs text-muted-foreground">Successful</p>
                   </div>
                 </div>
@@ -143,15 +205,92 @@ export default function AdminEmailLogs() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <XCircle className="w-5 h-5 text-red-500" />
+                  <XCircle className="w-5 h-5 text-muted-foreground" />
                   <div>
-                    <p className="text-2xl font-bold text-red-600">{failedCount}</p>
+                    <p className="text-2xl font-bold">{failedCount}</p>
                     <p className="text-xs text-muted-foreground">Failed</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
+
+          {/* User lookup */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <UserSearch className="w-4 h-4" />
+                User lookup (DB check)
+              </CardTitle>
+              <CardDescription>
+                Verify whether a password-reset email address exists in this backend database.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
+                <div className="space-y-2">
+                  <Label htmlFor="lookupEmail">Email</Label>
+                  <Input
+                    id="lookupEmail"
+                    value={lookupEmail}
+                    onChange={(e) => setLookupEmail(e.target.value)}
+                    placeholder="name@domain.com"
+                    autoComplete="off"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  onClick={lookupUser}
+                  disabled={isLookingUp || !lookupEmail.trim()}
+                >
+                  {isLookingUp ? (
+                    <span className="inline-flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Checking...
+                    </span>
+                  ) : (
+                    "Check"
+                  )}
+                </Button>
+              </div>
+
+              {lookupResult && (
+                <div className="rounded-lg border border-border bg-muted/40 p-3 text-sm">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant={lookupResult.exists ? "default" : "destructive"}>
+                      {lookupResult.exists ? "exists" : "missing"}
+                    </Badge>
+                    <span className="text-muted-foreground">
+                      match: {lookupResult.foundBy || "—"}
+                    </span>
+                    {lookupResult.environment?.nodeEnv && (
+                      <span className="text-muted-foreground">
+                        env: {lookupResult.environment.nodeEnv}
+                      </span>
+                    )}
+                    {lookupResult.environment?.mongoDb && (
+                      <span className="text-muted-foreground">
+                        db: {lookupResult.environment.mongoDb}
+                      </span>
+                    )}
+                  </div>
+
+                  {lookupResult.user && (
+                    <div className="mt-2 grid gap-1">
+                      <div className="text-muted-foreground">email: {lookupResult.user.email}</div>
+                      <div className="text-muted-foreground">auth: {lookupResult.user.authMethod}</div>
+                      <div className="text-muted-foreground">
+                        verified: {lookupResult.user.emailVerified ? "yes" : "no"}
+                      </div>
+                      <div className="text-muted-foreground">
+                        created: {new Date(lookupResult.user.createdAt).toLocaleString()}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Error State */}
           {error && (
