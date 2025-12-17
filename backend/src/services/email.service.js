@@ -1,6 +1,6 @@
 const resend = require('../config/resend');
 
-const EMAIL_FROM = process.env.EMAIL_FROM || 'MailVet <noreply@mailvet.app>';
+const EMAIL_FROM = process.env.EMAIL_FROM || 'MailVet <send@mailvet.app>';
 
 const sendVerificationEmail = async (email, token, name = '') => {
   const verificationUrl = `${process.env.FRONTEND_URL}/access?page=verify-email&token=${token}`;
