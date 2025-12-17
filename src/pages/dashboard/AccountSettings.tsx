@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
   User, 
@@ -20,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/useUser";
+import { getDashboardUrl, getMainSiteUrl } from "@/lib/subdomain";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,6 +35,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export default function AccountSettings() {
+  const navigate = useNavigate();
   const { user, isLoading: isUserLoading, refetch } = useUser();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -45,6 +48,20 @@ export default function AccountSettings() {
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
   const sessionTokenKey = "mailvet_session";
+
+  const getInternalPathOrUrl = (target: string): string => {
+    try {
+      const url = new URL(target, window.location.origin);
+      if (url.origin === window.location.origin) {
+        return url.pathname + url.search + url.hash;
+      }
+      return url.toString();
+    } catch {
+      return target;
+    }
+  };
+
+  const apiTokenTo = getInternalPathOrUrl(getDashboardUrl("/api-token"));
 
   useEffect(() => {
     if (user?.name) {
@@ -152,8 +169,15 @@ export default function AccountSettings() {
         description: "Your account has been permanently deleted.",
       });
       
-      // Redirect to marketing site
-      window.location.href = "/";
+      // Redirect to marketing site (smooth if same-origin)
+      const target = getMainSiteUrl("/");
+      const internalOrUrl = getInternalPathOrUrl(target);
+
+      if (internalOrUrl.startsWith("http")) {
+        window.location.assign(internalOrUrl);
+      } else {
+        navigate(internalOrUrl, { replace: true });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -384,10 +408,10 @@ export default function AccountSettings() {
                   <p className="text-sm text-muted-foreground">Manage your API access</p>
                 </div>
                 <Button variant="outline" size="sm" asChild>
-                  <a href="/dashboard/api-token">
+                  <Link to={apiTokenTo}>
                     <Key className="w-4 h-4 mr-2" />
                     Manage
-                  </a>
+                  </Link>
                 </Button>
               </div>
             </div>
