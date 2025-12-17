@@ -14,7 +14,7 @@ interface ProtectedRouteProps {
  * Shows loading spinner while checking auth status
  */
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isAuthenticated, isLoading, user } = useAuthContext();
+  const { isAuthenticated, isLoading, hasSession, user } = useAuthContext();
   const location = useLocation();
 
   if (isLoading) {
@@ -28,14 +28,14 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
-  if (!isAuthenticated) {
-    // Save intended destination for redirect after login
+  // No session at all - redirect to login
+  if (!hasSession) {
     const returnUrl = encodeURIComponent(location.pathname + location.search);
     return <Navigate to={`/access?page=login&returnUrl=${returnUrl}`} replace />;
   }
 
-  // Check if email is verified (required for protected routes)
-  if (user && user.emailVerified === false) {
+  // Has session but email not verified - redirect to email-sent page
+  if (!isAuthenticated && user?.emailVerified === false) {
     return <Navigate to="/access?page=email-sent" replace />;
   }
 
@@ -44,7 +44,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
 /**
  * Guest Only Route Component
- * Redirects authenticated users to dashboard
+ * Redirects fully authenticated users (verified email) to dashboard
+ * Allows unverified users to stay on auth pages (email-sent, verify-email)
  * Shows loading spinner while checking auth status
  */
 export const GuestOnlyRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
@@ -62,6 +63,8 @@ export const GuestOnlyRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
+  // Only redirect if user is FULLY authenticated (has session AND verified email)
+  // Unverified users (hasSession but !emailVerified) can stay on auth pages
   if (isAuthenticated) {
     // Check for return URL
     const params = new URLSearchParams(location.search);
