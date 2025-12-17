@@ -1,30 +1,40 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { 
+import {
   Settings as SettingsIcon,
   User,
   CreditCard,
   Key,
   Gauge,
   Loader2,
-  Save,
-  Lock,
-  CheckCircle,
-  AlertTriangle,
   Copy,
   Eye,
   EyeOff,
   RefreshCw,
   Check,
+  Trash2,
 } from "lucide-react";
 import { TopNavLayout } from "@/components/dashboard/TopNavLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/useUser";
+import { logout as authLogout, authenticatedFetch } from "@/lib/auth";
+import { getMainSiteUrl } from "@/lib/subdomain";
 import { cn } from "@/lib/utils";
 
 type TabType = "account" | "billing" | "api" | "limits";
@@ -46,6 +56,7 @@ export default function Settings() {
   const [lastName, setLastName] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // API Token state
   const [showToken, setShowToken] = useState(false);
@@ -66,6 +77,10 @@ export default function Settings() {
       setFirstName(nameParts[0] || "");
       setLastName(nameParts.slice(1).join(" ") || "");
     }
+
+    if (user?.companyName !== undefined) {
+      setCompanyName(user.companyName || "");
+    }
   }, [user]);
 
   const handleTabChange = (tab: TabType) => {
@@ -76,18 +91,33 @@ export default function Settings() {
   const handleSaveProfile = async () => {
     setIsSaving(true);
     try {
-      const response = await fetch(`${apiBaseUrl}/v1/account`, {
+      const response = await authenticatedFetch(`${apiBaseUrl}/v1/account`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ name: `${firstName} ${lastName}`.trim() }),
+        body: JSON.stringify({
+          name: `${firstName} ${lastName}`.trim(),
+          companyName: companyName.trim(),
+        }),
       });
 
-      if (!response.ok) throw new Error("Failed to update profile");
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        const message =
+          typeof data?.error === "string"
+            ? data.error
+            : Array.isArray(data?.errors)
+              ? data.errors?.[0]?.msg
+              : null;
+        throw new Error(message || "Failed to update profile");
+      }
+
       await refetch();
       toast({ title: "Profile updated", description: "Your profile has been saved." });
-    } catch {
-      toast({ title: "Error", description: "Failed to update profile.", variant: "destructive" });
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to update profile.",
+        variant: "destructive",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -119,17 +149,47 @@ export default function Settings() {
   };
 
   const handleRequestPasswordChange = async () => {
+    if (!user?.email) return;
+
     try {
-      const response = await fetch(`${apiBaseUrl}/v1/auth/forgot-password`, {
+      const response = await fetch(`${apiBaseUrl}/v1/auth/password-reset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: user?.email }),
+        body: JSON.stringify({ email: user.email }),
       });
       if (!response.ok) throw new Error("Failed to send reset email");
-      toast({ title: "Email sent", description: `Password reset link sent to ${user?.email}` });
+      toast({ title: "Email sent", description: `Password reset link sent to ${user.email}` });
     } catch {
       toast({ title: "Error", description: "Failed to send reset email.", variant: "destructive" });
     }
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      const response = await authenticatedFetch(`${apiBaseUrl}/v1/account`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(typeof data?.error === "string" ? data.error : "Failed to delete account");
+      }
+
+      toast({ title: "Account deleted", description: "Your account has been deleted." });
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to delete account.",
+        variant: "destructive",
+      });
+      return;
+    } finally {
+      await authLogout();
+      setIsDeleting(false);
+    }
+
+    window.location.href = getMainSiteUrl("/");
   };
 
   const credits = user?.credits ?? 0;
