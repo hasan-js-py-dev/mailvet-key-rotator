@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Folder, Upload, Zap, ChevronRight, Lock } from "lucide-react";
+import { Mail, Folder, Upload, Zap, ChevronRight, Lock, Check, Crown } from "lucide-react";
 import { TopNavLayout } from "@/components/dashboard/TopNavLayout";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/hooks/useUser";
+import { toast } from "@/hooks/use-toast";
 
 const plans = [
   {
@@ -18,8 +19,8 @@ const plans = [
     features: [
       {
         icon: Mail,
-        title: "Unlimited Verification Credits",
-        description: "Validate unlimited emails, no credit limits.",
+        title: "100 Verification Credits",
+        description: "Start with 100 free email verifications.",
       },
       {
         icon: Folder,
@@ -73,48 +74,133 @@ const plans = [
 
 export default function PlanManagement() {
   const [isAnnual, setIsAnnual] = useState(false);
-  const { user } = useUser();
+  const [isUpgrading, setIsUpgrading] = useState(false);
+  const { user, refetch } = useUser();
   const currentPlan = user?.plan || "free";
+  
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
+
+  const handleUpgrade = async (planKey: string) => {
+    if (planKey === currentPlan) return;
+    
+    // For free plan (downgrade), just show message
+    if (planKey === 'free') {
+      toast({
+        title: "Contact Support",
+        description: "Please contact support to downgrade your plan.",
+      });
+      return;
+    }
+    
+    setIsUpgrading(true);
+    try {
+      const token = localStorage.getItem("mailvet_session");
+      const response = await fetch(`${apiBaseUrl}/v1/billing/checkout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+        body: JSON.stringify({ 
+          plan: planKey === 'pro' ? 'ultimate' : planKey,
+          billingCycle: isAnnual ? 'annual' : 'monthly'
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to initiate checkout");
+      }
+
+      const data = await response.json();
+      
+      // Redirect to checkout URL
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else {
+        toast({
+          title: "Checkout Initiated",
+          description: "Redirecting to payment...",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Upgrade Failed",
+        description: error instanceof Error ? error.message : "Failed to upgrade plan",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpgrading(false);
+    }
+  };
 
   return (
     <TopNavLayout>
       <div className="space-y-8">
         {/* Page Header */}
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground">Upgrade</h1>
+        <div className="text-center max-w-2xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+            <Crown className="w-4 h-4" />
+            Plans & Pricing
+          </div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Choose Your Plan</h1>
+          <p className="text-muted-foreground">
+            Select the plan that best fits your email verification needs.
+          </p>
         </div>
 
         {/* Plan Cards */}
-        <div className="grid md:grid-cols-2 gap-6 max-w-4xl">
+        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           {plans.map((plan, index) => {
-            const isCurrent = currentPlan === plan.planKey;
+            const isCurrent = currentPlan === plan.planKey || 
+              (plan.planKey === 'pro' && (currentPlan === 'ultimate' || currentPlan === 'enterprise'));
+            const isPro = plan.popular;
+            
             return (
               <motion.div
                 key={plan.name}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-card border border-border rounded-lg p-6"
+                className={cn(
+                  "bg-card border rounded-lg p-6 relative",
+                  isPro ? "border-primary shadow-lg" : "border-border"
+                )}
               >
+                {/* Popular Badge */}
+                {isPro && !isCurrent && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-primary text-primary-foreground">
+                      Most Popular
+                    </span>
+                  </div>
+                )}
+
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold text-foreground">{plan.name}</h2>
-                  <span className="px-3 py-1 rounded-full text-xs font-medium border bg-card text-foreground border-border">
-                    {isCurrent ? "Current" : plan.badge}
+                  <span className={cn(
+                    "px-3 py-1 rounded-full text-xs font-medium border",
+                    isCurrent 
+                      ? "bg-green-500/10 text-green-600 border-green-500/30"
+                      : "bg-card text-foreground border-border"
+                  )}>
+                    {isCurrent ? "Current Plan" : plan.badge}
                   </span>
                 </div>
 
                 {/* Billing Toggle for Pro */}
-                {plan.popular && (
+                {isPro && (
                   <div className="flex items-center justify-center gap-3 mb-4">
-                    <span className={cn("text-sm", !isAnnual ? "text-foreground" : "text-muted-foreground")}>
+                    <span className={cn("text-sm", !isAnnual ? "text-foreground font-medium" : "text-muted-foreground")}>
                       Monthly
                     </span>
                     <Switch
                       checked={isAnnual}
                       onCheckedChange={setIsAnnual}
                     />
-                    <span className={cn("text-sm", isAnnual ? "text-foreground" : "text-muted-foreground")}>
+                    <span className={cn("text-sm", isAnnual ? "text-foreground font-medium" : "text-muted-foreground")}>
                       Annual
                     </span>
                   </div>
@@ -123,7 +209,7 @@ export default function PlanManagement() {
                 {/* Price */}
                 <div className="text-center mb-2">
                   <span className="text-4xl font-bold text-foreground">
-                    {plan.popular && isAnnual ? plan.priceAnnual : plan.price}
+                    {isPro && isAnnual ? plan.priceAnnual : plan.price}
                   </span>
                   <span className="text-muted-foreground">/month</span>
                 </div>
@@ -131,9 +217,9 @@ export default function PlanManagement() {
                 {/* Tagline */}
                 <p className={cn(
                   "text-center text-sm mb-6",
-                  plan.popular && isAnnual ? "text-amber-600" : "text-muted-foreground"
+                  isPro && isAnnual ? "text-green-600 font-medium" : "text-muted-foreground"
                 )}>
-                  {plan.popular && isAnnual 
+                  {isPro && isAnnual 
                     ? "Save 16.7% with annual billing" 
                     : plan.tagline}
                 </p>
@@ -144,17 +230,29 @@ export default function PlanManagement() {
                     "w-full mb-6",
                     isCurrent 
                       ? "bg-muted text-muted-foreground hover:bg-muted cursor-default" 
-                      : "bg-primary text-primary-foreground hover:bg-primary/90"
+                      : isPro
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                   )}
-                  disabled={isCurrent}
+                  disabled={isCurrent || isUpgrading}
+                  onClick={() => handleUpgrade(plan.planKey)}
                 >
-                  {isCurrent ? (
-                    plan.planKey === "free" ? "Free Plan" : "Current Plan"
-                  ) : (
+                  {isUpgrading ? (
+                    <span className="flex items-center gap-2">
+                      Processing...
+                    </span>
+                  ) : isCurrent ? (
+                    <span className="flex items-center gap-2">
+                      <Check className="w-4 h-4" />
+                      Current Plan
+                    </span>
+                  ) : isPro ? (
                     <span className="flex items-center gap-2">
                       Upgrade to Pro
                       <ChevronRight className="w-4 h-4" />
                     </span>
+                  ) : (
+                    "Free Plan"
                   )}
                 </Button>
 
@@ -165,7 +263,15 @@ export default function PlanManagement() {
                 <div className="space-y-4">
                   {plan.features.map((feature, featureIndex) => (
                     <div key={featureIndex} className="flex items-start gap-3">
-                      <feature.icon className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                      <div className={cn(
+                        "p-1.5 rounded-md",
+                        isPro ? "bg-primary/10" : "bg-muted"
+                      )}>
+                        <feature.icon className={cn(
+                          "w-4 h-4",
+                          isPro ? "text-primary" : "text-muted-foreground"
+                        )} />
+                      </div>
                       <div>
                         <p className="font-medium text-foreground text-sm">{feature.title}</p>
                         <p className="text-sm text-muted-foreground">{feature.description}</p>
@@ -175,7 +281,7 @@ export default function PlanManagement() {
                 </div>
 
                 {/* Security Badge for Pro */}
-                {plan.popular && (
+                {isPro && (
                   <div className="mt-6 pt-4 border-t border-border">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Lock className="w-4 h-4" />

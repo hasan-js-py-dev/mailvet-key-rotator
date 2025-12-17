@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
   ArrowRight, 
@@ -16,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/useUser";
+import { getDashboardUrl } from "@/lib/subdomain";
 
 interface ValidationResult {
   email: string;
@@ -76,12 +78,25 @@ const categories = [
 ];
 
 export default function SingleEmail() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<ValidationResult | null>(null);
   const { user, refetch } = useUser();
   
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
+
+  const getInternalPathOrUrl = (target: string): string => {
+    try {
+      const url = new URL(target, window.location.origin);
+      if (url.origin === window.location.origin) {
+        return url.pathname + url.search + url.hash;
+      }
+      return url.toString();
+    } catch {
+      return target;
+    }
+  };
 
   const handleValidate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,6 +115,19 @@ export default function SingleEmail() {
 
       if (!response.ok) {
         const error = await response.json();
+        
+        // Handle no credits - redirect to plan page
+        if (response.status === 403 && error.error === 'No credits remaining') {
+          toast({
+            title: "No Credits Remaining",
+            description: "Upgrade your plan to continue verifying emails.",
+            variant: "destructive",
+          });
+          const planPath = getInternalPathOrUrl(getDashboardUrl("/plan"));
+          navigate(planPath);
+          return;
+        }
+        
         throw new Error(error.error || "Validation failed");
       }
 

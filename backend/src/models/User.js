@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
   },
   credits: {
     type: Number,
-    default: 50 // Free plan starts with 50 credits
+    default: 100 // Free plan starts with 100 credits
   },
   plan: {
     type: String,
