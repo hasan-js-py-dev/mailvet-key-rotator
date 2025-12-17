@@ -16,8 +16,8 @@ const {
   getRefreshTokenCookieOptions 
 } = require('../services/token.service');
 
-// Apply rate limiting to all auth routes
-router.use(authLimiter);
+// Note: Rate limiting is applied per-route instead of globally
+// This allows different limits for different auth actions
 
 // Validation middleware
 const validate = (req, res, next) => {
@@ -85,9 +85,10 @@ const clearAuthTokens = async (res, user) => {
 /**
  * POST /auth/signup
  * Register with email/password via Firebase
- * Returns: access token in JSON, refresh token in HttpOnly cookie
+ * Returns: message to verify email (no tokens issued)
  */
 router.post('/signup',
+  // No authLimiter on signup - it's too strict and causes "too many attempts" errors
   [
     body('email').isEmail().normalizeEmail(),
     body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
@@ -221,6 +222,7 @@ router.post('/social/google',
  * Returns: access token in JSON, refresh token in HttpOnly cookie
  */
 router.post('/login',
+  authLimiter, // Apply rate limiting to login attempts
   verifyFirebaseToken,
   async (req, res, next) => {
     try {
@@ -438,6 +440,7 @@ router.post('/resend-verification',
  * Request password reset
  */
 router.post('/password-reset',
+  authLimiter, // Apply rate limiting to password reset requests
   [
     body('email')
       .trim()
