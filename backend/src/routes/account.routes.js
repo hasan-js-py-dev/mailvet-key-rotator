@@ -37,6 +37,7 @@ router.get('/', async (req, res, next) => {
       id: user._id,
       email: user.email,
       name: user.name,
+      companyName: user.companyName,
       emailVerified: user.emailVerified,
       credits: user.credits,
       plan: user.plan,
@@ -57,12 +58,13 @@ router.get('/', async (req, res, next) => {
  */
 router.patch('/',
   [
-    body('name').optional().trim().isLength({ min: 1, max: 100 })
+    body('name').optional().trim().isLength({ min: 1, max: 100 }),
+    body('companyName').optional().trim().isLength({ max: 100 })
   ],
   validate,
   async (req, res, next) => {
     try {
-      const { name } = req.body;
+      const { name, companyName } = req.body;
       
       const user = await User.findById(req.userId);
       if (!user) {
@@ -73,6 +75,9 @@ router.patch('/',
       if (name !== undefined) {
         user.name = name;
       }
+      if (companyName !== undefined) {
+        user.companyName = companyName;
+      }
 
       await user.save();
 
@@ -82,6 +87,7 @@ router.patch('/',
           id: user._id,
           email: user.email,
           name: user.name,
+          companyName: user.companyName,
           emailVerified: user.emailVerified,
           credits: user.credits,
           plan: user.plan
@@ -92,6 +98,41 @@ router.patch('/',
     }
   }
 );
+
+/**
+ * DELETE /account
+ * Delete user account and all associated data
+ */
+router.delete('/', async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const ValidationResult = require('../models/ValidationResult');
+    const Job = require('../models/Job');
+
+    // Delete associated data
+    await ValidationResult.deleteMany({ userId: user._id });
+    await Job.deleteMany({ userId: user._id });
+
+    // Delete the user
+    await User.findByIdAndDelete(req.userId);
+
+    // Clear refresh token cookie
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/'
+    });
+
+    res.json({ message: 'Account deleted' });
+  } catch (error) {
+    next(error);
+  }
+});
 
 /**
  * GET /account/usage

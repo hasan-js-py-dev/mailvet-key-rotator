@@ -5,6 +5,7 @@ interface User {
   id: string;
   email: string;
   name: string | null;
+  companyName: string;
   emailVerified: boolean;
   credits: number;
   plan: string;
