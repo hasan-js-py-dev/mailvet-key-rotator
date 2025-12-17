@@ -121,7 +121,10 @@ export const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-3 ml-10">
-            {!isLoading && hasSession ? (
+            {isLoading ? (
+              // Show nothing while checking auth to prevent flash
+              <div className="w-[180px]" />
+            ) : hasSession ? (
               <Link to="/dashboard">
                 <Button size="default" className="marketing-cta text-[15px] font-semibold text-white px-6 rounded-full">
                   <User className="w-4 h-4 mr-2" />
@@ -197,7 +200,10 @@ export const Navbar = () => {
                 Use Cases
               </Link>
               <div className="flex flex-col gap-3 pt-4 border-t border-[hsl(270,50%,15%)]">
-                {!isLoading && hasSession ? (
+                {isLoading ? (
+                  // Show nothing while checking auth to prevent flash
+                  <div className="h-12" />
+                ) : hasSession ? (
                   <Link to="/dashboard" onClick={() => setIsOpen(false)}>
                     <Button className="w-full marketing-cta text-[15px] font-semibold text-white rounded-full">
                       <User className="w-4 h-4 mr-2" />

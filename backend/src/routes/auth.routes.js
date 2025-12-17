@@ -266,7 +266,8 @@ router.post('/login',
 /**
  * POST /auth/refresh
  * Refresh access token using refresh token from cookie
- * Optionally rotates refresh token for enhanced security
+ * NOTE: We do NOT rotate refresh token on every request to avoid race conditions
+ * on rapid page refreshes. The refresh token is only rotated on login.
  */
 router.post('/refresh',
   verifyRefreshTokenMiddleware,
@@ -274,8 +275,9 @@ router.post('/refresh',
     try {
       const user = req.user;
 
-      // Rotate refresh token (generate new one)
-      const accessToken = await setAuthTokens(res, user);
+      // Only generate a new access token, keep the same refresh token
+      // This prevents race conditions when multiple tabs/requests refresh simultaneously
+      const accessToken = generateAccessToken(user._id);
 
       res.json({
         accessToken,
