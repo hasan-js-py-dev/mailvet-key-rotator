@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, User } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
 import { UseCasesMenu } from "./UseCasesMenu";
 import { FeaturesMenu } from "./FeaturesMenu";
+import { useAuthContext } from "./AuthProvider";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +14,7 @@ export const Navbar = () => {
   const [featuresOpen, setFeaturesOpen] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
-
+  const { hasSession, isLoading } = useAuthContext();
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-[hsl(270,50%,15%)/0.5] bg-[hsl(270,100%,2%)/0.85] backdrop-blur-2xl">
       <div className="container mx-auto px-6">
@@ -120,16 +121,27 @@ export const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-3 ml-10">
-            <Link to="/access?page=login">
-              <Button variant="ghost" size="default" className="text-[15px] font-medium text-[hsl(270,20%,75%)] hover:text-white hover:bg-[hsl(270,50%,10%)]">
-                Log in
-              </Button>
-            </Link>
-            <Link to="/access?page=signup">
-              <Button size="default" className="marketing-cta text-[15px] font-semibold text-white px-6 rounded-full">
-                <span className="relative z-10">100 Free Credits</span>
-              </Button>
-            </Link>
+            {!isLoading && hasSession ? (
+              <Link to="/dashboard">
+                <Button size="default" className="marketing-cta text-[15px] font-semibold text-white px-6 rounded-full">
+                  <User className="w-4 h-4 mr-2" />
+                  <span className="relative z-10">Go to my account</span>
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/access?page=login">
+                  <Button variant="ghost" size="default" className="text-[15px] font-medium text-[hsl(270,20%,75%)] hover:text-white hover:bg-[hsl(270,50%,10%)]">
+                    Log in
+                  </Button>
+                </Link>
+                <Link to="/access?page=signup">
+                  <Button size="default" className="marketing-cta text-[15px] font-semibold text-white px-6 rounded-full">
+                    <span className="relative z-10">100 Free Credits</span>
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -185,14 +197,25 @@ export const Navbar = () => {
                 Use Cases
               </Link>
               <div className="flex flex-col gap-3 pt-4 border-t border-[hsl(270,50%,15%)]">
-                <Link to="/access?page=login" onClick={() => setIsOpen(false)}>
-                  <Button variant="ghost" className="w-full text-[15px] font-medium text-[hsl(270,20%,75%)] hover:text-white hover:bg-[hsl(270,50%,10%)]">Log in</Button>
-                </Link>
-                <Link to="/access?page=signup" onClick={() => setIsOpen(false)}>
-                  <Button className="w-full marketing-cta text-[15px] font-semibold text-white rounded-full">
-                    <span className="relative z-10">100 Free Credits</span>
-                  </Button>
-                </Link>
+                {!isLoading && hasSession ? (
+                  <Link to="/dashboard" onClick={() => setIsOpen(false)}>
+                    <Button className="w-full marketing-cta text-[15px] font-semibold text-white rounded-full">
+                      <User className="w-4 h-4 mr-2" />
+                      <span className="relative z-10">Go to my account</span>
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link to="/access?page=login" onClick={() => setIsOpen(false)}>
+                      <Button variant="ghost" className="w-full text-[15px] font-medium text-[hsl(270,20%,75%)] hover:text-white hover:bg-[hsl(270,50%,10%)]">Log in</Button>
+                    </Link>
+                    <Link to="/access?page=signup" onClick={() => setIsOpen(false)}>
+                      <Button className="w-full marketing-cta text-[15px] font-semibold text-white rounded-full">
+                        <span className="relative z-10">100 Free Credits</span>
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
