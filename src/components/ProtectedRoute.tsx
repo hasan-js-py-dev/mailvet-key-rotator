@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '@/components/AuthProvider';
 import { Loader2 } from 'lucide-react';
@@ -46,23 +46,25 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
  * Guest Only Route Component
  * Redirects fully authenticated users (verified email) to dashboard
  * Allows unverified users to stay on auth pages (email-sent, verify-email)
- * Shows loading spinner while checking auth status
+ * Allows password reset pages always (and clears any existing session)
  */
 export const GuestOnlyRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isAuthenticated, isLoading, clearSession } = useAuthContext();
+  const { isAuthenticated, isLoading, hasSession, clearSession } = useAuthContext();
   const location = useLocation();
 
-  // Check if this is a password reset page - always allow access
   const params = new URLSearchParams(location.search);
   const pageType = params.get('page');
-  const isResetPage = (pageType === 'reset' || pageType === 'reset-password') && params.get('token');
+  const isResetPage = (pageType === 'reset' || pageType === 'reset-password') && !!params.get('token');
 
-  // Password reset pages should ALWAYS be accessible, clear any existing session
-  if (isResetPage) {
-    // Clear session to ensure user can reset password without being redirected
-    if (isAuthenticated) {
+  // Clear any existing session in an effect (avoid setState during render)
+  useEffect(() => {
+    if (isResetPage && hasSession) {
       clearSession();
     }
+  }, [isResetPage, hasSession, clearSession]);
+
+  // Password reset pages should ALWAYS be accessible
+  if (isResetPage) {
     return <>{children}</>;
   }
 
@@ -80,7 +82,6 @@ export const GuestOnlyRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   // Only redirect if user is FULLY authenticated (has session AND verified email)
   // Unverified users (hasSession but !emailVerified) can stay on auth pages
   if (isAuthenticated) {
-    // Check for return URL
     const returnUrl = params.get('returnUrl');
     return <Navigate to={returnUrl ? decodeURIComponent(returnUrl) : '/dashboard'} replace />;
   }

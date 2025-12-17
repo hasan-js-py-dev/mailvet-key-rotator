@@ -477,6 +477,7 @@ export default function AccessPage() {
     try {
       const response = await fetch(`${apiBaseUrl}/v1/auth/reset-password`, {
         method: "POST",
+        credentials: 'include',
         headers: {
           "Content-Type": "application/json",
         },
@@ -492,12 +493,15 @@ export default function AccessPage() {
         throw new Error(data.error || "Password reset failed");
       }
 
+      // Clear any local session to ensure user must login with the new password
+      clearSession();
+
       toast({
         title: "Password updated!",
         description: "Your password has been reset. Please login with your new password.",
       });
 
-      navigate("/access?page=login");
+      navigate("/access?page=login", { replace: true });
     } catch (error: any) {
       toast({
         title: "Reset failed",

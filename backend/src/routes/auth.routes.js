@@ -532,7 +532,7 @@ router.post('/reset-password',
       const user = await User.findOne({
         passwordResetToken: token,
         passwordResetExpires: { $gt: new Date() }
-      }).select('+passwordResetToken +passwordResetExpires +passwordHash');
+      }).select('+passwordResetToken +passwordResetExpires +passwordHash +refreshTokenHash +refreshTokenExpires');
 
       if (!user) {
         return res.status(400).json({ 
@@ -549,6 +549,10 @@ router.post('/reset-password',
       user.passwordResetToken = undefined;
       user.passwordResetExpires = undefined;
       await user.save();
+
+      // IMPORTANT: Logout the user everywhere after password change
+      // (clears refresh token cookie + invalidates server-side refresh token)
+      await clearAuthTokens(res, user);
 
       res.json({ 
         message: 'Password reset successfully',
