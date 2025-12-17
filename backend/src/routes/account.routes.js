@@ -120,11 +120,11 @@ router.delete('/', async (req, res, next) => {
     // Delete the user
     await User.findByIdAndDelete(req.userId);
 
-    // Clear refresh token cookie
-    res.clearCookie('refreshToken', {
+    // Clear refresh token cookie (matches name used in auth.routes.js)
+    res.clearCookie('refresh_token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/'
     });
 

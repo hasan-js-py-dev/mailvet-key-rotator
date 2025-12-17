@@ -177,19 +177,18 @@ export default function Settings() {
       }
 
       toast({ title: "Account deleted", description: "Your account has been deleted." });
+
+      // Logout and redirect after successful deletion
+      await authLogout();
+      window.location.href = getMainSiteUrl("/");
     } catch (err) {
       toast({
         title: "Error",
         description: err instanceof Error ? err.message : "Failed to delete account.",
         variant: "destructive",
       });
-      return;
-    } finally {
-      await authLogout();
       setIsDeleting(false);
     }
-
-    window.location.href = getMainSiteUrl("/");
   };
 
   const credits = user?.credits ?? 0;
@@ -314,6 +313,58 @@ export default function Settings() {
                   <Button variant="outline" onClick={handleRequestPasswordChange} className="mt-2">
                     Request change
                   </Button>
+                </div>
+              </div>
+
+              {/* Danger Zone - Delete Account */}
+              <div className="border-t border-destructive/30 pt-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <Trash2 className="w-5 h-5 text-destructive" />
+                  <h2 className="text-lg font-semibold text-destructive">Danger Zone</h2>
+                </div>
+                <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-foreground">Delete Account</p>
+                      <p className="text-sm text-muted-foreground">
+                        Permanently delete your account and all associated data. This action cannot be undone.
+                      </p>
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm">
+                          Delete Account
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your
+                            account and remove all your data from our servers including validation
+                            history, API tokens, and billing information.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={handleDeleteAccount}
+                            disabled={isDeleting}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            {isDeleting ? (
+                              <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Deleting...
+                              </>
+                            ) : (
+                              "Delete Account"
+                            )}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
               </div>
             </motion.div>
