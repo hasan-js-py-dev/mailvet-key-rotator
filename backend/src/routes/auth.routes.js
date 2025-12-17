@@ -38,6 +38,14 @@ const maskEmail = (email = '') => {
   return `${maskedLocal}@${domain}`;
 };
 
+const normalizeEmailForLookup = (email = '') => {
+  return String(email ?? '').trim().toLowerCase();
+};
+
+const escapeRegExp = (value = '') => {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
+
 /**
  * Helper: Set auth tokens (access in response, refresh in cookie)
  */
@@ -434,19 +442,36 @@ router.post('/resend-verification',
  * Request password reset
  */
 router.post('/password-reset',
-  [body('email').isEmail().normalizeEmail()],
+  [body('email').trim().isEmail().normalizeEmail()],
   validate,
   async (req, res, next) => {
     try {
-      const { email } = req.body;
+      const rawEmail = req.body?.email;
+      const normalizedEmail = normalizeEmailForLookup(rawEmail);
 
-      console.info('[auth] password-reset requested', { email: maskEmail(email) });
+      console.info('[auth] password-reset requested', { email: maskEmail(normalizedEmail) });
 
-      const user = await User.findOne({ email });
+      let user = await User.findOne({ email: normalizedEmail });
+      let foundBy = user ? 'normalized' : null;
+
+      // Fallback for legacy records (case differences, whitespace, etc.)
+      if (!user && normalizedEmail) {
+        const regex = new RegExp(`^${escapeRegExp(normalizedEmail)}$`, 'i');
+        user = await User.findOne({ email: { $regex: regex } });
+        if (user) {
+          foundBy = 'case_insensitive';
+
+          // Heal legacy records to the normalized form (safe because schema enforces lowercase+trim)
+          if (user.email !== normalizedEmail) {
+            user.email = normalizedEmail;
+            await user.save();
+          }
+        }
+      }
 
       // Always return success to prevent email enumeration
       if (!user) {
-        console.info('[auth] password-reset no_user', { email: maskEmail(email) });
+        console.info('[auth] password-reset no_user', { email: maskEmail(normalizedEmail) });
         return res.json({
           message: 'If an account exists, a reset link has been sent'
         });
@@ -454,11 +479,13 @@ router.post('/password-reset',
 
       // Google accounts don't have a password to reset in this flow
       if (user.googleId) {
-        console.info('[auth] password-reset google_account', { email: maskEmail(email) });
+        console.info('[auth] password-reset google_account', { email: maskEmail(normalizedEmail) });
         return res.json({
           message: 'If an account exists, a reset link has been sent'
         });
       }
+
+      console.info('[auth] password-reset user_found', { email: maskEmail(normalizedEmail), foundBy });
 
       // Generate reset token
       const resetToken = generatePasswordResetToken();
@@ -467,9 +494,9 @@ router.post('/password-reset',
       await user.save();
 
       // Send email
-      await sendPasswordResetEmail(email, resetToken, user.name);
+      await sendPasswordResetEmail(user.email, resetToken, user.name);
 
-      console.info('[auth] password-reset email_sent', { email: maskEmail(email) });
+      console.info('[auth] password-reset email_sent', { email: maskEmail(user.email) });
 
       res.json({
         message: 'If an account exists, a reset link has been sent'
