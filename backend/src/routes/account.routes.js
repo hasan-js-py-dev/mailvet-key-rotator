@@ -4,6 +4,8 @@ const router = express.Router();
 
 const User = require('../models/User');
 const { verifyToken, requireVerifiedEmail } = require('../middleware/auth');
+const { sendPasswordResetEmail } = require('../services/email.service');
+const { generatePasswordResetToken } = require('../services/token.service');
 
 // Validation middleware
 const validate = (req, res, next) => {
@@ -97,7 +99,36 @@ router.patch('/',
       next(error);
     }
   }
-);
+ );
+
+/**
+ * POST /account/password-reset
+ * Request a password reset email for the currently authenticated user
+ */
+router.post('/password-reset', async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (user.googleId) {
+      return res.status(400).json({ error: 'Google accounts do not support password reset in this flow' });
+    }
+
+    const resetToken = generatePasswordResetToken();
+    user.passwordResetToken = resetToken;
+    user.passwordResetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    await user.save();
+
+    await sendPasswordResetEmail(user.email, resetToken, user.name);
+
+    res.json({ message: 'Password reset email sent' });
+  } catch (error) {
+    next(error);
+  }
+});
 
 /**
  * DELETE /account

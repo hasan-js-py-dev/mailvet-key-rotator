@@ -442,7 +442,13 @@ router.post('/resend-verification',
  * Request password reset
  */
 router.post('/password-reset',
-  [body('email').trim().isEmail().normalizeEmail()],
+  [
+    body('email')
+      .trim()
+      .isEmail()
+      .withMessage('Invalid email')
+      .customSanitizer((v) => String(v ?? '').trim().toLowerCase())
+  ],
   validate,
   async (req, res, next) => {
     try {
