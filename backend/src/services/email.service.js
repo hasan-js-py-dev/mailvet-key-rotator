@@ -2,14 +2,45 @@ const resend = require('../config/resend');
 
 const EMAIL_FROM = process.env.EMAIL_FROM || 'MailVet <send@mailvet.app>';
 
+const maskEmail = (email = '') => {
+  if (!email || typeof email !== 'string' || !email.includes('@')) return email;
+  const [local, domain] = email.split('@');
+  const safeLocal = local || '';
+  const maskedLocal = safeLocal.length <= 2
+    ? `${safeLocal.slice(0, 1)}*`
+    : `${safeLocal.slice(0, 2)}***`;
+  return `${maskedLocal}@${domain}`;
+};
+
+const logEmailSuccess = (type, to, subject, data) => {
+  console.info('[email] sent', {
+    type,
+    to: maskEmail(to),
+    from: EMAIL_FROM,
+    subject,
+    id: data?.id,
+  });
+};
+
+const logEmailFailure = (type, to, subject, error) => {
+  console.error('[email] failed', {
+    type,
+    to: maskEmail(to),
+    from: EMAIL_FROM,
+    subject,
+    error: error?.message || error,
+  });
+};
+
 const sendVerificationEmail = async (email, token, name = '') => {
   const verificationUrl = `${process.env.FRONTEND_URL}/access?page=verify-email&token=${token}`;
-  
+  const subject = 'Verify your MailVet account';
+
   try {
     const { data, error } = await resend.emails.send({
       from: EMAIL_FROM,
       to: email,
-      subject: 'Verify your MailVet account',
+      subject,
       html: `
         <!DOCTYPE html>
         <html>
@@ -60,25 +91,27 @@ const sendVerificationEmail = async (email, token, name = '') => {
     });
 
     if (error) {
-      console.error('Resend error:', error);
+      logEmailFailure('verification', email, subject, error);
       throw new Error('Failed to send verification email');
     }
 
+    logEmailSuccess('verification', email, subject, data);
     return data;
   } catch (error) {
-    console.error('Email service error:', error);
+    logEmailFailure('verification', email, subject, error);
     throw error;
   }
 };
 
 const sendPasswordResetEmail = async (email, token, name = '') => {
   const resetUrl = `${process.env.FRONTEND_URL}/access?page=reset&token=${token}`;
-  
+  const subject = 'Reset your MailVet password';
+
   try {
     const { data, error } = await resend.emails.send({
       from: EMAIL_FROM,
       to: email,
-      subject: 'Reset your MailVet password',
+      subject,
       html: `
         <!DOCTYPE html>
         <html>
@@ -129,23 +162,26 @@ const sendPasswordResetEmail = async (email, token, name = '') => {
     });
 
     if (error) {
-      console.error('Resend error:', error);
+      logEmailFailure('password_reset', email, subject, error);
       throw new Error('Failed to send password reset email');
     }
 
+    logEmailSuccess('password_reset', email, subject, data);
     return data;
   } catch (error) {
-    console.error('Email service error:', error);
+    logEmailFailure('password_reset', email, subject, error);
     throw error;
   }
 };
 
 const sendWelcomeEmail = async (email, name = '') => {
+  const subject = 'Welcome to MailVet! 🎉';
+
   try {
     const { data, error } = await resend.emails.send({
       from: EMAIL_FROM,
       to: email,
-      subject: 'Welcome to MailVet! 🎉',
+      subject,
       html: `
         <!DOCTYPE html>
         <html>
@@ -197,12 +233,14 @@ const sendWelcomeEmail = async (email, name = '') => {
     });
 
     if (error) {
-      console.error('Resend error:', error);
+      logEmailFailure('welcome', email, subject, error);
+      return;
     }
 
+    logEmailSuccess('welcome', email, subject, data);
     return data;
   } catch (error) {
-    console.error('Welcome email error:', error);
+    logEmailFailure('welcome', email, subject, error);
     // Don't throw - welcome email is not critical
   }
 };

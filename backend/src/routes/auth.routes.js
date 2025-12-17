@@ -28,6 +28,16 @@ const validate = (req, res, next) => {
   next();
 };
 
+const maskEmail = (email = '') => {
+  if (!email || typeof email !== 'string' || !email.includes('@')) return email;
+  const [local, domain] = email.split('@');
+  const safeLocal = local || '';
+  const maskedLocal = safeLocal.length <= 2
+    ? `${safeLocal.slice(0, 1)}*`
+    : `${safeLocal.slice(0, 2)}***`;
+  return `${maskedLocal}@${domain}`;
+};
+
 /**
  * Helper: Set auth tokens (access in response, refresh in cookie)
  */
@@ -430,12 +440,23 @@ router.post('/password-reset',
     try {
       const { email } = req.body;
 
+      console.info('[auth] password-reset requested', { email: maskEmail(email) });
+
       const user = await User.findOne({ email });
-      
+
       // Always return success to prevent email enumeration
-      if (!user || user.googleId) {
-        return res.json({ 
-          message: 'If an account exists, a reset link has been sent' 
+      if (!user) {
+        console.info('[auth] password-reset no_user', { email: maskEmail(email) });
+        return res.json({
+          message: 'If an account exists, a reset link has been sent'
+        });
+      }
+
+      // Google accounts don't have a password to reset in this flow
+      if (user.googleId) {
+        console.info('[auth] password-reset google_account', { email: maskEmail(email) });
+        return res.json({
+          message: 'If an account exists, a reset link has been sent'
         });
       }
 
@@ -448,8 +469,10 @@ router.post('/password-reset',
       // Send email
       await sendPasswordResetEmail(email, resetToken, user.name);
 
-      res.json({ 
-        message: 'If an account exists, a reset link has been sent' 
+      console.info('[auth] password-reset email_sent', { email: maskEmail(email) });
+
+      res.json({
+        message: 'If an account exists, a reset link has been sent'
       });
     } catch (error) {
       next(error);
