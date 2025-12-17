@@ -10,10 +10,11 @@ interface ProtectedRouteProps {
 /**
  * Protected Route Component
  * Redirects unauthenticated users to login page
+ * Redirects unverified users to email verification page
  * Shows loading spinner while checking auth status
  */
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuthContext();
+  const { isAuthenticated, isLoading, user } = useAuthContext();
   const location = useLocation();
 
   if (isLoading) {
@@ -31,6 +32,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     // Save intended destination for redirect after login
     const returnUrl = encodeURIComponent(location.pathname + location.search);
     return <Navigate to={`/access?page=login&returnUrl=${returnUrl}`} replace />;
+  }
+
+  // Check if email is verified (required for protected routes)
+  if (user && user.emailVerified === false) {
+    return <Navigate to="/access?page=email-sent" replace />;
   }
 
   return <>{children}</>;

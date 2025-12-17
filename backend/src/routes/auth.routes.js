@@ -130,19 +130,15 @@ router.post('/signup',
       // Send verification email
       await sendVerificationEmail(email, verificationToken, name);
 
-      // Generate tokens
-      const accessToken = await setAuthTokens(res, user);
-
+      // Do NOT issue tokens for email signups - user must verify email first
       res.status(201).json({
         message: 'Account created. Please verify your email.',
-        accessToken,
+        requiresVerification: true,
         user: {
           id: user._id,
           email: user.email,
           name: user.name,
-          emailVerified: user.emailVerified,
-          credits: user.credits,
-          plan: user.plan
+          emailVerified: user.emailVerified
         }
       });
     } catch (error) {

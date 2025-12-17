@@ -306,10 +306,8 @@ export default function AccessPage() {
         throw new Error(data.error || "Signup failed");
       }
 
-      if (data.accessToken) {
-        await login(data.accessToken);
-      }
-
+      // Email signups don't get tokens - user must verify first
+      // Google signups get tokens immediately (handled via /social/google)
       setEmailSentTo(formData.email);
       setVerificationEmail(formData.email);
       setEmailSentContext("verification");
