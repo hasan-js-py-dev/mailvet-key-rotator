@@ -1,35 +1,14 @@
 const resend = require('../config/resend');
+const emailLogger = require('./emailLogger');
 
 const EMAIL_FROM = process.env.EMAIL_FROM || 'MailVet <send@mailvet.app>';
 
-const maskEmail = (email = '') => {
-  if (!email || typeof email !== 'string' || !email.includes('@')) return email;
-  const [local, domain] = email.split('@');
-  const safeLocal = local || '';
-  const maskedLocal = safeLocal.length <= 2
-    ? `${safeLocal.slice(0, 1)}*`
-    : `${safeLocal.slice(0, 2)}***`;
-  return `${maskedLocal}@${domain}`;
-};
-
 const logEmailSuccess = (type, to, subject, data) => {
-  console.info('[email] sent', {
-    type,
-    to: maskEmail(to),
-    from: EMAIL_FROM,
-    subject,
-    id: data?.id,
-  });
+  emailLogger.logSuccess({ type, to, from: EMAIL_FROM, subject, id: data?.id });
 };
 
 const logEmailFailure = (type, to, subject, error) => {
-  console.error('[email] failed', {
-    type,
-    to: maskEmail(to),
-    from: EMAIL_FROM,
-    subject,
-    error: error?.message || error,
-  });
+  emailLogger.logFailure({ type, to, from: EMAIL_FROM, subject, error });
 };
 
 const sendVerificationEmail = async (email, token, name = '') => {
