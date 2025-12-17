@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Settings as SettingsIcon,
@@ -34,7 +34,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/useUser";
 import { logout as authLogout, authenticatedFetch } from "@/lib/auth";
-import { getMainSiteUrl } from "@/lib/subdomain";
+import { getDashboardUrl, getMainSiteUrl } from "@/lib/subdomain";
 import { cn } from "@/lib/utils";
 
 type TabType = "account" | "billing" | "api" | "limits";
@@ -48,6 +48,7 @@ const tabs: { id: TabType; label: string; icon: typeof User }[] = [
 
 export default function Settings() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const tabParam = searchParams.get("tab") as TabType | null;
   const [activeTab, setActiveTab] = useState<TabType>(tabParam || "account");
   
@@ -82,6 +83,37 @@ export default function Settings() {
       setCompanyName(user.companyName || "");
     }
   }, [user]);
+
+  const smartNavigateTo = (
+    target: string,
+    options: { replace?: boolean; delayMs?: number } = {}
+  ) => {
+    const { replace = false, delayMs = 0 } = options;
+
+    const doNavigate = () => {
+      try {
+        const url = new URL(target, window.location.origin);
+        if (url.origin === window.location.origin) {
+          navigate(url.pathname + url.search + url.hash, { replace });
+          return;
+        }
+        window.location.assign(url.toString());
+      } catch {
+        if (target.startsWith("/")) {
+          navigate(target, { replace });
+        } else {
+          window.location.assign(target);
+        }
+      }
+    };
+
+    if (delayMs > 0) {
+      window.setTimeout(doNavigate, delayMs);
+      return;
+    }
+
+    doNavigate();
+  };
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
@@ -180,7 +212,7 @@ export default function Settings() {
 
       // Logout and redirect after successful deletion
       await authLogout();
-      window.location.href = getMainSiteUrl("/");
+      smartNavigateTo(getMainSiteUrl("/"), { replace: true, delayMs: 350 });
     } catch (err) {
       toast({
         title: "Error",
@@ -385,7 +417,7 @@ export default function Settings() {
                       {user?.plan === "free" ? "Free Trial" : `${user?.plan?.charAt(0).toUpperCase()}${user?.plan?.slice(1)} Plan`}
                     </p>
                   </div>
-                  <Button variant="outline" onClick={() => window.location.href = "/dashboard/plan"}>
+                  <Button variant="outline" onClick={() => smartNavigateTo(getDashboardUrl("/plan"))}>
                     Upgrade
                   </Button>
                 </div>
@@ -546,7 +578,7 @@ export default function Settings() {
                 <p className="text-sm text-muted-foreground mb-4">
                   Need higher limits?
                 </p>
-                <Button onClick={() => window.location.href = "/dashboard/plan"}>
+                <Button onClick={() => smartNavigateTo(getDashboardUrl("/plan"))}>
                   Upgrade your plan
                 </Button>
               </div>
