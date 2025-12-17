@@ -181,18 +181,26 @@ export default function Settings() {
   };
 
   const handleRequestPasswordChange = async () => {
-    if (!user?.email) return;
-
     try {
-      const response = await fetch(`${apiBaseUrl}/v1/auth/password-reset`, {
+      const response = await authenticatedFetch(`${apiBaseUrl}/v1/account/password-reset`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: user.email }),
       });
-      if (!response.ok) throw new Error("Failed to send reset email");
-      toast({ title: "Email sent", description: `Password reset link sent to ${user.email}` });
-    } catch {
-      toast({ title: "Error", description: "Failed to send reset email.", variant: "destructive" });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data?.error || "Failed to send reset email");
+      }
+
+      toast({
+        title: "Email sent",
+        description: "Password reset instructions have been sent to your email address.",
+      });
+    } catch (err: any) {
+      toast({
+        title: "Error",
+        description: err?.message || "Failed to send reset email.",
+        variant: "destructive",
+      });
     }
   };
 
