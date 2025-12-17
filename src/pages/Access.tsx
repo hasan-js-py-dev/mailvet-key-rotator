@@ -63,7 +63,7 @@ type EmailSentContext = "verification" | "reset";
 export default function AccessPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { login } = useAuthContext();
+  const { login, clearSession } = useAuthContext();
   const pageParam = searchParams.get("page") || "login";
   const resetToken = searchParams.get("token");
   const verifyToken = searchParams.get("token");
@@ -266,6 +266,10 @@ export default function AccessPage() {
     try {
       setNeedsVerification(false);
       setVerificationEmail("");
+
+      // Clear any existing session before starting signup
+      // This prevents redirect issues if a previously logged-in user is signing up again
+      clearSession();
 
       // Create Firebase user
       const userCredential = await createUserWithEmailAndPassword(

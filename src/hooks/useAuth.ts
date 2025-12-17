@@ -13,20 +13,24 @@ import {
 interface UseAuthReturn {
   user: User | null;
   isLoading: boolean;
-  isAuthenticated: boolean;
+  isAuthenticated: boolean; // true ONLY if user exists AND emailVerified === true
+  hasSession: boolean; // true if user has a valid session (even if unverified)
   error: string | null;
   login: (accessToken: string) => Promise<void>;
   logout: () => Promise<void>;
   refetch: () => Promise<void>;
+  clearSession: () => void;
 }
 
 export const useAuth = (): UseAuthReturn => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [hasSession, setHasSession] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const location = useLocation();
+
+  // User is authenticated ONLY if they have a session AND their email is verified
+  const isAuthenticated = hasSession && user?.emailVerified === true;
 
   const loadUser = useCallback(async () => {
     try {
@@ -35,14 +39,14 @@ export const useAuth = (): UseAuthReturn => {
       
       if (userData) {
         setUser(userData);
-        setIsAuthenticated(true);
+        setHasSession(true);
       } else {
         setUser(null);
-        setIsAuthenticated(false);
+        setHasSession(false);
       }
     } catch (err) {
       setUser(null);
-      setIsAuthenticated(false);
+      setHasSession(false);
       setError(err instanceof Error ? err.message : 'Failed to load user');
     } finally {
       setIsLoading(false);
@@ -53,13 +57,13 @@ export const useAuth = (): UseAuthReturn => {
   useEffect(() => {
     const initAuth = async () => {
       setIsLoading(true);
-      const hasSession = await checkAuthStatus();
+      const hasValidSession = await checkAuthStatus();
       
-      if (hasSession) {
+      if (hasValidSession) {
         await loadUser();
       } else {
         setIsLoading(false);
-        setIsAuthenticated(false);
+        setHasSession(false);
       }
     };
 
@@ -69,7 +73,7 @@ export const useAuth = (): UseAuthReturn => {
   // Subscribe to auth state changes
   useEffect(() => {
     const unsubscribe = subscribeToAuthState((authenticated) => {
-      setIsAuthenticated(authenticated);
+      setHasSession(authenticated);
       if (!authenticated) {
         setUser(null);
       }
@@ -80,16 +84,22 @@ export const useAuth = (): UseAuthReturn => {
 
   const login = useCallback(async (accessToken: string) => {
     setAccessToken(accessToken);
-    setIsAuthenticated(true);
+    setHasSession(true);
     await loadUser();
   }, [loadUser]);
 
   const logout = useCallback(async () => {
     await authLogout();
     setUser(null);
-    setIsAuthenticated(false);
+    setHasSession(false);
     navigate('/access?page=login');
   }, [navigate]);
+
+  const clearSession = useCallback(() => {
+    setAccessToken(null);
+    setUser(null);
+    setHasSession(false);
+  }, []);
 
   const refetch = useCallback(async () => {
     await loadUser();
@@ -99,10 +109,12 @@ export const useAuth = (): UseAuthReturn => {
     user,
     isLoading,
     isAuthenticated,
+    hasSession,
     error,
     login,
     logout,
     refetch,
+    clearSession,
   };
 };
 
@@ -110,17 +122,22 @@ export const useAuth = (): UseAuthReturn => {
  * Hook for protected routes - redirects to login if not authenticated
  */
 export const useRequireAuth = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user, hasSession } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      // Save intended destination
-      const returnUrl = encodeURIComponent(location.pathname + location.search);
-      navigate(`/access?page=login&returnUrl=${returnUrl}`);
+    if (!isLoading) {
+      if (!hasSession) {
+        // No session at all - redirect to login
+        const returnUrl = encodeURIComponent(location.pathname + location.search);
+        navigate(`/access?page=login&returnUrl=${returnUrl}`);
+      } else if (!isAuthenticated && user?.emailVerified === false) {
+        // Has session but email not verified - redirect to email-sent
+        navigate('/access?page=email-sent');
+      }
     }
-  }, [isAuthenticated, isLoading, navigate, location]);
+  }, [isAuthenticated, isLoading, hasSession, user, navigate, location]);
 
   return { isAuthenticated, isLoading };
 };
@@ -134,6 +151,7 @@ export const useGuestOnly = () => {
   const location = useLocation();
 
   useEffect(() => {
+    // Only redirect if FULLY authenticated (has session AND verified email)
     if (!isLoading && isAuthenticated) {
       // Check for return URL
       const params = new URLSearchParams(location.search);
