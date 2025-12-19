@@ -29,8 +29,8 @@ const plans = [
       },
       {
         icon: Upload,
-        title: "Upload 1,000 Emails per List",
-        description: "Upload up to 1,000 emails per list.",
+        title: "Upload 100 Emails per List",
+        description: "Upload up to 100 emails per list.",
       },
       {
         icon: Zap,

@@ -5,14 +5,8 @@ import {
   Settings as SettingsIcon,
   User,
   CreditCard,
-  Key,
   Gauge,
   Loader2,
-  Copy,
-  Eye,
-  EyeOff,
-  RefreshCw,
-  Check,
   Trash2,
 } from "lucide-react";
 import { TopNavLayout } from "@/components/dashboard/TopNavLayout";
@@ -20,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,20 +32,26 @@ import { logout as authLogout, authenticatedFetch } from "@/lib/auth";
 import { getDashboardUrl, getMainSiteUrl } from "@/lib/subdomain";
 import { cn } from "@/lib/utils";
 
-type TabType = "account" | "billing" | "api" | "limits";
+type TabType = "account" | "billing" | "limits";
 
 const tabs: { id: TabType; label: string; icon: typeof User }[] = [
   { id: "account", label: "Account details", icon: User },
   { id: "billing", label: "Billing", icon: CreditCard },
-  { id: "api", label: "API keys", icon: Key },
   { id: "limits", label: "Limits", icon: Gauge },
 ];
 
 export default function Settings() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const tabParam = searchParams.get("tab") as TabType | null;
-  const [activeTab, setActiveTab] = useState<TabType>(tabParam || "account");
+  const tabParam = searchParams.get("tab");
+
+  const isValidTab = (value: string | null): value is TabType => {
+    return value === "account" || value === "billing" || value === "limits";
+  };
+
+  const [activeTab, setActiveTab] = useState<TabType>(
+    isValidTab(tabParam) ? tabParam : "account"
+  );
   
   const { user, isLoading: isUserLoading, refetch } = useUser();
   const [firstName, setFirstName] = useState("");
@@ -59,16 +60,20 @@ export default function Settings() {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // API Token state
-  const [showToken, setShowToken] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [isRegenerating, setIsRegenerating] = useState(false);
+  const [isCancellingPlan, setIsCancellingPlan] = useState(false);
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
 
   useEffect(() => {
-    if (tabParam && tabs.some(t => t.id === tabParam)) {
+    if (isValidTab(tabParam)) {
       setActiveTab(tabParam);
+      return;
+    }
+
+    // If an invalid tab is present (e.g. legacy 'api'), fall back to account.
+    if (tabParam) {
+      setActiveTab("account");
+      setSearchParams({ tab: "account" });
     }
   }, [tabParam]);
 
@@ -155,30 +160,6 @@ export default function Settings() {
     }
   };
 
-  const handleCopyToken = () => {
-    const token = "mv_live_xxxxxxxxxxxxxxxxxxxxx";
-    navigator.clipboard.writeText(token);
-    setCopied(true);
-    toast({ title: "Copied!", description: "API token copied to clipboard." });
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleRegenerateToken = async () => {
-    setIsRegenerating(true);
-    try {
-      const response = await fetch(`${apiBaseUrl}/v1/account/api-token`, {
-        method: "POST",
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to regenerate token");
-      await refetch();
-      toast({ title: "Token Regenerated", description: "Your new API token is ready." });
-    } catch {
-      toast({ title: "Error", description: "Failed to regenerate token.", variant: "destructive" });
-    } finally {
-      setIsRegenerating(false);
-    }
-  };
 
   const handleRequestPasswordChange = async () => {
     try {
@@ -232,9 +213,74 @@ export default function Settings() {
   };
 
   const credits = user?.credits ?? 0;
-  const totalCredits = user?.plan === "pro" ? 10000 : user?.plan === "ultimate" ? 50000 : 100;
-  const usagePercent = Math.min((credits / totalCredits) * 100, 100);
-  const maskedToken = "mv_live_" + "•".repeat(24);
+  const isPaid = user?.plan !== "free" && user?.billingStatus === "active";
+  const totalCredits = isPaid ? null : 100;
+  const usagePercent = totalCredits ? Math.min((credits / totalCredits) * 100, 100) : 0;
+
+  const planLabel = (() => {
+    if (!user?.plan) return "Free";
+    if (user.plan === "ultimate") return "Ultimate";
+    if (user.plan === "enterprise") return "Enterprise";
+    return "Free";
+  })();
+
+  const billingStatusLabel = (() => {
+    const status = user?.billingStatus || "none";
+    if (user?.plan === "free" && status === "none") return "Free";
+    if (status === "active") return "Active";
+    if (status === "cancelled") return "Cancelled";
+    if (status === "past_due") return "Past due";
+    return "None";
+  })();
+
+  const billingStatusBadgeClass = (() => {
+    const status = user?.billingStatus || "none";
+    if (user?.plan === "free" && status === "none") {
+      return "bg-muted text-muted-foreground border-border";
+    }
+    if (status === "active") return "bg-green-500/10 text-green-600 border-green-500/30";
+    if (status === "past_due") return "bg-amber-500/10 text-amber-600 border-amber-500/30";
+    if (status === "cancelled") return "bg-zinc-500/10 text-zinc-600 border-zinc-500/30";
+    return "bg-muted text-muted-foreground border-border";
+  })();
+
+  const formatDate = (value?: string | Date | null) => {
+    if (!value) return null;
+    const date = typeof value === "string" ? new Date(value) : value;
+    if (Number.isNaN(date.getTime())) return null;
+    return date.toLocaleDateString();
+  };
+
+  const handleCancelPlan = async () => {
+    if (isCancellingPlan) return;
+
+    setIsCancellingPlan(true);
+    try {
+      const response = await authenticatedFetch(`${apiBaseUrl}/v1/billing/cancel`, {
+        method: "POST",
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(typeof data?.error === "string" ? data.error : "Failed to cancel plan");
+      }
+
+      toast({
+        title: "Plan cancelled",
+        description: "You are now on the Free plan.",
+      });
+      await refetch();
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to cancel plan.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCancellingPlan(false);
+    }
+  };
 
   return (
     <TopNavLayout>
@@ -399,7 +445,7 @@ export default function Settings() {
                           <AlertDialogDescription>
                             This action cannot be undone. This will permanently delete your
                             account and remove all your data from our servers including validation
-                            history, API tokens, and billing information.
+                            history and billing information.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -433,114 +479,109 @@ export default function Settings() {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-8"
             >
-              {/* Current Plan */}
+              {/* Subscription */}
               <div className="bg-card border border-border rounded-lg p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="font-semibold text-foreground">Current Plan</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {user?.plan === "free" ? "Free Trial" : `${user?.plan?.charAt(0).toUpperCase()}${user?.plan?.slice(1)} Plan`}
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="space-y-1">
+                    <h3 className="font-semibold text-foreground">Billing</h3>
+                    <p className="text-sm text-muted-foreground">Manage your plan and subscription status.</p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" onClick={() => smartNavigateTo(getDashboardUrl("/plan"))}>
+                      Upgrade 🚀
+                    </Button>
+
+                    {user?.plan !== "free" && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="outline" disabled={isCancellingPlan}>
+                            Cancel plan
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Cancel your plan?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This will switch your account back to the Free plan.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Keep plan</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={handleCancelPlan}
+                              disabled={isCancellingPlan}
+                            >
+                              {isCancellingPlan ? (
+                                <span className="inline-flex items-center">
+                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                  Cancelling...
+                                </span>
+                              ) : (
+                                "Cancel plan"
+                              )}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-4 sm:grid-cols-3">
+                  <div className="rounded-lg border border-border bg-muted/30 p-4">
+                    <p className="text-xs text-muted-foreground">Active plan</p>
+                    <p className="mt-1 text-base font-semibold text-foreground">{planLabel}</p>
+                  </div>
+
+                  <div className="rounded-lg border border-border bg-muted/30 p-4">
+                    <p className="text-xs text-muted-foreground">Status</p>
+                    <div className="mt-2">
+                      <span
+                        className={cn(
+                          "inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium",
+                          billingStatusBadgeClass
+                        )}
+                      >
+                        {billingStatusLabel}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg border border-border bg-muted/30 p-4">
+                    <p className="text-xs text-muted-foreground">Renews</p>
+                    <p className="mt-1 text-base font-semibold text-foreground">
+                      {formatDate(user?.renewalDate) || (user?.plan === "free" ? "—" : "Not set")}
                     </p>
                   </div>
-                  <Button variant="outline" onClick={() => smartNavigateTo(getDashboardUrl("/plan"))}>
-                    Upgrade
-                  </Button>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Credits used</span>
-                    <span className="text-foreground">{totalCredits - credits} / {totalCredits}</span>
-                  </div>
-                  <Progress value={100 - usagePercent} className="h-2" />
-                </div>
-              </div>
 
-              {/* Payment Method */}
-              <div className="bg-card border border-border rounded-lg p-6">
-                <h3 className="font-semibold text-foreground mb-4">Payment Method</h3>
-                <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-                  <div className="w-12 h-8 bg-gradient-to-r from-blue-600 to-blue-800 rounded flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">VISA</span>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-lg border border-border bg-card p-4">
+                    <p className="text-xs text-muted-foreground">Upgraded / updated</p>
+                    <p className="mt-1 text-sm font-medium text-foreground">
+                      {formatDate(user?.planUpdatedAt) || (user?.plan === "free" ? "—" : "Not set")}
+                    </p>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground">•••• •••• •••• 4242</p>
-                    <p className="text-xs text-muted-foreground">Expires 12/25</p>
+
+                  <div className="rounded-lg border border-border bg-card p-4">
+                    <p className="text-xs text-muted-foreground">Credits</p>
+                    <p className="mt-1 text-sm font-medium text-foreground">
+                      {isPaid ? "Unlimited" : `${credits} / 100`}
+                    </p>
+                    {!isPaid && (
+                      <div className="mt-3">
+                        <Progress value={usagePercent} className="h-2" />
+                      </div>
+                    )}
                   </div>
-                  <Button variant="ghost" size="sm">Update</Button>
                 </div>
-                <Button variant="outline" className="mt-4">
-                  Add payment method
-                </Button>
               </div>
 
               {/* Billing History */}
               <div className="bg-card border border-border rounded-lg p-6">
                 <h3 className="font-semibold text-foreground mb-4">Billing History</h3>
-                <p className="text-sm text-muted-foreground">No billing history yet.</p>
-              </div>
-            </motion.div>
-          )}
-
-          {activeTab === "api" && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-6"
-            >
-              <div className="bg-card border border-border rounded-lg p-6">
-                <h3 className="font-semibold text-foreground mb-2">Your API Key</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Use this key to authenticate API requests. Keep it secure and never share publicly.
-                </p>
-
-                <div className="bg-muted rounded-lg p-4 flex items-center gap-4 mb-4">
-                  <code className="flex-1 font-mono text-sm break-all text-foreground">
-                    {showToken ? maskedToken : maskedToken}
-                  </code>
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" onClick={() => setShowToken(!showToken)}>
-                      {showToken ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={handleCopyToken}>
-                      {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <Button onClick={handleCopyToken}>
-                    {copied ? (
-                      <>
-                        <Check className="w-4 h-4 mr-2" />
-                        Copied!
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4 mr-2" />
-                        Copy Key
-                      </>
-                    )}
-                  </Button>
-                  <Button variant="outline" onClick={handleRegenerateToken} disabled={isRegenerating}>
-                    <RefreshCw className={cn("w-4 h-4 mr-2", isRegenerating && "animate-spin")} />
-                    {isRegenerating ? "Regenerating..." : "Regenerate"}
-                  </Button>
-                </div>
-              </div>
-
-              {/* Usage Example */}
-              <div className="bg-card border border-border rounded-lg overflow-hidden">
-                <div className="p-4 border-b border-border">
-                  <h3 className="font-semibold text-foreground">Usage Example</h3>
-                </div>
-                <div className="bg-zinc-950 p-4">
-                  <pre className="text-sm font-mono text-zinc-300 overflow-x-auto">
-{`curl -X POST https://api.mailvet.app/v1/verify-email \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{"email": "test@example.com"}'`}
-                  </pre>
-                </div>
+                <p className="text-sm text-muted-foreground">—</p>
               </div>
             </motion.div>
           )}
@@ -551,60 +592,41 @@ export default function Settings() {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
-              <div className="bg-card border border-border rounded-lg p-6">
-                <h3 className="font-semibold text-foreground mb-4">Usage Limits</h3>
-                
-                <div className="space-y-6">
-                  {/* Credits */}
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-muted-foreground">Email Validations</span>
-                      <span className="text-foreground font-medium">{credits} / {totalCredits}</span>
-                    </div>
-                    <Progress value={usagePercent} className="h-2" />
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Resets on {user?.renewalDate ? new Date(user.renewalDate).toLocaleDateString() : "next billing cycle"}
-                    </p>
-                  </div>
+              <div className="bg-card border border-border rounded-lg overflow-hidden">
+                <div className="p-6 border-b border-border">
+                  <h3 className="font-semibold text-foreground">Limits</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Current usage limits for checks and uploads.
+                  </p>
+                </div>
 
-                  {/* API Rate Limit */}
-                  <div className="pt-4 border-t border-border">
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-muted-foreground">API Rate Limit</span>
-                      <span className="text-foreground font-medium">
-                        {user?.plan === "enterprise" ? "Unlimited" : user?.plan === "ultimate" ? "100/sec" : "10/sec"}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Bulk Upload Limit */}
-                  <div className="pt-4 border-t border-border">
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-muted-foreground">Max Emails per List</span>
-                      <span className="text-foreground font-medium">
-                        {user?.plan === "enterprise" ? "Unlimited" : user?.plan === "ultimate" ? "100,000" : user?.plan === "pro" ? "10,000" : "1,000"}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Lists Storage */}
-                  <div className="pt-4 border-t border-border">
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-muted-foreground">Recent Lists Storage</span>
-                      <span className="text-foreground font-medium">
-                        {user?.plan === "free" ? "4 lists" : "Unlimited"}
-                      </span>
-                    </div>
-                  </div>
+                <div className="p-2">
+                  <Table>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell className="font-medium">Max rows per check</TableCell>
+                        <TableCell className="text-right">10,000 rows</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">Paid plan rate limit</TableCell>
+                        <TableCell className="text-right">3 emails/sec</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">Max concurrency</TableCell>
+                        <TableCell className="text-right">2 files</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">Max file size</TableCell>
+                        <TableCell className="text-right">20 MB</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
                 </div>
               </div>
 
               <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-4">
-                  Need higher limits?
-                </p>
                 <Button onClick={() => smartNavigateTo(getDashboardUrl("/plan"))}>
-                  Upgrade your plan
+                  Upgrade 🚀
                 </Button>
               </div>
             </motion.div>

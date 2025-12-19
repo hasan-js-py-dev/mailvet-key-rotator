@@ -125,7 +125,7 @@ router.post('/signup',
         emailVerified: false,
         emailVerificationToken: verificationToken,
         emailVerificationExpires: verificationExpires,
-        credits: 50,
+        credits: 100,
         plan: 'free'
       });
 
@@ -181,6 +181,19 @@ router.post('/social/google',
           emailUser.firebaseUid = firebaseUid;
           emailUser.googleId = firebaseUid;
           emailUser.emailVerified = true; // Google accounts are pre-verified
+
+          // Backfill legacy free-plan credits (only for unused accounts)
+          // IMPORTANT: Avoid resetting users who already consumed credits down to 50.
+          const totalValidations = Number(emailUser.totalValidations ?? 0);
+          const monthlyValidations = Number(emailUser.monthlyValidations ?? 0);
+          if (
+            emailUser.plan === 'free' &&
+            totalValidations === 0 &&
+            monthlyValidations === 0 &&
+            Number(emailUser.credits ?? 0) !== 100
+          ) {
+            emailUser.credits = 100;
+          }
           user = emailUser;
         } else {
           // New user
@@ -190,7 +203,7 @@ router.post('/social/google',
             firebaseUid,
             googleId: firebaseUid,
             emailVerified: true, // Google accounts are pre-verified
-            credits: 50,
+            credits: 100,
             plan: 'free'
           });
 

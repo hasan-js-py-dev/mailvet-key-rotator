@@ -51,6 +51,10 @@ const userSchema = new mongoose.Schema({
     enum: ['free', 'ultimate', 'enterprise'],
     default: 'free'
   },
+  planUpdatedAt: {
+    type: Date,
+    default: Date.now
+  },
   apiToken: {
     type: String,
     select: false

@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
       currency: 'USD',
       interval: null,
       features: {
-        credits: 50,
+        credits: 100,
         singleEmailValidation: true,
         csvUpload: false,
         apiAccess: false,
@@ -87,9 +87,9 @@ router.get('/:planId', (req, res) => {
       id: 'free',
       name: 'Free',
       price: 0,
-      credits: 50,
+      credits: 100,
       rateLimit: { requests: 1, windowMs: 1000 },
-      features: ['50 email validations', 'Single email validation', 'Basic results']
+      features: ['100 email validations', 'Single email validation', 'Basic results']
     },
     ultimate: {
       id: 'ultimate',

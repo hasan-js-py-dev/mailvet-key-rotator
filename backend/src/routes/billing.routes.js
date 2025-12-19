@@ -52,6 +52,46 @@ router.post('/checkout',
 );
 
 /**
+ * POST /billing/cancel
+ * Cancel subscription and downgrade to Free plan
+ */
+router.post('/cancel',
+  verifyToken,
+  requireVerifiedEmail,
+  async (req, res, next) => {
+    try {
+      const user = await User.findById(req.userId);
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      if (user.plan === 'free') {
+        return res.status(400).json({ error: 'No active paid plan to cancel' });
+      }
+
+      // TODO: Integrate with payment provider to cancel subscription
+      // For now, downgrade immediately.
+      user.plan = 'free';
+      user.billingStatus = 'none';
+      user.renewalDate = undefined;
+      user.planUpdatedAt = new Date();
+      await user.save();
+
+      res.json({
+        message: 'Plan cancelled. You are now on the Free plan.',
+        plan: user.plan,
+        billingStatus: user.billingStatus,
+        renewalDate: user.renewalDate,
+        planUpdatedAt: user.planUpdatedAt
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
  * POST /billing/webhook
  * Handle Dodo Payments webhooks
  */
@@ -102,6 +142,7 @@ async function handlePaymentSucceeded(data) {
 
   user.plan = plan;
   user.billingStatus = 'active';
+  user.planUpdatedAt = new Date();
   await user.save();
   
   console.log(`Payment succeeded for user ${userId}, upgraded to ${plan}`);
@@ -117,6 +158,7 @@ async function handleSubscriptionCreated(data) {
   user.plan = plan;
   user.billingStatus = 'active';
   user.renewalDate = new Date(data.currentPeriodEnd);
+  user.planUpdatedAt = new Date();
   await user.save();
 
   console.log(`Subscription created for user ${userId}`);
@@ -131,6 +173,7 @@ async function handleSubscriptionCancelled(data) {
 
   user.billingStatus = 'cancelled';
   // Keep plan active until renewal date
+  user.planUpdatedAt = new Date();
   await user.save();
 
   console.log(`Subscription cancelled for user ${userId}`);
@@ -146,6 +189,7 @@ async function handleSubscriptionRenewed(data) {
   user.billingStatus = 'active';
   user.renewalDate = new Date(data.currentPeriodEnd);
   user.monthlyValidations = 0; // Reset monthly counter
+  user.planUpdatedAt = new Date();
   await user.save();
 
   console.log(`Subscription renewed for user ${userId}`);
@@ -159,6 +203,7 @@ async function handlePaymentFailed(data) {
   if (!user) return;
 
   user.billingStatus = 'past_due';
+  user.planUpdatedAt = new Date();
   await user.save();
 
   console.log(`Payment failed for user ${userId}`);
@@ -178,10 +223,16 @@ router.get('/status',
         return res.status(404).json({ error: 'User not found' });
       }
 
+      if (!user.planUpdatedAt) {
+        user.planUpdatedAt = user.createdAt || new Date();
+        await user.save();
+      }
+
       res.json({
         plan: user.plan,
         billingStatus: user.billingStatus,
         renewalDate: user.renewalDate,
+        planUpdatedAt: user.planUpdatedAt,
         canUpgrade: user.plan !== 'enterprise'
       });
     } catch (error) {

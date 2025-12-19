@@ -1,66 +1,49 @@
-import { useState, useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  Upload, 
-  FileSpreadsheet, 
-  X, 
-  Download, 
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Lock,
-  Loader2,
-  List,
-  Trash2,
-} from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
 import { TopNavLayout } from "@/components/dashboard/TopNavLayout";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Link } from "react-router-dom";
-import { useUser } from "@/hooks/useUser";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
+import { authenticatedFetch } from "@/lib/auth";
 
-interface Job {
-  id: string;
-  filename: string;
+type Job = {
+  _id: string;
+  originalFilename: string;
   status: "pending" | "processing" | "completed" | "failed";
-  progress: number;
-  total: number;
-  valid: number;
-  invalid: number;
-  createdAt: string;
-}
+  totalEmails?: number;
+  processedEmails?: number;
+  progress?: number;
+  createdAt?: string;
+};
 
 export default function Lists() {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [mode] = useState<"standard">("standard");
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [isLoadingJobs, setIsLoadingJobs] = useState(true);
-  const { user } = useUser();
+  const [isLoadingJobs, setIsLoadingJobs] = useState(false);
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
-  const isProUser = user?.plan !== "free";
 
-  // Fetch jobs on mount
-  useEffect(() => {
-    fetchJobs();
-  }, []);
+  const isAllowedFile = (file: File) => {
+    const name = file.name.toLowerCase();
+    return name.endsWith(".csv") || name.endsWith(".xls") || name.endsWith(".xlsx");
+  };
 
-  const fetchJobs = async () => {
-    try {
-      const response = await fetch(`${apiBaseUrl}/v1/jobs`, {
-        credentials: "include",
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setJobs(data.jobs || []);
-      }
-    } catch (error) {
-      console.error("Failed to fetch jobs:", error);
-    } finally {
-      setIsLoadingJobs(false);
+  const setFileOrToast = (file: File | undefined | null) => {
+    if (!file) return;
+    if (isAllowedFile(file)) {
+      setUploadedFile(file);
+      return;
     }
+
+    toast({
+      title: "Invalid file",
+      description: "Upload a .csv, .xls, or .xlsx file.",
+      variant: "destructive",
+    });
   };
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -73,26 +56,14 @@ export default function Lists() {
     setIsDragging(false);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (file && file.name.endsWith(".csv")) {
-      setUploadedFile(file);
-    } else {
-      toast({
-        title: "Invalid file",
-        description: "Please upload a CSV file.",
-        variant: "destructive",
-      });
-    }
-  }, []);
+    setFileOrToast(e.dataTransfer.files?.[0]);
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setUploadedFile(file);
-    }
+    setFileOrToast(e.target.files?.[0]);
   };
 
   const handleStartValidation = async () => {
@@ -102,29 +73,26 @@ export default function Lists() {
     try {
       const formData = new FormData();
       formData.append("file", uploadedFile);
+      formData.append("mode", mode);
 
-      const response = await fetch(`${apiBaseUrl}/v1/jobs/upload`, {
+      const response = await authenticatedFetch(`${apiBaseUrl}/v1/jobs/upload`, {
         method: "POST",
-        credentials: "include",
         body: formData,
       });
 
+      const payload = await response.json().catch(() => ({} as any));
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Upload failed");
+        throw new Error(payload?.error || payload?.message || "Upload failed");
       }
 
-      const data = await response.json();
       toast({
         title: "Upload successful",
-        description: `Job ${data.jobId} created. Processing ${data.emailCount} emails.`,
+        description: `Job ${payload.jobId} created. ${payload.emailCount} emails queued.`,
       });
-
       setUploadedFile(null);
-      fetchJobs(); // Refresh jobs list
+      void fetchJobs();
     } catch (error) {
       toast({
-        title: "Upload failed",
         description: error instanceof Error ? error.message : "Failed to upload file",
         variant: "destructive",
       });
@@ -133,224 +101,184 @@ export default function Lists() {
     }
   };
 
-  const handleDownload = async (jobId: string) => {
+  const fetchJobs = useCallback(async () => {
+    setIsLoadingJobs(true);
     try {
-      const response = await fetch(`${apiBaseUrl}/v1/jobs/${jobId}/download`, {
-        credentials: "include",
+      const response = await authenticatedFetch(`${apiBaseUrl}/v1/jobs?limit=50`, {
+        method: "GET",
       });
-      if (!response.ok) throw new Error("Download failed");
-      
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `mailvet-results-${jobId}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (error) {
-      toast({
-        title: "Download failed",
-        description: "Failed to download results",
-        variant: "destructive",
-      });
+
+      const payload = await response.json().catch(() => ({} as any));
+      if (!response.ok) {
+        return;
+      }
+
+      setJobs(Array.isArray(payload?.jobs) ? payload.jobs : []);
+    } finally {
+      setIsLoadingJobs(false);
+    }
+  }, [apiBaseUrl]);
+
+  useEffect(() => {
+    void fetchJobs();
+  }, [fetchJobs]);
+
+  const processingJobs = useMemo(() => {
+    return jobs.filter((j) => j.status === "pending" || j.status === "processing");
+  }, [jobs]);
+
+  const statusPill = (status: Job["status"]) => {
+    const base = "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border";
+    switch (status) {
+      case "processing":
+        return `${base} bg-muted text-foreground border-border`;
+      case "pending":
+        return `${base} bg-muted text-foreground border-border`;
+      case "completed":
+        return `${base} bg-muted text-foreground border-border`;
+      case "failed":
+        return `${base} bg-muted text-foreground border-border`;
+      default:
+        return `${base} bg-muted text-foreground border-border`;
     }
   };
 
-  if (!isProUser) {
-    return (
-      <TopNavLayout>
-        <div className="max-w-2xl mx-auto text-center py-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-card rounded-xl border border-border p-12"
-          >
-            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
-              <Lock className="w-10 h-10 text-muted-foreground" />
-            </div>
-            <h2 className="text-2xl font-bold mb-4">Pro Feature</h2>
-            <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-              Bulk CSV validation is available on Pro and Ultimate plans. Upgrade now to validate thousands of emails at once.
-            </p>
-            <Link to="/dashboard/plan">
-              <Button size="lg">
-                Upgrade to Pro
-              </Button>
-            </Link>
-          </motion.div>
-        </div>
-      </TopNavLayout>
-    );
-  }
-
   return (
     <TopNavLayout>
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-            <List className="w-6 h-6 text-primary" />
+      <div className="max-w-5xl mx-auto space-y-10">
+        <div className="space-y-3">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight">📥 Bulk Upload</h1>
+          <p className="text-muted-foreground text-base md:text-lg">
+            Upload a spreadsheet and we’ll queue your list clean instantly. ✨
+          </p>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-card rounded-xl border border-border p-8"
+        >
+          <div className="flex items-start md:items-center justify-between gap-6">
+            <div className="space-y-1">
+              <h2 className="text-xl font-semibold text-foreground">📄 Upload a file</h2>
+              <p className="text-sm text-muted-foreground">Supported: CSV, XLS, XLSX</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm font-medium text-foreground">10,000</p>
+              <p className="text-xs text-muted-foreground">max rows / list</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Email Lists</h1>
-            <p className="text-muted-foreground">
-              Upload a CSV file to validate multiple email addresses in batch.
-            </p>
+
+          {/* Keeping internal mode as "standard"; Catch-all option removed per request */}
+          <div className="sr-only">
+            <Tabs value={mode}>
+              <TabsList>
+                <TabsTrigger value="standard">Standard</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
+          <div
+            className={`mt-6 rounded-xl border-2 border-dashed p-10 transition-colors ${
+              isDragging ? "border-primary bg-primary/5" : "border-border"
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="w-14 h-14 rounded-xl bg-muted flex items-center justify-center">
+                <Upload className="w-7 h-7 text-muted-foreground" />
+              </div>
+              <div className="space-y-1">
+                <p className="font-medium text-foreground">Drag & drop your file here 👇</p>
+                <p className="text-sm text-muted-foreground">CSV / XLS / XLSX • up to 10,000 rows</p>
+              </div>
+
+              <div className="mt-4 flex items-center gap-3">
+                <label>
+                  <input
+                    type="file"
+                    accept=".csv,.xls,.xlsx"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                  <Button variant="outline" asChild>
+                    <span className="cursor-pointer">Choose file 📎</span>
+                  </Button>
+                </label>
+
+                <Button variant="gradient" size="lg" disabled={!uploadedFile || isUploading} onClick={handleStartValidation}>
+                  {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                  Click Upload 🚀
+                </Button>
+              </div>
+
+              {uploadedFile ? (
+                <div className="mt-4 text-sm text-muted-foreground">
+                  Selected: <span className="text-foreground font-medium">{uploadedFile.name}</span> ✅
+                  <Button variant="ghost" size="sm" className="ml-2" onClick={() => setUploadedFile(null)}>
+                    Remove
+                  </Button>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </motion.div>
+
+        <div className="space-y-4">
+          <h2 className="text-2xl font-semibold text-foreground">How to Use ⚡</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-card rounded-xl border border-border p-6">
+              <p className="font-semibold text-foreground">1️⃣ Prepare your file</p>
+              <p className="text-sm text-muted-foreground mt-2">One email per row (headers OK).</p>
+            </div>
+            <div className="bg-card rounded-xl border border-border p-6">
+              <p className="font-semibold text-foreground">2️⃣ Upload</p>
+              <p className="text-sm text-muted-foreground mt-2">Up to 10,000 rows per list.</p>
+            </div>
+            <div className="bg-card rounded-xl border border-border p-6">
+              <p className="font-semibold text-foreground">3️⃣ Get results</p>
+              <p className="text-sm text-muted-foreground mt-2">We process and you download when ready.</p>
+            </div>
           </div>
         </div>
 
-        {/* Upload Area */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`bg-card rounded-xl border-2 border-dashed transition-colors p-12 ${
-            isDragging ? "border-primary bg-primary/5" : "border-border"
-          }`}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-        >
-          {uploadedFile ? (
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-xl bg-green-500/10 flex items-center justify-center mx-auto mb-4">
-                <FileSpreadsheet className="w-8 h-8 text-green-500" />
-              </div>
-              <p className="font-medium mb-1 text-foreground">{uploadedFile.name}</p>
-              <p className="text-sm text-muted-foreground mb-6">
-                {(uploadedFile.size / 1024).toFixed(1)} KB
-              </p>
-              <div className="flex items-center justify-center gap-4">
-                <Button onClick={handleStartValidation} disabled={isUploading}>
-                  {isUploading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Uploading...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="w-4 h-4 mr-2" />
-                      Start Validation
-                    </>
-                  )}
-                </Button>
-                <Button variant="outline" onClick={() => setUploadedFile(null)}>
-                  <X className="w-4 h-4 mr-2" />
-                  Remove
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-xl bg-muted flex items-center justify-center mx-auto mb-4">
-                <Upload className="w-8 h-8 text-muted-foreground" />
-              </div>
-              <p className="font-medium mb-1 text-foreground">Drag and drop your CSV file here</p>
-              <p className="text-sm text-muted-foreground mb-6">or click to browse</p>
-              <label>
-                <input
-                  type="file"
-                  accept=".csv"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
-                <Button variant="outline" asChild>
-                  <span className="cursor-pointer">Browse Files</span>
-                </Button>
-              </label>
-            </div>
-          )}
-        </motion.div>
+        <div className="space-y-4">
+          <h2 className="text-2xl font-semibold text-foreground">⏳ Processing Lists</h2>
 
-        {/* Jobs List */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4 text-foreground">Recent Lists</h2>
-          
           {isLoadingJobs ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+            <div className="bg-card rounded-xl border border-border p-6 text-muted-foreground">
+              Loading…
             </div>
-          ) : jobs.length === 0 ? (
-            <div className="bg-card border border-border rounded-lg p-12 text-center">
-              <p className="text-muted-foreground">No lists uploaded yet. Upload a CSV to get started.</p>
+          ) : processingJobs.length === 0 ? (
+            <div className="bg-card rounded-xl border border-border p-6 text-muted-foreground">
+              No processing lists yet.
             </div>
           ) : (
-            <div className="space-y-4">
-              {jobs.map((job) => (
+            <div className="grid grid-cols-1 gap-3">
+              {processingJobs.map((job) => (
                 <motion.div
-                  key={job.id}
-                  initial={{ opacity: 0, y: 10 }}
+                  key={job._id}
+                  initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-card rounded-xl border border-border p-6"
+                  className="bg-card rounded-xl border border-border p-5"
                 >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                        <FileSpreadsheet className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-foreground">{job.filename}</p>
-                        <p className="text-sm text-muted-foreground">{job.createdAt}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {job.status === "completed" ? (
-                        <span className="flex items-center gap-2 text-green-500 text-sm font-medium">
-                          <CheckCircle className="w-4 h-4" />
-                          Completed
-                        </span>
-                      ) : job.status === "processing" ? (
-                        <span className="flex items-center gap-2 text-yellow-500 text-sm font-medium">
-                          <Clock className="w-4 h-4 animate-spin" />
-                          Processing
-                        </span>
-                      ) : job.status === "failed" ? (
-                        <span className="flex items-center gap-2 text-red-500 text-sm font-medium">
-                          <AlertCircle className="w-4 h-4" />
-                          Failed
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
-                          <Clock className="w-4 h-4" />
-                          Pending
-                        </span>
-                      )}
-                      {job.status === "completed" && (
-                        <Button variant="outline" size="sm" onClick={() => handleDownload(job.id)}>
-                          <Download className="w-4 h-4 mr-2" />
-                          Download
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-
-                  {job.status === "processing" && (
-                    <div className="space-y-2">
-                      <Progress value={job.progress} className="h-2" />
-                      <p className="text-sm text-muted-foreground">
-                        {Math.round((job.total * job.progress) / 100).toLocaleString()} of{" "}
-                        {job.total.toLocaleString()} emails processed
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-foreground truncate">📄 {job.originalFilename}</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {typeof job.totalEmails === "number" ? `${job.totalEmails.toLocaleString()} emails` : ""}
+                        {typeof job.totalEmails === "number" && typeof job.processedEmails === "number"
+                          ? ` • ${job.processedEmails.toLocaleString()} processed`
+                          : ""}
                       </p>
                     </div>
-                  )}
 
-                  {job.status === "completed" && (
-                    <div className="flex items-center gap-8 mt-2">
-                      <div className="text-sm">
-                        <span className="text-muted-foreground">Total: </span>
-                        <span className="font-medium text-foreground">{job.total.toLocaleString()}</span>
-                      </div>
-                      <div className="text-sm">
-                        <span className="text-muted-foreground">Valid: </span>
-                        <span className="font-medium text-green-500">{job.valid.toLocaleString()}</span>
-                      </div>
-                      <div className="text-sm">
-                        <span className="text-muted-foreground">Invalid: </span>
-                        <span className="font-medium text-red-500">{job.invalid.toLocaleString()}</span>
-                      </div>
-                    </div>
-                  )}
+                    <span className={statusPill(job.status)}>
+                      {job.status === "processing" ? "Processing 🔄" : "Queued ⏳"}
+                    </span>
+                  </div>
                 </motion.div>
               ))}
             </div>

@@ -33,6 +33,24 @@ router.get('/', async (req, res, next) => {
 
     // Check if monthly validations should reset
     user.checkMonthlyReset();
+
+    // Backfill legacy free-plan credits (older accounts may have started below 100)
+    // IMPORTANT: Only do this for accounts with zero usage, otherwise we'd reset users who already consumed credits.
+    const totalValidations = Number(user.totalValidations ?? 0);
+    const monthlyValidations = Number(user.monthlyValidations ?? 0);
+    if (
+      user.plan === 'free' &&
+      totalValidations === 0 &&
+      monthlyValidations === 0 &&
+      Number(user.credits ?? 0) !== 100
+    ) {
+      user.credits = 100;
+    }
+
+    // Backfill for older users created before this field existed
+    if (!user.planUpdatedAt) {
+      user.planUpdatedAt = user.createdAt || new Date();
+    }
     await user.save();
 
     res.json({
@@ -43,6 +61,7 @@ router.get('/', async (req, res, next) => {
       emailVerified: user.emailVerified,
       credits: user.credits,
       plan: user.plan,
+      planUpdatedAt: user.planUpdatedAt,
       totalValidations: user.totalValidations,
       monthlyValidations: user.monthlyValidations,
       billingStatus: user.billingStatus,

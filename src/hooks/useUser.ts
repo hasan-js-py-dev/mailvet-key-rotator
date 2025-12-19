@@ -9,6 +9,7 @@ interface User {
   emailVerified: boolean;
   credits: number;
   plan: string;
+  planUpdatedAt?: string | null;
   totalValidations: number;
   monthlyValidations: number;
   billingStatus: string;

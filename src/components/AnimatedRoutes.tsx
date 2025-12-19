@@ -21,7 +21,8 @@ import NotFound from "@/pages/NotFound";
 
 // Dashboard pages
 import Lists from "@/pages/dashboard/Lists";
-import SingleEmail from "@/pages/dashboard/SingleEmail";
+import VerifyEmail from "@/pages/dashboard/VerifyEmail";
+import Reports from "@/pages/dashboard/Reports";
 import ApiDocs from "@/pages/dashboard/ApiDocs";
 import Settings from "@/pages/dashboard/Settings";
 import Plan from "@/pages/dashboard/Plan";
@@ -65,9 +66,10 @@ const DashboardRoutesComponent = ({ basePath = "" }: { basePath?: string }) => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path={`${basePath}/`} element={<ProtectedRoute><Navigate to={`${basePath}/lists`} replace /></ProtectedRoute>} />
+        <Route path={`${basePath}/`} element={<ProtectedRoute><Navigate to={`${basePath}/verify-email`} replace /></ProtectedRoute>} />
         <Route path={`${basePath}/lists`} element={<ProtectedRoute><PageTransition><Lists /></PageTransition></ProtectedRoute>} />
-        <Route path={`${basePath}/verify-email`} element={<ProtectedRoute><PageTransition><SingleEmail /></PageTransition></ProtectedRoute>} />
+        <Route path={`${basePath}/reports`} element={<ProtectedRoute><PageTransition><Reports /></PageTransition></ProtectedRoute>} />
+        <Route path={`${basePath}/verify-email`} element={<ProtectedRoute><PageTransition><VerifyEmail /></PageTransition></ProtectedRoute>} />
         <Route path={`${basePath}/api`} element={<ProtectedRoute><PageTransition><ApiDocs /></PageTransition></ProtectedRoute>} />
         <Route path={`${basePath}/settings`} element={<ProtectedRoute><PageTransition><Settings /></PageTransition></ProtectedRoute>} />
         <Route path={`${basePath}/plan`} element={<ProtectedRoute><PageTransition><Plan /></PageTransition></ProtectedRoute>} />
@@ -101,9 +103,10 @@ const DevelopmentRoutesComponent = () => {
           <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
           
           {/* Dashboard routes */}
-          <Route path="/dashboard" element={<ProtectedRoute><Navigate to="/dashboard/lists" replace /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Navigate to="/dashboard/verify-email" replace /></ProtectedRoute>} />
           <Route path="/dashboard/lists" element={<ProtectedRoute><PageTransition><Lists /></PageTransition></ProtectedRoute>} />
-          <Route path="/dashboard/verify-email" element={<ProtectedRoute><PageTransition><SingleEmail /></PageTransition></ProtectedRoute>} />
+          <Route path="/dashboard/reports" element={<ProtectedRoute><PageTransition><Reports /></PageTransition></ProtectedRoute>} />
+          <Route path="/dashboard/verify-email" element={<ProtectedRoute><PageTransition><VerifyEmail /></PageTransition></ProtectedRoute>} />
           <Route path="/dashboard/api" element={<ProtectedRoute><PageTransition><ApiDocs /></PageTransition></ProtectedRoute>} />
           <Route path="/dashboard/settings" element={<ProtectedRoute><PageTransition><Settings /></PageTransition></ProtectedRoute>} />
           <Route path="/dashboard/plan" element={<ProtectedRoute><PageTransition><Plan /></PageTransition></ProtectedRoute>} />

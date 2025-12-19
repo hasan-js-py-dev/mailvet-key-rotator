@@ -15,7 +15,7 @@ const plans = [
     highlight: "Perfect to get started",
     limitedOffer: false,
     features: [
-      { text: "50 email validations", included: true, icon: Mail },
+      { text: "100 email validations", included: true, icon: Mail },
       { text: "Single email validation only", included: true, icon: Check },
       { text: "No CSV bulk upload", included: false, icon: FileSpreadsheet },
       { text: "No API access", included: false, icon: Code },

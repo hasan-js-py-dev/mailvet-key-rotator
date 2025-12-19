@@ -181,7 +181,7 @@ const sendWelcomeEmail = async (email, name = '') => {
             </p>
             
             <p style="color: #52525b; line-height: 1.6;">
-              Your account is now verified and ready to use. You've been credited with <strong>50 free email validations</strong> to get started.
+              Your account is now verified and ready to use. You've been credited with <strong>100 free email validations</strong> to get started.
             </p>
             
             <div style="background: #f4f4f5; border-radius: 8px; padding: 20px; margin: 24px 0;">

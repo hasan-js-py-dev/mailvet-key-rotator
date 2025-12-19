@@ -142,13 +142,16 @@ export const authenticatedFetch = async (
   }
 
   const makeRequest = async (authToken: string) => {
+    const isFormDataBody =
+      typeof FormData !== 'undefined' && options.body instanceof FormData;
+
     return fetch(url, {
       ...options,
       credentials: 'include',
       headers: {
         ...options.headers,
         'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/json',
+        ...(isFormDataBody ? {} : { 'Content-Type': 'application/json' }),
       },
     });
   };
@@ -182,6 +185,7 @@ export interface User {
   emailVerified: boolean;
   credits: number;
   plan: string;
+  planUpdatedAt?: string | null;
   totalValidations: number;
   monthlyValidations: number;
   billingStatus: string;

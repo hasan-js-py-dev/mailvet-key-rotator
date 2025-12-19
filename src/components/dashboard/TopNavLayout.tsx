@@ -25,9 +25,9 @@ import { useAuthContext } from "@/components/AuthProvider";
 import { Logo } from "@/components/Logo";
 
 const mainNavItems = [
-  { icon: Mail, label: "Single", path: "/dashboard/verify-email" },
-  { icon: List, label: "Lists", path: "/dashboard/lists" },
-  { icon: FileText, label: "Reports", path: "/dashboard/reports" },
+  { icon: Mail, label: "Single ✉️", path: "/dashboard/verify-email" },
+  { icon: List, label: "Lists 📋", path: "/dashboard/lists" },
+  { icon: FileText, label: "Reports 📊", path: "/dashboard/reports" },
 ];
 
 // Additional paths to check for active state
@@ -84,9 +84,9 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
   const credits = user?.credits ?? 0;
 
   return (
-    <div className="min-h-screen bg-background font-geist">
+    <div className="min-h-screen font-sans bg-gradient-to-b from-background to-muted/30">
       {/* Top Navigation */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border h-14">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/75 border-b border-border h-14">
         <div className="h-full px-4 lg:px-6 flex items-center justify-between max-w-screen-2xl mx-auto">
           {/* Left: Logo */}
           <div className="flex items-center">
@@ -98,7 +98,8 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
           {/* Center: Navigation */}
           <nav className="hidden md:flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
             {mainNavItems.map((item) => {
-              const isActive = location.pathname === item.path || 
+              const isActive =
+                location.pathname === item.path ||
                 (item.path === "/dashboard/lists" && listsPaths.includes(location.pathname)) ||
                 (item.path === "/dashboard/verify-email" && singlePaths.includes(location.pathname));
               return (
@@ -117,6 +118,12 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
                 </Link>
               );
             })}
+
+            <Link to="/dashboard/plan">
+              <Button variant="gradient" size="sm" className="rounded-full">
+                Upgrade 🚀
+              </Button>
+            </Link>
           </nav>
 
           {/* Right: Credits + User Menu */}
@@ -124,7 +131,7 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
             {/* Credits Display */}
             <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
               <CreditCard className="w-4 h-4" />
-              <span>{credits} credits left</span>
+              <span>{credits} credits left ⚡</span>
             </div>
 
             {/* User Menu */}
@@ -161,7 +168,7 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.96 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-full mt-2 w-64 bg-card border border-border rounded-lg shadow-lg z-50 overflow-hidden"
+                      className="absolute right-0 top-full mt-2 w-72 bg-card border border-border rounded-xl shadow-lg z-50 overflow-hidden"
                     >
                       {/* User Info */}
                       <div className="p-4 border-b border-border">
@@ -170,10 +177,10 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
                         </p>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
-                            {getPlanLabel(user?.plan)}
+                            {getPlanLabel(user?.plan)} ✨
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            {credits} emails left
+                            {credits} emails left ⚡
                           </span>
                         </div>
                       </div>
@@ -186,7 +193,7 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                         >
                           <Settings className="w-4 h-4" />
-                          <span>Settings</span>
+                          <span>Settings ⚙️</span>
                         </Link>
                         <Link
                           to="/dashboard/settings?tab=billing"
@@ -194,15 +201,15 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                         >
                           <CreditCard className="w-4 h-4" />
-                          <span>Billing</span>
+                          <span>Billing 💳</span>
                         </Link>
                         <Link
-                          to="/docs"
+                          to="/dashboard/plan"
                           onClick={() => setUserMenuOpen(false)}
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                         >
-                          <FileText className="w-4 h-4" />
-                          <span>API Docs</span>
+                          <CreditCard className="w-4 h-4" />
+                          <span>Upgrade 🚀</span>
                         </Link>
                         <a
                           href="mailto:support@mailvet.app"
@@ -210,7 +217,7 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                         >
                           <HelpCircle className="w-4 h-4" />
-                          <span>Support</span>
+                          <span>Support 🤝</span>
                         </a>
                       </div>
 
@@ -272,6 +279,15 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
                     </Link>
                   );
                 })}
+
+                <div className="pt-2">
+                  <Link to="/dashboard/plan" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="gradient" className="w-full justify-center rounded-lg">
+                      Upgrade 🚀
+                    </Button>
+                  </Link>
+                </div>
+
                 <div className="pt-2 border-t border-border mt-2">
                   <div className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground">
                     <CreditCard className="w-4 h-4" />
