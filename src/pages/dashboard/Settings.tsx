@@ -201,7 +201,7 @@ export default function Settings() {
 
       // Logout and redirect after successful deletion
       await authLogout();
-      smartNavigateTo(getMainSiteUrl("/"), { replace: true, delayMs: 350 });
+      smartNavigateTo(getMainSiteUrl("/?accountDeleted=1"), { replace: true, delayMs: 350 });
     } catch (err) {
       toast({
         title: "Error",

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { authenticatedFetch } from "@/lib/auth";
+import { getValidationApiBaseUrl } from "@/lib/validationApi";
 
 type Job = {
   _id: string;
@@ -16,11 +17,15 @@ export default function Reports() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
+  const apiBaseUrl = getValidationApiBaseUrl();
 
   useEffect(() => {
     let mounted = true;
     const run = async () => {
+      if (!apiBaseUrl) {
+        if (mounted) setJobs([]);
+        return;
+      }
       setIsLoading(true);
       try {
         const response = await authenticatedFetch(`${apiBaseUrl}/v1/jobs?limit=50`, {

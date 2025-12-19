@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { authenticatedFetch } from "@/lib/auth";
+import { getValidationApiBaseUrl } from "@/lib/validationApi";
 
 type Job = {
   _id: string;
@@ -25,7 +26,7 @@ export default function Lists() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoadingJobs, setIsLoadingJobs] = useState(false);
 
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
+  const apiBaseUrl = getValidationApiBaseUrl();
 
   const isAllowedFile = (file: File) => {
     const name = file.name.toLowerCase();
@@ -69,6 +70,15 @@ export default function Lists() {
   const handleStartValidation = async () => {
     if (!uploadedFile) return;
 
+    if (!apiBaseUrl) {
+      toast({
+        title: "Validation backend not configured",
+        description: "Set VITE_VALIDATION_API_BASE_URL to enable bulk upload.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsUploading(true);
     try {
       const formData = new FormData();
@@ -102,6 +112,10 @@ export default function Lists() {
   };
 
   const fetchJobs = useCallback(async () => {
+    if (!apiBaseUrl) {
+      setJobs([]);
+      return;
+    }
     setIsLoadingJobs(true);
     try {
       const response = await authenticatedFetch(`${apiBaseUrl}/v1/jobs?limit=50`, {

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { authenticatedFetch } from "@/lib/auth";
+import { getValidationApiBaseUrl } from "@/lib/validationApi";
 import { cn } from "@/lib/utils";
 
 type VerifyResult = "valid" | "catch-all" | "invalid" | "no-mx records" | "timeout";
@@ -72,13 +73,22 @@ export default function VerifyEmail() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<VerifyEmailResponse | null>(null);
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
+  const apiBaseUrl = getValidationApiBaseUrl();
 
   const canSubmit = useMemo(() => email.trim().length > 3 && email.includes("@"), [email]);
 
   const handleValidate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
+
+    if (!apiBaseUrl) {
+      toast({
+        title: "Validation backend not configured",
+        description: "Set VITE_VALIDATION_API_BASE_URL to enable email validation.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsLoading(true);
     setResult(null);

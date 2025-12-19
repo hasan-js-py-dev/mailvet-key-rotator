@@ -327,9 +327,47 @@ export default function AccessPage() {
     } catch (error: any) {
       // Handle Firebase specific errors
       if (error.code === "auth/email-already-in-use") {
+        // If the user is trying to sign up with an existing email, try signing in
+        // with the provided password. This prevents a "Firebase exists / Mongo missing"
+        // loop after account deletion.
+        try {
+          const userCredential = await signInWithEmailAndPassword(
+            auth,
+            formData.email,
+            formData.password
+          );
+
+          const idToken = await userCredential.user.getIdToken();
+
+          const response = await fetch(`${apiBaseUrl}/v1/auth/login`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${idToken}`,
+            },
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.accessToken) {
+            await login(data.accessToken);
+
+            toast({
+              title: "Welcome back!",
+              description: "Redirecting to your dashboard...",
+            });
+
+            navigate("/dashboard");
+            return;
+          }
+        } catch {
+          // Fall back to the normal message below
+        }
+
         toast({
           title: "Email already registered",
-          description: "An account with this email already exists. Please login or use a different email.",
+          description: "This email already exists in our authentication system. Please sign in (or reset your password). If you previously deleted your account, sign in once and delete again to fully remove it.",
           variant: "destructive",
         });
       } else if (error.code === "auth/weak-password") {

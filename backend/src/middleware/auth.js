@@ -1,7 +1,6 @@
-const jwt = require('jsonwebtoken');
 const admin = require('../config/firebase');
 const User = require('../models/User');
-const { verifyAccessToken, verifyRefreshToken } = require('../services/token.service');
+const { verifyAccessToken, verifyRefreshToken } = require('../services/tokenService');
 
 /**
  * Verify access token from Authorization header
@@ -89,6 +88,13 @@ const verifyRefreshTokenMiddleware = async (req, res, next) => {
 // Verify Firebase ID token (for initial auth from frontend)
 const verifyFirebaseToken = async (req, res, next) => {
   try {
+    if (!admin.apps || admin.apps.length === 0) {
+      return res.status(500).json({
+        error: 'Firebase Admin is not configured on the server',
+        code: 'FIREBASE_NOT_CONFIGURED'
+      });
+    }
+
     const authHeader = req.headers.authorization;
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -109,58 +115,6 @@ const verifyFirebaseToken = async (req, res, next) => {
   }
 };
 
-// Verify API token for programmatic access (Enterprise only)
-const verifyApiToken = async (req, res, next) => {
-  try {
-    const apiKey = req.headers['x-api-key'] || req.query.apiKey;
-    
-    if (!apiKey) {
-      return res.status(401).json({ error: 'No API key provided' });
-    }
-
-    // Find user by API token hash
-    const bcrypt = require('bcryptjs');
-    const users = await User.find({ plan: 'enterprise' }).select('+apiTokenHash');
-    
-    let matchedUser = null;
-    for (const user of users) {
-      if (user.apiTokenHash && await bcrypt.compare(apiKey, user.apiTokenHash)) {
-        matchedUser = user;
-        break;
-      }
-    }
-
-    if (!matchedUser) {
-      return res.status(401).json({ error: 'Invalid API key' });
-    }
-
-    req.user = matchedUser;
-    req.userId = matchedUser._id;
-    next();
-  } catch (error) {
-    console.error('API token auth error:', error);
-    return res.status(401).json({ error: 'Invalid API key' });
-  }
-};
-
-// Check if user has required plan
-const requirePlan = (...allowedPlans) => {
-  return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-
-    if (!allowedPlans.includes(req.user.plan)) {
-      return res.status(403).json({ 
-        error: 'Plan upgrade required',
-        requiredPlans: allowedPlans,
-        currentPlan: req.user.plan
-      });
-    }
-
-    next();
-  };
-};
 
 // Check if user's email is verified
 const requireVerifiedEmail = (req, res, next) => {
@@ -179,7 +133,5 @@ module.exports = {
   verifyToken,
   verifyRefreshTokenMiddleware,
   verifyFirebaseToken,
-  verifyApiToken,
-  requirePlan,
   requireVerifiedEmail
 };

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { Loader2 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { TrustBadgesSection } from "@/components/landing/TrustBadgesSection";
@@ -17,7 +18,9 @@ import { Footer } from "@/components/landing/Footer";
 
 const Index = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { scrollY } = useScroll();
+  const [showRedirectLoader, setShowRedirectLoader] = useState(false);
   
   // Parallax transforms for glow orbs
   const y1 = useTransform(scrollY, [0, 3000], [0, -400]);
@@ -45,8 +48,41 @@ const Index = () => {
     }
   }, [location]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const isAccountDeletedRedirect = params.get('accountDeleted') === '1';
+
+    if (!isAccountDeletedRedirect) return;
+
+    setShowRedirectLoader(true);
+
+    const timeout = window.setTimeout(() => {
+      setShowRedirectLoader(false);
+      params.delete('accountDeleted');
+      const remaining = params.toString();
+      const next = remaining ? `/?${remaining}` : '/';
+      navigate(next, { replace: true });
+    }, 900);
+
+    return () => window.clearTimeout(timeout);
+  }, [location.search, navigate]);
+
   return (
     <div className="min-h-screen bg-[hsl(270,100%,2%)] text-[hsl(0,0%,98%)] relative overflow-hidden">
+      {showRedirectLoader ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 bg-[hsl(270,100%,2%)]/90 backdrop-blur-sm flex items-center justify-center"
+        >
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="w-6 h-6 animate-spin text-[hsl(0,0%,98%)]" />
+            <p className="text-sm text-[hsl(0,0%,98%)]/80">Redirecting…</p>
+          </div>
+        </motion.div>
+      ) : null}
+
       {/* Parallax glow orbs with smooth animations */}
       <motion.div 
         style={{ y: y1, rotate: rotate1, scale: scale1, opacity: opacity1 }}

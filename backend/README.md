@@ -1,6 +1,6 @@
 # MailVet Backend API
 
-Node.js/Express backend for MailVet email validation SaaS.
+Node.js/Express backend for MailVet authentication, account management, billing, and admin diagnostics.
 
 ## Tech Stack
 
@@ -33,7 +33,7 @@ Required environment variables:
 | Variable | Description |
 |----------|-------------|
 | `PORT` | Server port (default: 3001) |
-| `MONGODB_URI` | MongoDB connection string |
+| `MONGODB_URI` | MongoDB connection string (use `/mailvet` as the database name) |
 | `FIREBASE_PROJECT_ID` | Firebase project ID |
 | `FIREBASE_CLIENT_EMAIL` | Firebase service account email |
 | `FIREBASE_PRIVATE_KEY` | Firebase service account private key |
@@ -42,7 +42,6 @@ Required environment variables:
 | `JWT_SECRET` | Secret key for JWT signing |
 | `FRONTEND_URL` | Frontend URL for CORS & email links |
 | `DASHBOARD_URL` | Dashboard URL |
-| `KEY_MANAGER_URL` | MailTester key rotation service URL |
 
 ### 3. Firebase Setup
 
@@ -86,20 +85,7 @@ npm run dev
 
 ### Validation
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/v1/verify-email` | Validate single email (auto-routes by plan) |
-| POST | `/v1/free/validate` | Free plan validation |
-| POST | `/v1/ultimate/validate` | Ultimate plan validation |
-| POST | `/v1/enterprise/validate` | Enterprise API validation |
-
-### Jobs
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/v1/jobs` | List jobs |
-| GET | `/v1/jobs/:jobId` | Get job details |
-| DELETE | `/v1/jobs/:jobId` | Delete job |
+Validation and bulk jobs have been removed. This backend now focuses on authentication, account management, billing, and admin diagnostics.
 
 ### Billing
 
@@ -109,12 +95,13 @@ npm run dev
 | POST | `/v1/billing/webhook` | Payment webhooks |
 | GET | `/v1/billing/status` | Get billing status |
 
-### Plans
+### Admin
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/v1/plans` | List all plans |
-| GET | `/v1/plans/:planId` | Get plan details |
+| GET | `/v1/admin/email-logs` | Fetch recent email logs |
+| DELETE | `/v1/admin/email-logs` | Clear email logs |
+| GET | `/v1/admin/users/lookup?email=` | Lookup user by email |
 
 ## Authentication Flow
 
@@ -136,22 +123,11 @@ npm run dev
 ### Session Management
 
 - All authenticated requests use JWT in `Authorization: Bearer <token>` header
-- JWTs expire in 7 days (configurable)
-- Enterprise users also get API tokens for programmatic access
-
-## Rate Limits
-
-| Plan | Validation Rate |
-|------|-----------------|
-| Free | 1 request/second |
-| Ultimate | 3 requests/second |
-| Enterprise | 10 requests/second |
+- JWTs expire (configurable)
 
 ## MongoDB Collections
 
 - **users** - User accounts, credits, plans
-- **jobs** - Batch validation jobs
-- **validationresults** - Individual email validation results
 
 ## Security
 
@@ -159,7 +135,6 @@ npm run dev
 - CORS restricted to configured origins
 - Rate limiting on all endpoints
 - Password hashing with bcrypt
-- API tokens hashed before storage
 - JWT for session management
 
 ## License

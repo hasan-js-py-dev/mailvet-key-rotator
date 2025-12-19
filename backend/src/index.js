@@ -5,13 +5,10 @@ const helmet = require('helmet');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 
-const authRoutes = require('./routes/auth.routes');
-const accountRoutes = require('./routes/account.routes');
-const validationRoutes = require('./routes/validation.routes');
-const jobRoutes = require('./routes/job.routes');
-const billingRoutes = require('./routes/billing.routes');
-const planRoutes = require('./routes/plan.routes');
-const adminRoutes = require('./routes/admin.routes');
+const authRoutes = require('./routes/authRoutes');
+const accountRoutes = require('./routes/accountRoutes');
+const billingRoutes = require('./routes/billingRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const errorHandler = require('./middleware/errorHandler');
 
@@ -45,7 +42,7 @@ app.use(cors({
   },
   credentials: true, // Required for cookies
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(cookieParser()); // Parse cookies for refresh token
 app.use(express.json());
@@ -58,10 +55,7 @@ app.get('/health', (req, res) => {
 // API Routes (v1)
 app.use('/v1/auth', authRoutes);
 app.use('/v1/account', accountRoutes);
-app.use('/v1', validationRoutes);
-app.use('/v1/jobs', jobRoutes);
 app.use('/v1/billing', billingRoutes);
-app.use('/v1/plans', planRoutes);
 app.use('/v1/admin', adminRoutes);
 
 // Error handling
@@ -75,9 +69,12 @@ app.use((req, res) => {
 // Connect to MongoDB and start server
 const PORT = process.env.PORT || 3001;
 
-mongoose.connect(process.env.MONGODB_URI)
+const mongoDbName = process.env.MONGODB_DBNAME || 'mailvet';
+
+mongoose.connect(process.env.MONGODB_URI, { dbName: mongoDbName })
   .then(() => {
     console.log('Connected to MongoDB');
+    console.log(`MongoDB database: ${mongoose.connection?.name || '(unknown)'}`);
     app.listen(PORT, () => {
       console.log(`MailVet API running on port ${PORT}`);
     });

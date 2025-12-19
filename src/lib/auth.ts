@@ -186,8 +186,6 @@ export interface User {
   credits: number;
   plan: string;
   planUpdatedAt?: string | null;
-  totalValidations: number;
-  monthlyValidations: number;
   billingStatus: string;
   renewalDate: string | null;
   createdAt: string;

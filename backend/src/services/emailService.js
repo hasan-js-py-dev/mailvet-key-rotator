@@ -32,41 +32,27 @@ const sendVerificationEmail = async (email, token, name = '') => {
             <div style="text-align: center; margin-bottom: 32px;">
               <h1 style="color: #8B5CF6; margin: 0; font-size: 28px;">MailVet</h1>
             </div>
-            
+
             <h2 style="color: #18181b; margin-bottom: 16px;">Verify your email address</h2>
-            
-            <p style="color: #52525b; line-height: 1.6;">
-              Hi${name ? ` ${name}` : ''},
-            </p>
-            
-            <p style="color: #52525b; line-height: 1.6;">
-              Thanks for signing up for MailVet! Please click the button below to verify your email address and activate your account.
-            </p>
-            
+
+            <p style="color: #52525b; line-height: 1.6;">Hi${name ? ` ${name}` : ''},</p>
+
+            <p style="color: #52525b; line-height: 1.6;">Thanks for signing up for MailVet! Please click the button below to verify your email address and activate your account.</p>
+
             <div style="text-align: center; margin: 32px 0;">
-              <a href="${verificationUrl}" style="display: inline-block; background: linear-gradient(135deg, #8B5CF6, #6366F1); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600;">
-                Verify Email Address
-              </a>
+              <a href="${verificationUrl}" style="display: inline-block; background: linear-gradient(135deg, #8B5CF6, #6366F1); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600;">Verify Email Address</a>
             </div>
-            
-            <p style="color: #71717a; font-size: 14px; line-height: 1.6;">
-              If you didn't create an account with MailVet, you can safely ignore this email.
-            </p>
-            
-            <p style="color: #71717a; font-size: 14px; line-height: 1.6;">
-              This link will expire in 24 hours.
-            </p>
-            
+
+            <p style="color: #71717a; font-size: 14px; line-height: 1.6;">If you didn't create an account with MailVet, you can safely ignore this email.</p>
+            <p style="color: #71717a; font-size: 14px; line-height: 1.6;">This link will expire in 24 hours.</p>
+
             <hr style="border: none; border-top: 1px solid #e4e4e7; margin: 32px 0;">
-            
-            <p style="color: #a1a1aa; font-size: 12px; text-align: center;">
-              MailVet - Professional Email Validation<br>
-              <a href="https://mailvet.app" style="color: #8B5CF6;">mailvet.app</a>
-            </p>
+
+            <p style="color: #a1a1aa; font-size: 12px; text-align: center;">MailVet<br><a href="https://mailvet.app" style="color: #8B5CF6;">mailvet.app</a></p>
           </div>
         </body>
         </html>
-      `
+      `,
     });
 
     if (error) {
@@ -103,41 +89,27 @@ const sendPasswordResetEmail = async (email, token, name = '') => {
             <div style="text-align: center; margin-bottom: 32px;">
               <h1 style="color: #8B5CF6; margin: 0; font-size: 28px;">MailVet</h1>
             </div>
-            
+
             <h2 style="color: #18181b; margin-bottom: 16px;">Reset your password</h2>
-            
-            <p style="color: #52525b; line-height: 1.6;">
-              Hi${name ? ` ${name}` : ''},
-            </p>
-            
-            <p style="color: #52525b; line-height: 1.6;">
-              We received a request to reset your password. Click the button below to choose a new password.
-            </p>
-            
+
+            <p style="color: #52525b; line-height: 1.6;">Hi${name ? ` ${name}` : ''},</p>
+
+            <p style="color: #52525b; line-height: 1.6;">We received a request to reset your password. Click the button below to choose a new password.</p>
+
             <div style="text-align: center; margin: 32px 0;">
-              <a href="${resetUrl}" style="display: inline-block; background: linear-gradient(135deg, #8B5CF6, #6366F1); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600;">
-                Reset Password
-              </a>
+              <a href="${resetUrl}" style="display: inline-block; background: linear-gradient(135deg, #8B5CF6, #6366F1); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600;">Reset Password</a>
             </div>
-            
-            <p style="color: #71717a; font-size: 14px; line-height: 1.6;">
-              If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.
-            </p>
-            
-            <p style="color: #71717a; font-size: 14px; line-height: 1.6;">
-              This link will expire in 1 hour.
-            </p>
-            
+
+            <p style="color: #71717a; font-size: 14px; line-height: 1.6;">If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.</p>
+            <p style="color: #71717a; font-size: 14px; line-height: 1.6;">This link will expire in 1 hour.</p>
+
             <hr style="border: none; border-top: 1px solid #e4e4e7; margin: 32px 0;">
-            
-            <p style="color: #a1a1aa; font-size: 12px; text-align: center;">
-              MailVet - Professional Email Validation<br>
-              <a href="https://mailvet.app" style="color: #8B5CF6;">mailvet.app</a>
-            </p>
+
+            <p style="color: #a1a1aa; font-size: 12px; text-align: center;">MailVet<br><a href="https://mailvet.app" style="color: #8B5CF6;">mailvet.app</a></p>
           </div>
         </body>
         </html>
-      `
+      `,
     });
 
     if (error) {
@@ -154,7 +126,7 @@ const sendPasswordResetEmail = async (email, token, name = '') => {
 };
 
 const sendWelcomeEmail = async (email, name = '') => {
-  const subject = 'Welcome to MailVet! 🎉';
+  const subject = 'Welcome to MailVet!';
 
   try {
     const { data, error } = await resend.emails.send({
@@ -173,42 +145,24 @@ const sendWelcomeEmail = async (email, name = '') => {
             <div style="text-align: center; margin-bottom: 32px;">
               <h1 style="color: #8B5CF6; margin: 0; font-size: 28px;">MailVet</h1>
             </div>
-            
-            <h2 style="color: #18181b; margin-bottom: 16px;">Welcome to MailVet! 🎉</h2>
-            
-            <p style="color: #52525b; line-height: 1.6;">
-              Hi${name ? ` ${name}` : ''},
-            </p>
-            
-            <p style="color: #52525b; line-height: 1.6;">
-              Your account is now verified and ready to use. You've been credited with <strong>100 free email validations</strong> to get started.
-            </p>
-            
-            <div style="background: #f4f4f5; border-radius: 8px; padding: 20px; margin: 24px 0;">
-              <h3 style="color: #18181b; margin: 0 0 12px 0; font-size: 16px;">What you can do:</h3>
-              <ul style="color: #52525b; margin: 0; padding-left: 20px; line-height: 1.8;">
-                <li>Validate single email addresses instantly</li>
-                <li>Check email deliverability and risk levels</li>
-                <li>Upgrade to Ultimate for bulk CSV validation</li>
-              </ul>
-            </div>
-            
+
+            <h2 style="color: #18181b; margin-bottom: 16px;">Welcome to MailVet</h2>
+
+            <p style="color: #52525b; line-height: 1.6;">Hi${name ? ` ${name}` : ''},</p>
+
+            <p style="color: #52525b; line-height: 1.6;">Your account is verified and ready to use. Your Free plan starts with <strong>100 credits</strong>.</p>
+
             <div style="text-align: center; margin: 32px 0;">
-              <a href="${process.env.DASHBOARD_URL}" style="display: inline-block; background: linear-gradient(135deg, #8B5CF6, #6366F1); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600;">
-                Go to Dashboard
-              </a>
+              <a href="${process.env.DASHBOARD_URL}" style="display: inline-block; background: linear-gradient(135deg, #8B5CF6, #6366F1); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600;">Go to Dashboard</a>
             </div>
-            
+
             <hr style="border: none; border-top: 1px solid #e4e4e7; margin: 32px 0;">
-            
-            <p style="color: #a1a1aa; font-size: 12px; text-align: center;">
-              MailVet - Professional Email Validation<br>
-              <a href="https://mailvet.app" style="color: #8B5CF6;">mailvet.app</a>
-            </p>
+
+            <p style="color: #a1a1aa; font-size: 12px; text-align: center;">MailVet<br><a href="https://mailvet.app" style="color: #8B5CF6;">mailvet.app</a></p>
           </div>
         </body>
         </html>
-      `
+      `,
     });
 
     if (error) {
@@ -220,12 +174,11 @@ const sendWelcomeEmail = async (email, name = '') => {
     return data;
   } catch (error) {
     logEmailFailure('welcome', email, subject, error);
-    // Don't throw - welcome email is not critical
   }
 };
 
 module.exports = {
   sendVerificationEmail,
   sendPasswordResetEmail,
-  sendWelcomeEmail
+  sendWelcomeEmail,
 };

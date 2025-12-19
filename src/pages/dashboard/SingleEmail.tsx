@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/useUser";
 import { getDashboardUrl } from "@/lib/subdomain";
+import { getValidationApiBaseUrl } from "@/lib/validationApi";
 
 interface ValidationResult {
   email: string;
@@ -83,8 +84,8 @@ export default function SingleEmail() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<ValidationResult | null>(null);
   const { user, refetch } = useUser();
-  
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
+
+  const apiBaseUrl = getValidationApiBaseUrl();
 
   const getInternalPathOrUrl = (target: string): string => {
     try {
@@ -101,6 +102,15 @@ export default function SingleEmail() {
   const handleValidate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
+
+    if (!apiBaseUrl) {
+      toast({
+        title: "Validation backend not configured",
+        description: "Set VITE_VALIDATION_API_BASE_URL to enable email validation.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsLoading(true);
     setResult(null);

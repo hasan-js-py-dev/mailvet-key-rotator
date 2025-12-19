@@ -55,14 +55,6 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  apiToken: {
-    type: String,
-    select: false
-  },
-  apiTokenHash: {
-    type: String,
-    select: false
-  },
   name: {
     type: String,
     trim: true
@@ -71,18 +63,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
     default: ''
-  },
-  totalValidations: {
-    type: Number,
-    default: 0
-  },
-  monthlyValidations: {
-    type: Number,
-    default: 0
-  },
-  lastValidationReset: {
-    type: Date,
-    default: Date.now
   },
   billingStatus: {
     type: String,
@@ -125,19 +105,6 @@ userSchema.methods.setPassword = async function(password) {
 // Compare password
 userSchema.methods.comparePassword = async function(password) {
   return bcrypt.compare(password, this.passwordHash);
-};
-
-// Check if monthly validations should reset
-userSchema.methods.checkMonthlyReset = function() {
-  const now = new Date();
-  const lastReset = new Date(this.lastValidationReset);
-  
-  if (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear()) {
-    this.monthlyValidations = 0;
-    this.lastValidationReset = now;
-    return true;
-  }
-  return false;
 };
 
 module.exports = mongoose.model('User', userSchema);

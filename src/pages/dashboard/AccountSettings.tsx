@@ -171,7 +171,7 @@ export default function AccountSettings() {
       });
       
       // Redirect to marketing site (smooth if same-origin)
-      const target = getMainSiteUrl("/");
+      const target = getMainSiteUrl("/?accountDeleted=1");
       const internalOrUrl = getInternalPathOrUrl(target);
 
       if (internalOrUrl.startsWith("http")) {
