@@ -41,10 +41,26 @@ const getAvailableMailtesterKey = async () => {
   }
 
   const url = getRotatorUrl();
-  const res = await fetch(url, {
-    method: 'GET',
-    headers: { Accept: 'application/json', ...getRotatorAuthHeaders() },
-  });
+  let res;
+  try {
+    res = await fetch(url, {
+      method: 'GET',
+      headers: { Accept: 'application/json', ...getRotatorAuthHeaders() },
+    });
+  } catch (error) {
+    const code = error?.cause?.code || error?.code;
+    if (code === 'ECONNREFUSED' || code === 'ENOTFOUND' || code === 'EAI_AGAIN') {
+      const friendly = new Error(
+        `Key rotator is unreachable at ${url}. ` +
+          `Set MAILTESTER_ROTATOR_URL to the full endpoint (e.g. https://api.daddy-leads.com/mailtester/key/available) ` +
+          `or set KEY_MANAGER_URL to the base URL (e.g. https://api.daddy-leads.com).`
+      );
+      friendly.statusCode = 502;
+      friendly.details = { url, code };
+      throw friendly;
+    }
+    throw error;
+  }
 
   const text = await res.text();
   let payload;
