@@ -3,18 +3,20 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { authenticatedFetch } from "@/lib/auth";
 import { getValidationApiBaseUrl } from "@/lib/validationApi";
 
-type Job = {
+type ActivityItem = {
   _id: string;
-  originalFilename: string;
-  status: "pending" | "processing" | "completed" | "failed";
-  totalEmails?: number;
-  processedEmails?: number;
-  progress?: number;
+  email: string;
+  domain?: string;
+  provider?: string;
+  code?: string;
+  message?: string;
+  riskLevel?: "low" | "medium" | "high";
+  creditsConsumed?: number;
   createdAt?: string;
 };
 
 export default function Reports() {
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [activity, setActivity] = useState<ActivityItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const apiBaseUrl = getValidationApiBaseUrl();
@@ -23,12 +25,12 @@ export default function Reports() {
     let mounted = true;
     const run = async () => {
       if (!apiBaseUrl) {
-        if (mounted) setJobs([]);
+        if (mounted) setActivity([]);
         return;
       }
       setIsLoading(true);
       try {
-        const response = await authenticatedFetch(`${apiBaseUrl}/v1/jobs?limit=50`, {
+        const response = await authenticatedFetch(`${apiBaseUrl}/v1/validation/activity?limit=50`, {
           method: "GET",
         });
 
@@ -36,7 +38,7 @@ export default function Reports() {
         if (!response.ok) return;
         if (!mounted) return;
 
-        setJobs(Array.isArray(payload?.jobs) ? payload.jobs : []);
+        setActivity(Array.isArray(payload?.activity) ? payload.activity : []);
       } finally {
         if (mounted) setIsLoading(false);
       }
@@ -57,11 +59,11 @@ export default function Reports() {
     );
   }
 
-  if (jobs.length === 0) {
+  if (activity.length === 0) {
     return (
       <DashboardLayout>
         <div className="min-h-[60vh] flex items-center justify-center">
-          <p className="text-muted-foreground">No Emails or List Clean yet.</p>
+          <p className="text-muted-foreground">No recent verification activity yet.</p>
         </div>
       </DashboardLayout>
     );
@@ -72,41 +74,35 @@ export default function Reports() {
       <div className="max-w-5xl mx-auto space-y-8">
         <div className="space-y-2">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">Reports</h1>
-          <p className="text-muted-foreground">All your uploaded lists appear here.</p>
+          <p className="text-muted-foreground">Your most recent single-email verifications.</p>
         </div>
 
         <div className="bg-card rounded-xl border border-border overflow-hidden">
           <div className="grid grid-cols-12 gap-3 px-5 py-3 text-xs font-semibold text-muted-foreground border-b border-border">
-            <div className="col-span-6">List</div>
-            <div className="col-span-2">Status</div>
-            <div className="col-span-2">Total</div>
-            <div className="col-span-2">Progress</div>
+            <div className="col-span-5">Email</div>
+            <div className="col-span-2">Code</div>
+            <div className="col-span-3">Message</div>
+            <div className="col-span-2">When</div>
           </div>
 
-          {jobs.map((job) => (
-            <div key={job._id} className="grid grid-cols-12 gap-3 px-5 py-4 border-b border-border last:border-b-0">
-              <div className="col-span-6 min-w-0">
-                <p className="font-semibold text-foreground truncate">{job.originalFilename}</p>
+          {activity.map((item) => (
+            <div
+              key={item._id}
+              className="grid grid-cols-12 gap-3 px-5 py-4 border-b border-border last:border-b-0"
+            >
+              <div className="col-span-5 min-w-0">
+                <p className="font-semibold text-foreground truncate">{item.email}</p>
+                <p className="text-xs text-muted-foreground truncate">{item.domain || "—"}</p>
+              </div>
+              <div className="col-span-2">
+                <span className="text-sm text-foreground">{item.code || "—"}</span>
+              </div>
+              <div className="col-span-3 min-w-0">
+                <span className="text-sm text-foreground truncate block">{item.message || "—"}</span>
               </div>
               <div className="col-span-2">
                 <span className="text-sm text-foreground">
-                  {job.status === "pending"
-                    ? "Queued"
-                    : job.status === "processing"
-                      ? "Processing"
-                      : job.status === "completed"
-                        ? "Completed"
-                        : "Failed"}
-                </span>
-              </div>
-              <div className="col-span-2">
-                <span className="text-sm text-foreground">
-                  {typeof job.totalEmails === "number" ? job.totalEmails.toLocaleString() : "—"}
-                </span>
-              </div>
-              <div className="col-span-2">
-                <span className="text-sm text-foreground">
-                  {typeof job.progress === "number" ? `${job.progress}%` : "—"}
+                  {item.createdAt ? new Date(item.createdAt).toLocaleString() : "—"}
                 </span>
               </div>
             </div>

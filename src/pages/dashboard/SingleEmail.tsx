@@ -19,6 +19,7 @@ import { toast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/useUser";
 import { getDashboardUrl } from "@/lib/subdomain";
 import { getValidationApiBaseUrl } from "@/lib/validationApi";
+import { authenticatedFetch } from "@/lib/auth";
 
 interface ValidationResult {
   email: string;
@@ -116,10 +117,8 @@ export default function SingleEmail() {
     setResult(null);
 
     try {
-      const response = await fetch(`${apiBaseUrl}/v1/validation/verify-email`, {
+      const response = await authenticatedFetch(`${apiBaseUrl}/v1/validation/verify-email`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ email }),
       });
 
