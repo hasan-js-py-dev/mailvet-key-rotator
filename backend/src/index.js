@@ -10,6 +10,7 @@ const accountRoutes = require('./routes/accountRoutes');
 const billingRoutes = require('./routes/billingRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const validationRoutes = require('./routes/validationRoutes');
+const legacyValidationRoutes = require('./routes/legacyValidationRoutes');
 
 const errorHandler = require('./middleware/errorHandler');
 
@@ -67,6 +68,7 @@ app.use('/v1/account', accountRoutes);
 app.use('/v1/billing', billingRoutes);
 app.use('/v1/admin', adminRoutes);
 app.use('/v1/validation', validationRoutes);
+app.use('/v1', legacyValidationRoutes);
 
 // Error handling
 app.use(errorHandler);
