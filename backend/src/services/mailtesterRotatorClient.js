@@ -5,6 +5,14 @@ const getRotatorUrl = () => {
   if (typeof configured === 'string' && configured.trim().length > 0) {
     return configured.trim();
   }
+
+  // Backwards-compatible: allow specifying the key manager base URL.
+  // Example: KEY_MANAGER_URL=http://localhost:4000
+  const base = process.env.KEY_MANAGER_URL;
+  if (typeof base === 'string' && base.trim().length > 0) {
+    return base.trim().replace(/\/+$/, '') + '/mailtester/key/available';
+  }
+
   return DEFAULT_ROTATOR_URL;
 };
 
