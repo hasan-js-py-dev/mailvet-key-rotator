@@ -23,6 +23,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/useUser";
 import { getDashboardUrl, getMainSiteUrl } from "@/lib/subdomain";
+import { authenticatedFetch, logout as authLogout } from "@/lib/auth";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,7 +49,6 @@ export default function AccountSettings() {
   const [marketingEmails, setMarketingEmails] = useState(false);
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
-  const sessionTokenKey = "mailvet_session";
 
   const getInternalPathOrUrl = (target: string): string => {
     try {
@@ -76,20 +76,13 @@ export default function AccountSettings() {
   }, [user]);
 
   const handleSaveProfile = async () => {
-    const token = localStorage.getItem(sessionTokenKey);
-    if (!token) return;
-
     setIsSaving(true);
     try {
-      const response = await fetch(`${apiBaseUrl}/v1/account`, {
+      const response = await authenticatedFetch(`${apiBaseUrl}/v1/account`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           name: `${firstName} ${lastName}`.trim(),
-          companyName: companyName.trim() 
+          companyName: companyName.trim(),
         }),
       });
 
@@ -146,17 +139,10 @@ export default function AccountSettings() {
   };
 
   const handleDeleteAccount = async () => {
-    const token = localStorage.getItem(sessionTokenKey);
-    if (!token) return;
-
     setIsDeleting(true);
     try {
-      const response = await fetch(`${apiBaseUrl}/v1/account`, {
+      const response = await authenticatedFetch(`${apiBaseUrl}/v1/account`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: "include",
       });
 
       if (!response.ok) {
@@ -164,7 +150,7 @@ export default function AccountSettings() {
       }
 
       // Clear session and redirect
-      localStorage.removeItem(sessionTokenKey);
+      await authLogout();
       toast({
         title: "Account deleted",
         description: "Your account has been permanently deleted.",
@@ -203,10 +189,8 @@ export default function AccountSettings() {
 
   const getPlanDisplayName = (plan: string) => {
     switch (plan) {
-      case 'pro':
-        return 'Pro Plan';
-      case 'enterprise':
-        return 'Enterprise Plan';
+      case 'ultimate':
+        return 'Paid Plan';
       default:
         return 'Free Plan';
     }
@@ -428,7 +412,7 @@ export default function AccountSettings() {
                   <div className="flex items-start gap-3">
                     <Crown className="w-5 h-5 text-primary mt-0.5" />
                     <div className="flex-1">
-                      <p className="font-medium text-foreground">Upgrade to Pro</p>
+                      <p className="font-medium text-foreground">Upgrade to Paid</p>
                       <p className="text-sm text-muted-foreground mt-1">
                         Get unlimited list storage, faster processing, and upload up to 10,000 emails per list.
                       </p>

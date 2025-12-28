@@ -48,7 +48,7 @@ const reasons = [
 
 export const WhyChooseSection = () => {
   return (
-    <section id="why-choose" className="relative py-24 overflow-hidden">
+    <section id="why-choose" className="relative py-24 overflow-hidden scroll-mt-24">
       <div className="absolute inset-0 bg-[hsl(270,50%,5%)]" />
       <div className="absolute inset-0 dot-pattern opacity-15" />
       

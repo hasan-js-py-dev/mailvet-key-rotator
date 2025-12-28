@@ -40,7 +40,7 @@ const endpoints = [
   "user": {
     "id": "user_123",
     "email": "user@example.com",
-    "plan": "pro"
+    "plan": "free"
   }
 }`,
   },
@@ -74,8 +74,8 @@ const endpoints = [
   "id": "user_123",
   "email": "user@example.com",
   "name": "John Doe",
-  "credits": 500,
-  "plan": "pro",
+  "credits": 87,
+  "plan": "free",
   "totalValidations": 1250,
   "monthlyValidations": 450
 }`,
@@ -103,8 +103,8 @@ const endpoints = [
     auth: true,
     body: "No body required.",
     response: `{
-  "credits": 500,
-  "plan": "pro",
+  "credits": 87,
+  "plan": "free",
   "totalValidations": 1250,
   "monthlyValidations": 450,
   "last30Days": {
@@ -200,8 +200,8 @@ const endpoints = [
     auth: true,
     body: "No body required.",
     response: `{
-  "plan": "pro",
-  "billingStatus": "active",
+  "plan": "free",
+  "billingStatus": "none",
   "renewalDate": "2024-02-15T00:00:00Z",
   "canUpgrade": true
 }`,
@@ -209,7 +209,7 @@ const endpoints = [
   {
     method: "POST",
     path: "/v1/billing/checkout",
-    description: "Initiate checkout for plan upgrade",
+    description: "Initiate checkout for paid plan",
     auth: true,
     body: `{
   "plan": "ultimate"
@@ -357,15 +357,7 @@ export default function ApiDocs() {
               <span className="text-foreground">10 requests/second</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Pro Plan</span>
-              <span className="text-foreground">50 requests/second</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Ultimate Plan</span>
-              <span className="text-foreground">100 requests/second</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Enterprise</span>
+              <span className="text-muted-foreground">Paid Plan</span>
               <span className="text-foreground">Unlimited</span>
             </div>
           </div>

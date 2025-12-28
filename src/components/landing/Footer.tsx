@@ -35,14 +35,10 @@ export const Footer = () => {
         {/* CTA Section */}
         <div className="py-16 border-b border-[hsl(270,50%,15%)]">
           <div className="relative max-w-4xl mx-auto rounded-3xl overflow-hidden border border-[hsl(270,50%,25%)] shadow-[0_0_60px_-12px_hsl(267,100%,50%,0.4),0_0_30px_-6px_hsl(267,100%,60%,0.3)]">
-            {/* Dotted grid background */}
-            <div 
-              className="absolute inset-0 bg-gradient-to-br from-[#0d0628] via-[#120a3d] to-[#0a0520]"
-              style={{
-                backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px)`,
-                backgroundSize: '24px 24px',
-              }}
-            />
+            {/* Background */}
+            <div className="absolute inset-0 bg-[hsl(270,100%,2%)]" />
+            <div className="absolute inset-0 dot-pattern opacity-20" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[hsl(267,100%,60%)/0.08] via-transparent to-[hsl(212,93%,52%)/0.06]" />
             
             {/* Subtle glow overlay at edges */}
             <div className="absolute inset-0 bg-gradient-to-b from-[hsl(267,100%,60%,0.05)] via-transparent to-[hsl(267,100%,60%,0.05)]" />
@@ -132,7 +128,7 @@ export const Footer = () => {
         {/* Bottom bar */}
         <div className="py-6 border-t border-[hsl(270,50%,15%)] flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-[hsl(270,20%,50%)]">
-            © {new Date().getFullYear()} MailVet.app. All rights reserved. Built with ❤️ for email marketers.
+            © {new Date().getFullYear()} MailVet.app. All rights reserved. Built for email marketers.
           </p>
           <div className="flex items-center gap-4">
             <a 

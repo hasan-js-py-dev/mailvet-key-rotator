@@ -1,19 +1,18 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Folder, Upload, Zap, ChevronRight, Lock, Check, Crown } from "lucide-react";
+import { Mail, Folder, Upload, Zap, ChevronRight, Check, Crown } from "lucide-react";
 import { TopNavLayout } from "@/components/dashboard/TopNavLayout";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/hooks/useUser";
 import { toast } from "@/hooks/use-toast";
+import { authenticatedFetch } from "@/lib/auth";
 
 const plans = [
   {
     name: "Free Plan",
     badge: "Basic",
     price: "$0",
-    priceAnnual: "$0",
     tagline: "Always Free",
     planKey: "free",
     features: [
@@ -40,12 +39,11 @@ const plans = [
     ],
   },
   {
-    name: "Pro Plan",
-    badge: "Upgrade",
+    name: "Paid Plan",
+    badge: "Unlimited",
     price: "$29.99",
-    priceAnnual: "$24.99",
-    tagline: "Save 16.7% with annual billing",
-    planKey: "pro",
+    tagline: "Unlimited email verification",
+    planKey: "ultimate",
     popular: true,
     features: [
       {
@@ -73,9 +71,8 @@ const plans = [
 ];
 
 export default function PlanManagement() {
-  const [isAnnual, setIsAnnual] = useState(false);
   const [isUpgrading, setIsUpgrading] = useState(false);
-  const { user, refetch } = useUser();
+  const { user } = useUser();
   const currentPlan = user?.plan || "free";
   
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
@@ -83,29 +80,20 @@ export default function PlanManagement() {
   const handleUpgrade = async (planKey: string) => {
     if (planKey === currentPlan) return;
     
-    // For free plan (downgrade), just show message
+    // Downgrades happen by cancelling an active subscription.
     if (planKey === 'free') {
       toast({
-        title: "Contact Support",
-        description: "Please contact support to downgrade your plan.",
+        title: "Switching to Free",
+        description: "To switch back to Free, cancel your subscription in Settings → Billing.",
       });
       return;
     }
     
     setIsUpgrading(true);
     try {
-      const token = localStorage.getItem("mailvet_session");
-      const response = await fetch(`${apiBaseUrl}/v1/billing/checkout`, {
+      const response = await authenticatedFetch(`${apiBaseUrl}/v1/billing/checkout`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: "include",
-        body: JSON.stringify({ 
-          plan: planKey === 'pro' ? 'ultimate' : planKey,
-          billingCycle: isAnnual ? 'annual' : 'monthly'
-        }),
+        body: JSON.stringify({ plan: planKey }),
       });
 
       if (!response.ok) {
@@ -153,8 +141,8 @@ export default function PlanManagement() {
         {/* Plan Cards */}
         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           {plans.map((plan, index) => {
-            const isCurrent = currentPlan === plan.planKey || 
-              (plan.planKey === 'pro' && (currentPlan === 'ultimate' || currentPlan === 'enterprise'));
+            const isCurrent = currentPlan === plan.planKey ||
+              (plan.planKey === 'ultimate' && currentPlan !== 'free');
             const isPro = plan.popular;
             
             return (
@@ -190,39 +178,16 @@ export default function PlanManagement() {
                   </span>
                 </div>
 
-                {/* Billing Toggle for Pro */}
-                {isPro && (
-                  <div className="flex items-center justify-center gap-3 mb-4">
-                    <span className={cn("text-sm", !isAnnual ? "text-foreground font-medium" : "text-muted-foreground")}>
-                      Monthly
-                    </span>
-                    <Switch
-                      checked={isAnnual}
-                      onCheckedChange={setIsAnnual}
-                    />
-                    <span className={cn("text-sm", isAnnual ? "text-foreground font-medium" : "text-muted-foreground")}>
-                      Annual
-                    </span>
-                  </div>
-                )}
-
                 {/* Price */}
                 <div className="text-center mb-2">
                   <span className="text-4xl font-bold text-foreground">
-                    {isPro && isAnnual ? plan.priceAnnual : plan.price}
+                    {plan.price}
                   </span>
                   <span className="text-muted-foreground">/month</span>
                 </div>
 
                 {/* Tagline */}
-                <p className={cn(
-                  "text-center text-sm mb-6",
-                  isPro && isAnnual ? "text-green-600 font-medium" : "text-muted-foreground"
-                )}>
-                  {isPro && isAnnual 
-                    ? "Save 16.7% with annual billing" 
-                    : plan.tagline}
-                </p>
+                <p className="text-center text-sm mb-6 text-muted-foreground">{plan.tagline}</p>
 
                 {/* CTA Button */}
                 <Button
@@ -248,7 +213,7 @@ export default function PlanManagement() {
                     </span>
                   ) : isPro ? (
                     <span className="flex items-center gap-2">
-                      Upgrade to Pro
+                      Upgrade to Paid
                       <ChevronRight className="w-4 h-4" />
                     </span>
                   ) : (
@@ -280,12 +245,11 @@ export default function PlanManagement() {
                   ))}
                 </div>
 
-                {/* Security Badge for Pro */}
+                {/* Security Badge for Paid */}
                 {isPro && (
                   <div className="mt-6 pt-4 border-t border-border">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Lock className="w-4 h-4" />
-                      <span>Guaranteed safe and secure checkout. Powered by Stripe.</span>
+                      <span>Guaranteed safe and secure checkout. Powered by Dodo Payments.</span>
                     </div>
                   </div>
                 )}

@@ -18,7 +18,7 @@ router.post(
   '/checkout',
   verifyToken,
   requireVerifiedEmail,
-  [body('plan').isIn(['ultimate', 'enterprise'])],
+  [body('plan').isIn(['ultimate'])],
   validate,
   billingController.checkout
 );

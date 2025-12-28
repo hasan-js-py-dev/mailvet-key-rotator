@@ -8,7 +8,7 @@ This document outlines the architecture, processes and design choices for **Mail
 
 ## 1. Understanding the middle‑layer (MailTester API rotation micro‑service)
 
-- The MailTester key‑manager micro‑service maintains a pool of MailTester subscription keys. It enforces per‑30‑second and daily rate limits and returns an available key via the `GET /key/available` endpoint. Each key record stores the plan type (e.g., **pro** or **ultimate**) and tracks the next time the key may be used.
+- The MailTester key‑manager micro‑service maintains a pool of MailTester subscription keys. It enforces per‑30‑second and daily rate limits and returns an available key via the `GET /key/available` endpoint. Each key record stores the plan type (e.g., **free** or **ultimate**) and tracks the next time the key may be used.
 - To validate an email, your backend first calls `/key/available` to receive a free key. It then calls `https://happy.mailtester.ninja/ninja?email=<email>&key=<subscriptionId>` to perform the actual validation.
 - The micro‑service only handles key rotation and rate limiting; it does not manage users or update your SaaS dashboard. It is a private component that your backend calls, acting as a proxy between your service and the MailTester API.
 
@@ -78,7 +78,7 @@ MailVet supports two authentication methods:
 
 ### 4.4 Credits on sign‑up
 
-- Each new account (regardless of sign‑up method) starts with **50 credits** on the free plan. Decrement the `credits` field by one for each single email validation. When credits reach zero, deny further validations until the user upgrades or purchases more credits.
+- Each new account (regardless of sign‑up method) starts with **100 credits** on the free plan. Decrement the `credits` field by one for each single email validation. When credits reach zero, deny further validations until the user upgrades.
 
 ---
 
@@ -132,14 +132,14 @@ MailVet supports two authentication methods:
 | Feature | Details |
 | --- | --- |
 | **Price** | $0 |
-| **Email Credits** | 50 credits (one-time) |
+| **Email Credits** | 100 credits (one-time) |
 | **Single Email Validation** | ✅ Yes |
 | **Rate Limit** | 1 request/second |
 | **CSV Bulk Upload** | ❌ No |
 | **API Access** | ❌ No |
 | **Priority Support** | ❌ No |
 
-### 8.2 Ultimate Plan (Most Popular)
+### 8.2 Paid Plan (Unlimited)
 | Feature | Details |
 | --- | --- |
 | **Price** | **$29.99/month** (90% OFF from $299/month - Limited Time!) |
@@ -151,21 +151,9 @@ MailVet supports two authentication methods:
 | **Priority Support** | ✅ Yes |
 | **API Access** | ❌ No (Dashboard only) |
 
-### 8.3 Enterprise Plan
-| Feature | Details |
-| --- | --- |
-| **Price** | Custom (Contact Sales) |
-| **Email Validations** | ✅ **Unlimited** |
-| **Everything in Ultimate** | ✅ All Ultimate features included |
-| **Full API Access** | ✅ Yes - Programmatic access |
-| **Processing Speed** | Super fast processing |
-| **Concurrent Files** | Unlimited concurrent file uploads |
-| **Dedicated Account Manager** | ✅ Yes |
-| **Custom Integrations & SLA** | ✅ Yes |
-
-### 8.4 Subscription management
+### 8.3 Subscription management
 - Integrate Dodo Payments' checkout for seamless subscription purchases. Dodo acts as the Merchant of Record and handles VAT, currency conversion and compliance. Customers pay via credit card or local wallets.
-- Store plan information in the user document (`plan`, `creditsRemaining`, `renewalDate`). Use webhooks from Dodo to update plan status on successful payment or cancellation.
+- Store billing information in the user document (`plan`, `billingStatus`, `renewalDate`, plus Dodo customer/subscription identifiers). Use webhooks from Dodo to update plan status on successful payment, renewal, or cancellation scheduling.
 
 ---
 
@@ -222,22 +210,21 @@ MailVet provides dedicated paths per subscription tier to simplify rate limiting
 
 | Plan | Endpoint | Rate Limit | Price | Features |
 | --- | --- | --- | --- | --- |
-| **Free** | `POST /free/validate` | 1 email/second | $0 | Single email only, 50 credits |
-| **Ultimate** | `POST /ultimate/validate` | 3 emails/second | $29.99/month | Unlimited validations, CSV upload (10K rows max), 2 concurrent files |
-| **Enterprise** | `POST /enterprise/validate` | 10+ emails/second | Custom | Full API access, unlimited concurrent files, custom SLA |
+| **Free** | `POST /free/validate` | 1 email/second | $0 | Single email only, 100 credits |
+| **Paid** | `POST /ultimate/validate` | 3 emails/second | $29.99/month | Unlimited validations, CSV upload (10K rows max), 2 concurrent files |
 
 Additional endpoints common to all paid plans:
 
 | Method & Path | Description |
 | --- | --- |
-| `POST /{tier}/batch` | Upload a CSV or text file for bulk validation. Only available to paid tiers (`ultimate` and `enterprise`). Validates each email via the micro‑service, respecting per‑tier rate limits, and stores results. Returns a job ID. |
+| `POST /{tier}/batch` | Upload a CSV or text file for bulk validation. Only available to paid tier (`ultimate`). Validates each email via the micro‑service, respecting per‑tier rate limits, and stores results. Returns a job ID. |
 | `GET /jobs/{jobId}` | Retrieve status and statistics for a specific job. Returns counts of processed emails, current state (`pending`, `in‑progress`, `complete`), and a download link for the results if finished. |
-| `GET /plans` | Return a list of available subscription plans, including `free`, `ultimate` and `enterprise`, along with rate limits and pricing. |
+| `GET /plans` | Return a list of available subscription plans, including `free` and `ultimate`, along with rate limits and pricing. |
 
 In addition to these tier‑specific paths, MailVet exposes **simplified validation endpoints** that abstract away plan details:
 
-- **`POST /verify-email`** – Validate a single email address. This endpoint automatically routes the request to the correct tier‑specific path (`/free/validate`, `/ultimate/validate` or `/enterprise/validate`), applies the user's rate limit and deducts one credit (for free plan).
-- **`POST /verify-list`** – Validate a list of email addresses from a CSV or plain text file. Only available to paid tiers (`ultimate` and `enterprise`), it automatically calls the appropriate batch endpoint and returns a job identifier.
+- **`POST /verify-email`** – Validate a single email address. This endpoint automatically routes the request to the correct tier‑specific path (`/free/validate` or `/ultimate/validate`), applies the user's rate limit and deducts one credit (for free plan).
+- **`POST /verify-list`** – Validate a list of email addresses from a CSV or plain text file. Only available to paid tier (`ultimate`), it automatically calls the appropriate batch endpoint and returns a job identifier.
 
 Use these simplified endpoints if you prefer not to reference tier‑specific paths directly.
 
@@ -247,7 +234,7 @@ Billing is handled through Dodo Payments' hosted checkout and webhooks. MailVet'
 
 | Method & Path | Description |
 | --- | --- |
-| `POST /billing/checkout` | Initiate a new subscription purchase or plan upgrade. Accepts a `plan` in the body (`ultimate` or `enterprise`) and returns a redirect URL to Dodo Payments' hosted checkout. |
+| `POST /billing/checkout` | Initiate a new subscription purchase. Accepts a `plan` in the body (`ultimate`) and returns a redirect URL to Dodo Payments' hosted checkout. |
 | `POST /billing/webhook` | Receive webhooks from Dodo Payments for events such as successful payments, subscription renewals, cancellations or failed charges. Updates the user's `plan`, `credits`, `renewalDate` and `billingStatus` fields accordingly. |
 
 ### 12.4 Front‑end routes
@@ -263,7 +250,7 @@ MailVet uses parameterised URLs to direct users to different screens on the mark
 | `/access?page=verify-email` | `mailvet.app` | Landing page users reach after clicking the Resend verification link. Calls `GET /auth/verify-email`. |
 | `/dashboard` | `dashboard.mailvet.app` | Main overview showing credit balance, usage statistics and recent jobs. Loads data from `GET /account`. |
 | `/?page=verify-email` | `dashboard.mailvet.app` | Single email validation view inside the dashboard. Submits to `POST /verify-email` and displays the result in a table. |
-| `/?page=verify-list` | `dashboard.mailvet.app` | Bulk list validation view (available to Ultimate and Enterprise users). Allows CSV upload and submits to `POST /verify-list`. |
+| `/?page=verify-list` | `dashboard.mailvet.app` | Bulk list validation view (available to Paid users). Allows CSV upload and submits to `POST /verify-list`. |
 | `/?page=verify-reports` | `dashboard.mailvet.app` | Validation reports page showing the history of previous jobs. Fetches job details via `GET /jobs/{jobId}` and `GET /account`. |
 | `/dashboard/plan` | `dashboard.mailvet.app` | Plan management screen. Lists current plan and available upgrades. Calls `GET /plans` and triggers `POST /billing/checkout` when the user upgrades. |
 | `/api-token` | `dashboard.mailvet.app` | Shows the user's API token with an option to regenerate via `POST /auth/refresh-token`. |
@@ -289,9 +276,8 @@ To simplify integration, this section summarizes all of the key backend API endp
 | `/account` | **GET** | Retrieve profile information, plan details, credit balance and usage. |
 | `/account` | **PATCH** | Update mutable profile fields (name, contact info, etc.). |
 | `/free/validate` | **POST** | Validate a single email for Free plan users (rate‑limited to 1 request/second). |
-| `/ultimate/validate` | **POST** | Validate a single email for Ultimate plan users (3 requests/second). |
-| `/enterprise/validate` | **POST** | Validate a single email for Enterprise plan users (10+ requests/second). |
-| `/{tier}/batch` | **POST** | Validate a list of emails for Ultimate and Enterprise users. Accepts CSV or text uploads and returns a job ID. |
+| `/ultimate/validate` | **POST** | Validate a single email for Paid plan users (3 requests/second). |
+| `/{tier}/batch` | **POST** | Validate a list of emails for Paid users. Accepts CSV or text uploads and returns a job ID. |
 | `/jobs/{jobId}` | **GET** | Check the status and progress of a batch validation job. |
 | `/plans` | **GET** | List available subscription plans, rate limits and pricing. |
 | `/verify-email` | **POST** | Simplified endpoint to validate a single email address, automatically selecting the correct tier path. |
@@ -310,7 +296,7 @@ To simplify integration, this section summarizes all of the key backend API endp
 | `/access?page=verify-email` | `mailvet.app` | Confirms an email address via `GET /auth/verify-email`. |
 | `/dashboard` | `dashboard.mailvet.app` | Main application overview; fetches account data from `GET /account`. |
 | `/?page=verify-email` | `dashboard.mailvet.app` | Single email validation view; posts to `POST /verify-email` and displays results. |
-| `/?page=verify-list` | `dashboard.mailvet.app` | List validation view for Ultimate/Enterprise users; posts to `POST /verify-list`. |
+| `/?page=verify-list` | `dashboard.mailvet.app` | List validation view for Paid users; posts to `POST /verify-list`. |
 | `/?page=verify-reports` | `dashboard.mailvet.app` | History of past validations; queries jobs via `GET /jobs/{jobId}`. |
 | `/dashboard/plan` | `dashboard.mailvet.app` | Plan management; lists available tiers, checks current plan via `GET /plans`, and initiates upgrades via `POST /billing/checkout`. |
 | `/api-token` | `dashboard.mailvet.app` | API token management; allows the user to regenerate their token via `POST /auth/refresh-token`. |

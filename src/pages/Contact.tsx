@@ -67,7 +67,7 @@ export default function Contact() {
                     <MessageSquare className="w-7 h-7 text-[hsl(267,100%,60%)]" />
                   </div>
                   <h3 className="text-lg font-semibold mb-2 text-white">Sales Inquiries</h3>
-                  <p className="text-[hsl(270,20%,65%)] text-sm mb-4">Interested in enterprise or custom plans?</p>
+                  <p className="text-[hsl(270,20%,65%)] text-sm mb-4">Interested in a team plan or custom setup?</p>
                   <a href="mailto:contact@mailvet.app" className="text-[hsl(267,100%,60%)] hover:text-[hsl(267,100%,70%)] font-medium">contact@mailvet.app</a>
                 </motion.div>
 

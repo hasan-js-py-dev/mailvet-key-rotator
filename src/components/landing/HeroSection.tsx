@@ -70,7 +70,7 @@ const ValidationDemo = () => {
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.6, delay: 0.4 }}
-      className="relative w-full max-w-md"
+      className="relative w-full max-w-md sm:max-w-lg"
     >
       {/* Gradient glow effect */}
       <div className="absolute -inset-3 bg-gradient-to-r from-[hsl(264,100%,35%)] via-[hsl(269,100%,53%)] to-[hsl(212,93%,52%)] rounded-3xl blur-2xl opacity-30" />
@@ -260,22 +260,22 @@ const ValidationDemo = () => {
 
 export const HeroSection = () => {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
-      <div className="container mx-auto px-6 relative z-10 py-12 lg:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+    <section className="relative overflow-hidden pt-20">
+      <div className="container mx-auto px-6 relative z-10 py-14 lg:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           
           {/* Left Content - 7 columns */}
-          <div className="lg:col-span-7 text-left">
+          <div className="lg:col-span-7 text-center lg:text-left">
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="mb-8"
+              className="mb-7 flex justify-center lg:justify-start"
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(270,50%,10%)] border border-[hsl(270,50%,20%)] backdrop-blur-sm">
                 <Zap className="w-4 h-4 text-[hsl(267,100%,60%)]" />
-                <span className="text-sm text-[hsl(270,20%,75%)] font-medium">Unlimited Bulk Verification • 99% Accuracy</span>
+                <span className="text-xs sm:text-sm text-[hsl(270,20%,75%)] font-medium">Unlimited Bulk Verification • 99% Accuracy</span>
               </div>
             </motion.div>
 
@@ -284,7 +284,7 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="font-bold tracking-tight mb-6 text-4xl md:text-5xl lg:text-[56px] xl:text-[64px] leading-[1.08]"
+              className="font-bold tracking-tight mb-6 text-4xl sm:text-5xl lg:text-[56px] xl:text-[64px] leading-[1.06]"
             >
               <span className="text-white">Unlimited Bulk Email Verification.</span>
               <br />
@@ -298,7 +298,7 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-lg md:text-xl text-[hsl(270,20%,70%)] mb-8 max-w-xl leading-relaxed"
+              className="text-base sm:text-lg md:text-xl text-[hsl(270,20%,70%)] mb-8 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
             >
               Enterprise-grade unlimited email verification with 99% accuracy. Validate millions of emails instantly, 
               reduce bounce rates by 98%, and protect your sender reputation with our unlimited bulk validation API.
@@ -309,19 +309,19 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-wrap items-center gap-4 mb-10"
+              className="flex flex-wrap items-center justify-center lg:justify-start gap-3 mb-10"
             >
               <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[hsl(270,50%,8%)] border border-[hsl(270,50%,15%)]">
                 <Shield className="w-4 h-4 text-[hsl(267,100%,60%)]" />
-                <span className="text-sm text-[hsl(270,20%,70%)]">SOC 2 Compliant</span>
+                <span className="text-xs sm:text-sm text-[hsl(270,20%,70%)]">SOC 2 Compliant</span>
               </div>
               <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[hsl(270,50%,8%)] border border-[hsl(270,50%,15%)]">
                 <CheckCircle className="w-4 h-4 text-emerald" />
-                <span className="text-sm text-[hsl(270,20%,70%)]">99.9% Uptime SLA</span>
+                <span className="text-xs sm:text-sm text-[hsl(270,20%,70%)]">99.9% Uptime SLA</span>
               </div>
               <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[hsl(270,50%,8%)] border border-[hsl(270,50%,15%)]">
                 <Clock className="w-4 h-4 text-[hsl(212,93%,52%)]" />
-                <span className="text-sm text-[hsl(270,20%,70%)]">&lt;100ms Response</span>
+                <span className="text-xs sm:text-sm text-[hsl(270,20%,70%)]">&lt;100ms Response</span>
               </div>
             </motion.div>
 
@@ -330,12 +330,12 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="flex flex-col sm:flex-row items-start gap-4"
+              className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4"
             >
               <Link to="/access?page=signup">
                 <Button 
                   size="lg" 
-                  className="marketing-cta text-white font-semibold px-8 py-6 text-base rounded-full group"
+                  className="marketing-cta text-white font-semibold px-8 py-6 text-base rounded-full group w-full sm:w-auto"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Get started free
@@ -347,7 +347,7 @@ export const HeroSection = () => {
                 <Button 
                   variant="outline"
                   size="lg" 
-                  className="font-medium px-8 py-6 text-base rounded-full bg-transparent border-[hsl(270,50%,20%)] text-white hover:bg-[hsl(270,50%,10%)] hover:border-[hsl(270,50%,30%)] transition-all"
+                  className="font-medium px-8 py-6 text-base rounded-full bg-transparent border-[hsl(270,50%,20%)] text-white hover:bg-[hsl(270,50%,10%)] hover:border-[hsl(270,50%,30%)] transition-all w-full sm:w-auto"
                 >
                   See Pricing
                 </Button>

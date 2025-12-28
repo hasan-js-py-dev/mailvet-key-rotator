@@ -4,12 +4,12 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const pricingData = [
-  { name: "MailVet", free: "$0 (100)", popular: "$29.99/mo", enterprise: "Custom", model: "Unlimited", limitedOffer: "90% OFF", highlight: true, website: null, note: "Unlimited verifications on all paid plans" },
-  { name: "ZeroBounce", free: "$0 (100)", popular: "$99/mo", enterprise: "$499/mo+", model: "Credit-based", limitedOffer: null, highlight: false, website: "https://www.zerobounce.net/email-validation-pricing", note: "Monthly credit limits apply" },
-  { name: "NeverBounce", free: "$0 (1K)", popular: "$50/10K", enterprise: "$400/100K", model: "Pay-per-email", limitedOffer: null, highlight: false, website: "https://www.neverbounce.com/pricing", note: "Credits expire in 12 months" },
-  { name: "Hunter.io", free: "$0 (50)", popular: "$149/mo", enterprise: "$299/mo", model: "Credit-based", limitedOffer: null, highlight: false, website: "https://hunter.io/pricing", note: "10K credits/mo limit" },
-  { name: "Clearout", free: "$0 (100)", popular: "$58/mo", enterprise: "$174/mo", model: "Credit-based", limitedOffer: null, highlight: false, website: "https://clearout.io/pricing/", note: "Monthly credit limits" },
-  { name: "EmailListVerify", free: "$0 (100)", popular: "$27/10K", enterprise: "$186/100K", model: "Pay-per-email", limitedOffer: null, highlight: false, website: "https://www.emaillistverify.com/pricing/", note: "One-time credit purchase" },
+  { name: "MailVet", free: "$0 (100)", paid: "$29.99/mo", model: "Unlimited", limitedOffer: "90% OFF", highlight: true, website: null, note: "Unlimited verifications on the paid plan" },
+  { name: "ZeroBounce", free: "$0 (100)", paid: "$99/mo", model: "Credit-based", limitedOffer: null, highlight: false, website: "https://www.zerobounce.net/email-validation-pricing", note: "Monthly credit limits apply" },
+  { name: "NeverBounce", free: "$0 (1K)", paid: "$50/10K", model: "Pay-per-email", limitedOffer: null, highlight: false, website: "https://www.neverbounce.com/pricing", note: "Credits expire in 12 months" },
+  { name: "Hunter.io", free: "$0 (50)", paid: "$149/mo", model: "Credit-based", limitedOffer: null, highlight: false, website: "https://hunter.io/pricing", note: "10K credits/mo limit" },
+  { name: "Clearout", free: "$0 (100)", paid: "$58/mo", model: "Credit-based", limitedOffer: null, highlight: false, website: "https://clearout.io/pricing/", note: "Monthly credit limits" },
+  { name: "EmailListVerify", free: "$0 (100)", paid: "$27/10K", model: "Pay-per-email", limitedOffer: null, highlight: false, website: "https://www.emaillistverify.com/pricing/", note: "One-time credit purchase" },
 ];
 
 export const PricingComparisonSection = () => {
@@ -45,13 +45,12 @@ export const PricingComparisonSection = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="overflow-x-auto"
         >
-          <div className="min-w-[800px] max-w-5xl mx-auto">
+          <div className="min-w-[720px] max-w-5xl mx-auto">
             {/* Header */}
-            <div className="grid grid-cols-6 gap-3 mb-4">
+            <div className="grid grid-cols-5 gap-3 mb-4">
               <div className="p-4 text-left"><span className="text-sm text-[hsl(270,20%,65%)]">Provider</span></div>
               <div className="p-4 text-center"><span className="text-sm text-[hsl(270,20%,65%)]">Free Tier</span></div>
-              <div className="p-4 text-center"><span className="text-sm text-[hsl(270,20%,65%)]">Popular Plan</span></div>
-              <div className="p-4 text-center"><span className="text-sm text-[hsl(270,20%,65%)]">Enterprise</span></div>
+              <div className="p-4 text-center"><span className="text-sm text-[hsl(270,20%,65%)]">Paid Plan</span></div>
               <div className="p-4 text-center"><span className="text-sm text-[hsl(270,20%,65%)]">Pricing Model</span></div>
               <div className="p-4"></div>
             </div>
@@ -64,7 +63,7 @@ export const PricingComparisonSection = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                className={`grid grid-cols-6 gap-3 mb-3 p-4 rounded-xl ${
+                className={`grid grid-cols-5 gap-3 mb-3 p-4 rounded-xl ${
                   item.highlight 
                     ? 'bg-gradient-to-r from-[hsl(267,100%,60%)/0.15] via-[hsl(269,100%,53%)/0.1] to-[hsl(212,93%,52%)/0.1] border-2 border-[hsl(267,100%,60%)]' 
                     : 'bg-[hsl(270,50%,6%)] border border-[hsl(270,50%,15%)]'
@@ -86,15 +85,12 @@ export const PricingComparisonSection = () => {
                   <span className={`font-semibold ${item.highlight ? 'text-white' : 'text-[hsl(270,20%,65%)]'}`}>{item.free}</span>
                 </div>
                 <div className="flex flex-col items-center justify-center">
-                  <span className={`font-semibold ${item.highlight ? 'text-[hsl(152,76%,45%)]' : 'text-[hsl(270,20%,65%)]'}`}>{item.popular}</span>
+                  <span className={`font-semibold ${item.highlight ? 'text-[hsl(152,76%,45%)]' : 'text-[hsl(270,20%,65%)]'}`}>{item.paid}</span>
                   {item.limitedOffer && (
                     <span className="text-xs text-amber-400 font-bold flex items-center gap-1 mt-1">
                       <Flame className="w-3 h-3" />{item.limitedOffer}
                     </span>
                   )}
-                </div>
-                <div className="flex items-center justify-center">
-                  <span className={`font-semibold ${item.highlight ? 'text-white' : 'text-[hsl(270,20%,65%)]'}`}>{item.enterprise}</span>
                 </div>
                 <div className="flex items-center justify-center">
                   <span className={`text-sm font-medium flex items-center gap-1 ${item.model === 'Unlimited' ? 'text-[hsl(267,100%,60%)]' : 'text-[hsl(270,20%,65%)]'}`}>

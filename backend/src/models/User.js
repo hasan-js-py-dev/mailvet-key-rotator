@@ -72,6 +72,25 @@ const userSchema = new mongoose.Schema({
   renewalDate: {
     type: Date
   },
+
+  // Dodo Payments identifiers (safe to store; no card data)
+  dodoCustomerId: {
+    type: String,
+    trim: true,
+  },
+  dodoSubscriptionId: {
+    type: String,
+    trim: true,
+  },
+  dodoProductId: {
+    type: String,
+    trim: true,
+  },
+  dodoCancelAtNextBillingDate: {
+    type: Boolean,
+    default: false,
+  },
+
   // Refresh token storage for secure session management
   refreshTokenHash: {
     type: String,

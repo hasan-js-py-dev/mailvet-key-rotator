@@ -28,9 +28,26 @@ const generateRefreshToken = async () => {
 
 const verifyAccessToken = (token) => {
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  if (decoded.type !== 'access') {
-    throw new Error('Invalid token type');
+
+  if (!decoded || typeof decoded !== 'object') {
+    const err = new Error('Invalid token');
+    err.name = 'JsonWebTokenError';
+    throw err;
   }
+
+  // Backward-compatibility: older access tokens may not include `type`.
+  if (decoded.type && decoded.type !== 'access') {
+    const err = new Error('Invalid token');
+    err.name = 'JsonWebTokenError';
+    throw err;
+  }
+
+  if (!decoded.userId) {
+    const err = new Error('Invalid token');
+    err.name = 'JsonWebTokenError';
+    throw err;
+  }
+
   return decoded;
 };
 

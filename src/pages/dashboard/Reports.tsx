@@ -71,7 +71,7 @@ export default function Reports() {
     <DashboardLayout>
       <div className="max-w-5xl mx-auto space-y-8">
         <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">📊 Reports</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">Reports</h1>
           <p className="text-muted-foreground">All your uploaded lists appear here.</p>
         </div>
 
@@ -86,17 +86,17 @@ export default function Reports() {
           {jobs.map((job) => (
             <div key={job._id} className="grid grid-cols-12 gap-3 px-5 py-4 border-b border-border last:border-b-0">
               <div className="col-span-6 min-w-0">
-                <p className="font-semibold text-foreground truncate">📄 {job.originalFilename}</p>
+                <p className="font-semibold text-foreground truncate">{job.originalFilename}</p>
               </div>
               <div className="col-span-2">
                 <span className="text-sm text-foreground">
                   {job.status === "pending"
-                    ? "Queued ⏳"
+                    ? "Queued"
                     : job.status === "processing"
-                      ? "Processing 🔄"
+                      ? "Processing"
                       : job.status === "completed"
-                        ? "Completed ✅"
-                        : "Failed ❌"}
+                        ? "Completed"
+                        : "Failed"}
                 </span>
               </div>
               <div className="col-span-2">

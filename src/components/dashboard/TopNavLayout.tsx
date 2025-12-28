@@ -25,9 +25,9 @@ import { useAuthContext } from "@/components/AuthProvider";
 import { Logo } from "@/components/Logo";
 
 const mainNavItems = [
-  { icon: Mail, label: "Single ✉️", path: "/dashboard/verify-email" },
-  { icon: List, label: "Lists 📋", path: "/dashboard/lists" },
-  { icon: FileText, label: "Reports 📊", path: "/dashboard/reports" },
+  { icon: Mail, label: "Single", path: "/dashboard/verify-email" },
+  { icon: List, label: "Lists", path: "/dashboard/lists" },
+  { icon: FileText, label: "Reports", path: "/dashboard/reports" },
 ];
 
 // Additional paths to check for active state
@@ -69,15 +69,12 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
   const getPlanLabel = (plan: string | undefined) => {
     switch (plan) {
       case "free":
-        return "Trial";
-      case "pro":
-        return "Pro";
+        return "Free";
       case "ultimate":
-        return "Ultimate";
       case "enterprise":
-        return "Enterprise";
+        return "Paid";
       default:
-        return "Trial";
+        return "Free";
     }
   };
 
@@ -121,7 +118,7 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
 
             <Link to="/dashboard/plan">
               <Button variant="gradient" size="sm" className="rounded-full">
-                Upgrade 🚀
+                Upgrade
               </Button>
             </Link>
           </nav>
@@ -131,7 +128,7 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
             {/* Credits Display */}
             <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
               <CreditCard className="w-4 h-4" />
-              <span>{credits} credits left ⚡</span>
+              <span>{credits} credits left</span>
             </div>
 
             {/* User Menu */}
@@ -177,10 +174,10 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
                         </p>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
-                            {getPlanLabel(user?.plan)} ✨
+                            {getPlanLabel(user?.plan)}
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            {credits} emails left ⚡
+                            {credits} emails left
                           </span>
                         </div>
                       </div>
@@ -193,7 +190,7 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                         >
                           <Settings className="w-4 h-4" />
-                          <span>Settings ⚙️</span>
+                          <span>Settings</span>
                         </Link>
                         <Link
                           to="/dashboard/settings?tab=billing"
@@ -201,7 +198,7 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                         >
                           <CreditCard className="w-4 h-4" />
-                          <span>Billing 💳</span>
+                          <span>Billing</span>
                         </Link>
                         <Link
                           to="/dashboard/plan"
@@ -209,7 +206,7 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                         >
                           <CreditCard className="w-4 h-4" />
-                          <span>Upgrade 🚀</span>
+                          <span>Upgrade</span>
                         </Link>
                         <a
                           href="mailto:support@mailvet.app"
@@ -217,7 +214,7 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                         >
                           <HelpCircle className="w-4 h-4" />
-                          <span>Support 🤝</span>
+                          <span>Support</span>
                         </a>
                       </div>
 
@@ -283,7 +280,7 @@ export const TopNavLayout = ({ children }: TopNavLayoutProps) => {
                 <div className="pt-2">
                   <Link to="/dashboard/plan" onClick={() => setMobileMenuOpen(false)}>
                     <Button variant="gradient" className="w-full justify-center rounded-lg">
-                      Upgrade 🚀
+                      Upgrade
                     </Button>
                   </Link>
                 </div>

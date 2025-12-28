@@ -219,8 +219,7 @@ export default function Settings() {
 
   const planLabel = (() => {
     if (!user?.plan) return "Free";
-    if (user.plan === "ultimate") return "Ultimate";
-    if (user.plan === "enterprise") return "Enterprise";
+    if (user.plan !== "free") return "Paid";
     return "Free";
   })();
 
@@ -267,8 +266,11 @@ export default function Settings() {
       }
 
       toast({
-        title: "Plan cancelled",
-        description: "You are now on the Free plan.",
+        title: "Cancellation scheduled",
+        description:
+          typeof data?.message === "string"
+            ? data.message
+            : "Your subscription will remain active until the end of the billing period.",
       });
       await refetch();
     } catch (err) {
@@ -489,7 +491,7 @@ export default function Settings() {
 
                   <div className="flex items-center gap-2">
                     <Button variant="outline" onClick={() => smartNavigateTo(getDashboardUrl("/plan"))}>
-                      Upgrade 🚀
+                      Upgrade
                     </Button>
 
                     {user?.plan !== "free" && (
@@ -503,7 +505,7 @@ export default function Settings() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Cancel your plan?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This will switch your account back to the Free plan.
+                              This schedules cancellation at the end of your current billing period.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -613,7 +615,7 @@ export default function Settings() {
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">Max concurrency</TableCell>
-                        <TableCell className="text-right">2 files</TableCell>
+                        <TableCell className="text-right">1 file</TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="font-medium">Max file size</TableCell>
@@ -626,7 +628,7 @@ export default function Settings() {
 
               <div className="text-center">
                 <Button onClick={() => smartNavigateTo(getDashboardUrl("/plan"))}>
-                  Upgrade 🚀
+                  Upgrade
                 </Button>
               </div>
             </motion.div>

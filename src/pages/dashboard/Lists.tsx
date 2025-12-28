@@ -161,9 +161,9 @@ export default function Lists() {
     <TopNavLayout>
       <div className="max-w-5xl mx-auto space-y-10">
         <div className="space-y-3">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight">📥 Bulk Upload</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight">Bulk Upload</h1>
           <p className="text-muted-foreground text-base md:text-lg">
-            Upload a spreadsheet and we’ll queue your list clean instantly. ✨
+            Upload a spreadsheet and we’ll queue your list instantly.
           </p>
         </div>
 
@@ -174,7 +174,7 @@ export default function Lists() {
         >
           <div className="flex items-start md:items-center justify-between gap-6">
             <div className="space-y-1">
-              <h2 className="text-xl font-semibold text-foreground">📄 Upload a file</h2>
+              <h2 className="text-xl font-semibold text-foreground">Upload a file</h2>
               <p className="text-sm text-muted-foreground">Supported: CSV, XLS, XLSX</p>
             </div>
             <div className="text-right">
@@ -205,7 +205,7 @@ export default function Lists() {
                 <Upload className="w-7 h-7 text-muted-foreground" />
               </div>
               <div className="space-y-1">
-                <p className="font-medium text-foreground">Drag & drop your file here 👇</p>
+                <p className="font-medium text-foreground">Drag & drop your file here</p>
                 <p className="text-sm text-muted-foreground">CSV / XLS / XLSX • up to 10,000 rows</p>
               </div>
 
@@ -218,19 +218,19 @@ export default function Lists() {
                     className="hidden"
                   />
                   <Button variant="outline" asChild>
-                    <span className="cursor-pointer">Choose file 📎</span>
+                    <span className="cursor-pointer">Choose file</span>
                   </Button>
                 </label>
 
                 <Button variant="gradient" size="lg" disabled={!uploadedFile || isUploading} onClick={handleStartValidation}>
                   {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                  Click Upload 🚀
+                  Upload
                 </Button>
               </div>
 
               {uploadedFile ? (
                 <div className="mt-4 text-sm text-muted-foreground">
-                  Selected: <span className="text-foreground font-medium">{uploadedFile.name}</span> ✅
+                  Selected: <span className="text-foreground font-medium">{uploadedFile.name}</span>
                   <Button variant="ghost" size="sm" className="ml-2" onClick={() => setUploadedFile(null)}>
                     Remove
                   </Button>
@@ -241,25 +241,25 @@ export default function Lists() {
         </motion.div>
 
         <div className="space-y-4">
-          <h2 className="text-2xl font-semibold text-foreground">How to Use ⚡</h2>
+          <h2 className="text-2xl font-semibold text-foreground">How to Use</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-card rounded-xl border border-border p-6">
-              <p className="font-semibold text-foreground">1️⃣ Prepare your file</p>
+              <p className="font-semibold text-foreground">1. Prepare your file</p>
               <p className="text-sm text-muted-foreground mt-2">One email per row (headers OK).</p>
             </div>
             <div className="bg-card rounded-xl border border-border p-6">
-              <p className="font-semibold text-foreground">2️⃣ Upload</p>
+              <p className="font-semibold text-foreground">2. Upload</p>
               <p className="text-sm text-muted-foreground mt-2">Up to 10,000 rows per list.</p>
             </div>
             <div className="bg-card rounded-xl border border-border p-6">
-              <p className="font-semibold text-foreground">3️⃣ Get results</p>
+              <p className="font-semibold text-foreground">3. Get results</p>
               <p className="text-sm text-muted-foreground mt-2">We process and you download when ready.</p>
             </div>
           </div>
         </div>
 
         <div className="space-y-4">
-          <h2 className="text-2xl font-semibold text-foreground">⏳ Processing Lists</h2>
+          <h2 className="text-2xl font-semibold text-foreground">Processing Lists</h2>
 
           {isLoadingJobs ? (
             <div className="bg-card rounded-xl border border-border p-6 text-muted-foreground">
@@ -280,7 +280,7 @@ export default function Lists() {
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
-                      <p className="font-semibold text-foreground truncate">📄 {job.originalFilename}</p>
+                      <p className="font-semibold text-foreground truncate">{job.originalFilename}</p>
                       <p className="text-sm text-muted-foreground mt-1">
                         {typeof job.totalEmails === "number" ? `${job.totalEmails.toLocaleString()} emails` : ""}
                         {typeof job.totalEmails === "number" && typeof job.processedEmails === "number"
@@ -290,7 +290,7 @@ export default function Lists() {
                     </div>
 
                     <span className={statusPill(job.status)}>
-                      {job.status === "processing" ? "Processing 🔄" : "Queued ⏳"}
+                      {job.status === "processing" ? "Processing" : "Queued"}
                     </span>
                   </div>
                 </motion.div>

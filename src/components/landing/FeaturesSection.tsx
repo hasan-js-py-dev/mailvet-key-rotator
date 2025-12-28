@@ -59,7 +59,7 @@ const itemVariants = {
 
 export const FeaturesSection = () => {
   return (
-    <section id="features" className="relative py-24 overflow-hidden">
+    <section id="features" className="relative py-24 overflow-hidden scroll-mt-24">
       <div className="absolute inset-0 bg-[hsl(270,50%,4%)]" />
       <div className="absolute inset-0 dot-pattern opacity-20" />
       

@@ -45,7 +45,15 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(cookieParser()); // Parse cookies for refresh token
-app.use(express.json());
+app.use(
+  express.json({
+    verify: (req, res, buf) => {
+      if (buf && buf.length) {
+        req.rawBody = buf.toString('utf8');
+      }
+    },
+  })
+);
 
 // Health check
 app.get('/health', (req, res) => {

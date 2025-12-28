@@ -24,7 +24,7 @@ const steps = [
 
 export const HowItWorksSection = () => {
   return (
-    <section id="how-it-works" className="relative py-24 overflow-hidden">
+    <section id="how-it-works" className="relative py-24 overflow-hidden scroll-mt-24">
       <div className="absolute inset-0 bg-[hsl(270,100%,2%)]" />
       <div className="absolute inset-0 dot-pattern opacity-30" />
       

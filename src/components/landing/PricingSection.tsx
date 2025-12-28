@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Check, X, Sparkles, Zap, Crown, Rocket, Shield, Mail, FileSpreadsheet, Clock, Users, BarChart3, Headphones, Server, Code, Building2, Timer, Flame } from "lucide-react";
+import { Check, X, Sparkles, Zap, Crown, Shield, Mail, FileSpreadsheet, Clock, Users, BarChart3, Headphones, Code, Timer, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -26,7 +26,7 @@ const plans = [
     contactSales: false,
   },
   {
-    name: "Ultimate",
+    name: "Paid",
     icon: Crown,
     price: "$29.99",
     originalPrice: "$299",
@@ -44,36 +44,15 @@ const plans = [
       { text: "Priority support", included: true, icon: Headphones },
       { text: "No API access", included: false, icon: Code },
     ],
-    cta: "Get Ultimate Now",
+    cta: "Get Paid Now",
     popular: true,
     contactSales: false,
-  },
-  {
-    name: "Enterprise",
-    icon: Building2,
-    price: "Custom",
-    originalPrice: null,
-    period: "",
-    description: "For large-scale operations",
-    highlight: "Maximum Power",
-    limitedOffer: false,
-    features: [
-      { text: "Everything in Ultimate", included: true, icon: Crown },
-      { text: "Full API access", included: true, icon: Code },
-      { text: "Super fast processing", included: true, icon: Rocket },
-      { text: "Unlimited concurrent files", included: true, icon: Server },
-      { text: "Dedicated account manager", included: true, icon: Users },
-      { text: "Custom integrations & SLA", included: true, icon: Shield },
-    ],
-    cta: "Contact Sales",
-    popular: false,
-    contactSales: true,
   },
 ];
 
 export const PricingSection = () => {
   return (
-    <section id="pricing" className="relative py-28 overflow-hidden">
+    <section id="pricing" className="relative py-28 overflow-hidden scroll-mt-24">
       <div className="absolute inset-0 bg-[hsl(270,100%,2%)]" />
       <div className="absolute inset-0 dot-pattern opacity-10" />
       
@@ -106,7 +85,7 @@ export const PricingSection = () => {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto items-stretch">
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto items-stretch">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
@@ -143,7 +122,7 @@ export const PricingSection = () => {
                       />
                       <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 py-2.5 px-4 text-center">
                         <span className="text-xs font-bold tracking-wider text-white uppercase flex items-center justify-center gap-2">
-                          <Flame className="w-4 h-4 animate-pulse" />🔥 Limited Time: 90% OFF!<Timer className="w-4 h-4" />
+                          <Flame className="w-4 h-4 animate-pulse" />Limited Time: 90% OFF!<Timer className="w-4 h-4" />
                         </span>
                       </div>
                     </div>
@@ -157,15 +136,15 @@ export const PricingSection = () => {
                       "p-2.5 rounded-xl transition-all duration-300",
                       plan.popular 
                         ? "bg-gradient-to-br from-[hsl(267,100%,60%)/0.3] to-[hsl(269,100%,53%)/0.2]" 
-                        : plan.name === "Enterprise" ? "bg-[hsl(212,93%,52%)/0.15]" : "bg-[hsl(270,50%,15%)]"
+                        : "bg-[hsl(270,50%,15%)]"
                     )}>
                       <plan.icon className={cn(
                         "w-6 h-6",
-                        plan.popular ? "text-[hsl(267,100%,70%)]" : plan.name === "Enterprise" ? "text-[hsl(212,93%,60%)]" : "text-[hsl(270,20%,70%)]"
+                        plan.popular ? "text-[hsl(267,100%,70%)]" : "text-[hsl(270,20%,70%)]"
                       )} />
                     </div>
                     <h3 className="font-display text-2xl font-bold text-white flex items-center gap-2">
-                      {plan.name}{plan.popular && <span className="text-2xl">👑</span>}
+                      {plan.name}
                     </h3>
                   </div>
                   
@@ -218,9 +197,7 @@ export const PricingSection = () => {
                       "w-full font-bold h-12 text-base relative overflow-hidden rounded-full",
                       plan.popular 
                         ? "marketing-cta text-white"
-                        : plan.name === "Enterprise"
-                          ? "bg-[hsl(212,93%,52%)/0.15] border border-[hsl(212,93%,52%)/0.4] text-[hsl(212,93%,70%)] hover:bg-[hsl(212,93%,52%)/0.25]"
-                          : "bg-[hsl(270,50%,12%)] border border-[hsl(270,50%,20%)] text-white hover:bg-[hsl(270,50%,15%)]"
+                        : "bg-[hsl(270,50%,12%)] border border-[hsl(270,50%,20%)] text-white hover:bg-[hsl(270,50%,15%)]"
                     )}>
                       {plan.popular && (
                         <motion.div

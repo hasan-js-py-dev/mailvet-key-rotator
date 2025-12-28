@@ -86,11 +86,11 @@ const Index = () => {
       {/* Parallax glow orbs with smooth animations */}
       <motion.div 
         style={{ y: y1, rotate: rotate1, scale: scale1, opacity: opacity1 }}
-        className="glow-orb glow-orb-violet w-[800px] h-[800px] -top-60 -left-60 fixed pointer-events-none"
+        className="glow-orb glow-orb-violet hidden md:block w-[800px] h-[800px] -top-60 -left-60 fixed pointer-events-none"
       />
       <motion.div 
         style={{ y: y2, rotate: rotate2, scale: scale2, opacity: opacity2 }}
-        className="glow-orb glow-orb-blue w-[700px] h-[700px] top-1/3 -right-80 fixed pointer-events-none"
+        className="glow-orb glow-orb-blue hidden md:block w-[700px] h-[700px] top-1/3 -right-80 fixed pointer-events-none"
       />
       <motion.div 
         style={{ y: y3, scale: scale1 }}
@@ -109,7 +109,7 @@ const Index = () => {
           scale: [1, 1.1, 1]
         }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[60%] left-[10%] w-[300px] h-[300px] bg-[hsl(269,100%,53%)] rounded-full blur-[150px] opacity-20 pointer-events-none"
+        className="hidden md:block absolute top-[60%] left-[10%] w-[300px] h-[300px] bg-[hsl(269,100%,53%)] rounded-full blur-[150px] opacity-20 pointer-events-none"
       />
       <motion.div
         animate={{ 
@@ -118,7 +118,7 @@ const Index = () => {
           scale: [1, 0.9, 1]
         }}
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute top-[40%] right-[5%] w-[350px] h-[350px] bg-[hsl(212,93%,52%)] rounded-full blur-[160px] opacity-15 pointer-events-none"
+        className="hidden md:block absolute top-[40%] right-[5%] w-[350px] h-[350px] bg-[hsl(212,93%,52%)] rounded-full blur-[160px] opacity-15 pointer-events-none"
       />
       
       <Navbar />

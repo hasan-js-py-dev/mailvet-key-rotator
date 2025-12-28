@@ -41,7 +41,10 @@ const verifyToken = async (req, res, next) => {
     req.userId = user._id;
     next();
   } catch (error) {
-    console.error('Auth error:', error);
+    // Avoid noisy logs for routine auth failures
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Auth error:', error);
+    }
     return res.status(401).json({ error: 'Invalid token' });
   }
 };
