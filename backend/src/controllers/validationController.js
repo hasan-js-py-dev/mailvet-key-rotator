@@ -1,5 +1,6 @@
 const { body, validationResult } = require('express-validator');
 const disposableEmailDomains = require('disposable-email-domains');
+const crypto = require('crypto');
 
 const User = require('../models/User');
 const EmailVerification = require('../models/EmailVerification');
@@ -38,6 +39,24 @@ const validate = (req) => {
     err.details = errors.array();
     throw err;
   }
+};
+
+const maskSubscriptionId = (subscriptionId) => {
+  const raw = String(subscriptionId || '').trim();
+  if (!raw) return '';
+
+  // Preserve the "sub_" prefix if present, but hide the rest.
+  const cleaned = raw.replace(/[{}]/g, '');
+  if (cleaned.length <= 8) return '[redacted]';
+  const prefix = cleaned.startsWith('sub_') ? 'sub_' : cleaned.slice(0, 4);
+  const tail = cleaned.slice(-4);
+  return `${prefix}…${tail}`;
+};
+
+const hashValue = (value) => {
+  const v = String(value || '').trim();
+  if (!v) return '';
+  return crypto.createHash('sha256').update(v).digest('hex');
 };
 
 const inferFlags = ({ email, domain, apiResult }) => {
@@ -137,7 +156,9 @@ const verifyEmail = async (req, res, next) => {
       email,
       domain,
       provider: 'mailtester',
-      mailtesterSubscriptionId: keyReservation.subscriptionId,
+      // Do not store raw subscriptionId (it functions like an API key).
+      mailtesterSubscriptionId: maskSubscriptionId(keyReservation.subscriptionId),
+      mailtesterSubscriptionIdHash: hashValue(keyReservation.subscriptionId),
       mailtesterPlan: keyReservation.plan,
       code: apiResult?.code,
       message: apiResult?.message,
@@ -150,7 +171,10 @@ const verifyEmail = async (req, res, next) => {
       creditsConsumed: reserved ? 1 : 0,
       latencyMs: Date.now() - start,
       raw: {
-        rotator: keyReservation.raw,
+        rotator: {
+          ...(keyReservation.raw || {}),
+          subscriptionId: '[redacted]',
+        },
         mailtester: apiResult,
       },
     });

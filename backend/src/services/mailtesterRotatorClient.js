@@ -18,6 +18,23 @@ const getRotatorUrl = () => {
 
 const stripBraces = (value) => String(value || '').replace(/[{}]/g, '').trim();
 
+const getRotatorAuthHeaders = () => {
+  const bearer = process.env.MAILTESTER_ROTATOR_TOKEN || process.env.KEY_MANAGER_TOKEN;
+  const apiKey = process.env.MAILTESTER_ROTATOR_API_KEY || process.env.KEY_MANAGER_API_KEY;
+
+  const headers = {};
+
+  if (typeof bearer === 'string' && bearer.trim().length > 0) {
+    headers.Authorization = `Bearer ${bearer.trim()}`;
+  }
+
+  if (typeof apiKey === 'string' && apiKey.trim().length > 0) {
+    headers['x-api-key'] = apiKey.trim();
+  }
+
+  return headers;
+};
+
 const getAvailableMailtesterKey = async () => {
   if (typeof fetch !== 'function') {
     throw new Error('Global fetch is not available. Please run on Node 18+ or add a fetch polyfill.');
@@ -26,7 +43,7 @@ const getAvailableMailtesterKey = async () => {
   const url = getRotatorUrl();
   const res = await fetch(url, {
     method: 'GET',
-    headers: { Accept: 'application/json' },
+    headers: { Accept: 'application/json', ...getRotatorAuthHeaders() },
   });
 
   const text = await res.text();

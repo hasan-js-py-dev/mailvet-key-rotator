@@ -30,6 +30,11 @@ const emailVerificationSchema = new mongoose.Schema(
       trim: true,
       index: true,
     },
+    mailtesterSubscriptionIdHash: {
+      type: String,
+      trim: true,
+      index: true,
+    },
     mailtesterPlan: {
       type: String,
       trim: true,
